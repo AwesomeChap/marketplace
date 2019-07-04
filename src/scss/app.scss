@@ -1,0 +1,83 @@
+$blue: #2f54eb;
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.wrapper {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  &.primary {
+    background: $blue;
+    color: #fff;
+
+    a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: 100;
+      opacity: 0.8;
+      transition: all 0.3s;
+  
+      &:hover {
+        color: #fff;
+        opacity: 1;
+      }
+  
+      &.big {
+        font-size: 28px;
+      }
+    }
+  }
+}
+
+.container {
+  width: 1200px;
+}
+
+.space-between {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.blue-bg {
+  width: 100%;
+  background: $blue;
+}
+
+.ant-modal-content {
+  transition: all 0.5s !important;
+}
+
+.ant-modal-title {
+  font-weight: 100 !important;
+  font-size: 22px !important;
+}
+
+.center-me {
+  display: block !important;
+  margin: auto !important;
+}
+
+.inline-form{
+  display: flex;
+  justify-content: space-between;
+
+  div{
+    flex-basis: 48%;
+  }
+}

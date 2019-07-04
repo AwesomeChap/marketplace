@@ -1,0 +1,46 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "start": "node server/server.js"
+  },
+  "author": "AwesomeChap (Jatin Kumar)",
+  "license": "ISC",
+  "dependencies": {
+    "antd": "^3.19.8",
+    "axios": "^0.19.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "connect-mongo": "^3.0.0",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "mongoose": "^5.6.2",
+    "morgan": "^1.9.1",
+    "passport": "^0.4.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google": "^0.3.0",
+    "passport-linkedin": "^1.0.0",
+    "passport-local": "^1.0.0",
+    "r": "0.0.5",
+    "rc-animate": "^2.8.3",
+    "rc-queue-anim": "^1.6.12",
+    "rc-texty": "^0.2.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-r": "^2.0.0-rc02",
+    "react-redux": "^7.1.0",
+    "react-router-dom": "^5.0.1",
+    "redux": "^4.0.1",
+    "redux-devtools-extension": "^2.13.8",
+    "redux-thunk": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "node-sass": "^4.12.0"
+  }
+}
