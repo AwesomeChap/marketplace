@@ -33,7 +33,6 @@ const App = (props) => {
 
   useEffect(() => {
     const queryParams = qs.parse(window.location.search);
-    console.log(queryParams);
     if (Object.prototype.hasOwnProperty.call(queryParams, "verify")) {
       // if(queryParams.hasOwnProperty("verify")){
       const token = {

@@ -13,6 +13,7 @@ const axios = require('axios');
 // Oauth login
 // save lowercase emails to DB
 // remember me
+// disable other buttons when user clickes one button
 
 router.get('/user', (req, res, next) => {
 	if (req.user) {
@@ -134,6 +135,8 @@ router.post('/signup', (req, res) => {
 			// // Save the verification token
 			token.save(function (err) {
 				if (err) { return res.status(500).send({ message: err.message }); }
+
+				console.log(process.env.GMAIL_USERNAME,process.env.GMAIL_PASSWORD);
 
 				// Send the email
 				var transporter = nodemailer.createTransport({
