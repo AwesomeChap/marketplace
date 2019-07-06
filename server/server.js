@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const passport = require('./passport');
 const app = express();
+
 require('dotenv').config();
 
 const {MONGO_USERNAME, MONGO_PASSWORD} = process.env;

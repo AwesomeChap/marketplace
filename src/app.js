@@ -6,6 +6,8 @@ import Dashboard from './components/Pages/Dashboard';
 import Home from './components/Pages/Home';
 import { connect } from 'react-redux';
 import { saveUser } from './redux/actions/actions';
+import qs from 'query-string';
+import { message } from 'antd';
 
 function PrivateRoute({ component: Component, loggedIn, ...rest }) {
   return (
@@ -15,13 +17,13 @@ function PrivateRoute({ component: Component, loggedIn, ...rest }) {
         loggedIn ? (
           <Component {...props} />
         ) : (
-          <Redirect
-            to={{
-              pathname: "/",
-              state: { from: props.location }
-            }}
-          />
-        )
+            <Redirect
+              to={{
+                pathname: "/",
+                state: { from: props.location }
+              }}
+            />
+          )
       }
     />
   );
@@ -30,6 +32,19 @@ function PrivateRoute({ component: Component, loggedIn, ...rest }) {
 const App = (props) => {
 
   useEffect(() => {
+    const queryParams = qs.parse(window.location.search);
+    console.log(queryParams);
+    if (Object.prototype.hasOwnProperty.call(queryParams, "verify")) {
+      // if(queryParams.hasOwnProperty("verify")){
+      const token = {
+        _userId: queryParams.verify
+      }
+      axios.post('/auth/verifyToken', { token }).then(({ data }) => {
+        history.pushState({}, null, "hello");
+        // setTimeout(()=>{window.location.search = "";},2000);
+        return message.success("Email verified");
+      })
+    }
     if (!props.loggedIn) {
       axios.get('/auth/user')
         .then(({ data: { user } }) => {

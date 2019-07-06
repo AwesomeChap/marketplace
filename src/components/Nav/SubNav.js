@@ -91,6 +91,8 @@ const SubNav = (props) => {
                 width={350}
                 footer={null}
                 centered={true}
+                destroyOnClose={true}
+                maskClosable={false}
               >
                 {
                   showLoginForm ? (

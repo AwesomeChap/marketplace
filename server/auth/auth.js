@@ -6,6 +6,7 @@ const Token = require('../db/models/token');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const userController = require('./helper');
+const axios = require('axios');
 // Todo
 // Email verification
 // Forgot Password
@@ -33,32 +34,64 @@ router.get('/user', (req, res, next) => {
 
 })
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
-	const user = JSON.parse(JSON.stringify(req.user))
-	const freshUser = { ...user }
+// router.post('/login', passport.authenticate('local'), (req, res) => {
+// 	const user = JSON.parse(JSON.stringify(req.user))
+// 	const freshUser = { ...user }
 
-	console.log(req.body);
+// 	console.log(req.body);
 
-	console.log(user);
+// 	console.log(user);
 
-	if (req.body.remember) {
-		req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
-	} else {
-		req.session.cookie.expires = false; // Cookie expires at end of session
-	}
+// 	if (req.body.remember) {
+// 		req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
+// 	} else {
+// 		req.session.cookie.expires = false; // Cookie expires at end of session
+// 	}
 
-	if (freshUser.local) {
-		delete freshUser.local.password;
-	}
+// 	if (freshUser.local) {
+// 		delete freshUser.local.password;
+// 	}
 
-	User.findOne({ 'local.email': req.body.email }, function (err, user) {
-		if (!user.isVerified)
-			return res.status(400).json({ message: 'Your account has not been verified.' });
-		else
-			return res.status(200).json({ message: `Logged in as ${freshUser.name.first}`, user: freshUser });
-	});
+// 	User.findOne({ 'local.email': req.body.email }, function (err, user) {
+// 		if (!user.isVerified)
+// 			return res.status(400).json({ message: 'Your account has not been verified.' });
+// 		else
+// 			return res.status(200).json({ message: `Logged in as ${freshUser.name.first}`, user: freshUser });
+// 	});
 
-})
+// })
+
+router.post('/login', function (req, res, next) {
+
+		if (req.body.remember) {
+			req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
+		} else {
+			req.session.cookie.expires = false; // Cookie expires at end of session
+		}
+
+	passport.authenticate('local', function (err, user, info) {
+		if (err) { return next(err); }
+
+		if (!user) { return res.status(401).json({ message: "Invalid login credentials" }); } // failure
+
+		if (!user.isVerified) {
+			axios.post(`http://${req.headers.host}/auth/resendVerificationLink`, {
+				email: user.local.email
+			}).then(({ data }) => res.status(401).json({ type: "info", message: "Verification link sent to your email." }))
+				.catch(e => res.status(500).json({ message: "Your email needs verification, unable to send verification email at the moment" }))
+		}
+
+		else {
+			req.logIn(user, function (err) { // success
+				if (err) { return next(err); }
+				const freshUser = { ...JSON.parse(JSON.stringify(user)) };
+				delete freshUser.local.password;
+				return res.status(200).json({ message: `Welcome ${freshUser.name.first}!`, user: freshUser })
+			});
+		}
+
+	})(req, res, next);
+});
 
 router.post('/logout', (req, res) => {
 	if (req.user) {
@@ -120,7 +153,7 @@ router.post('/signup', (req, res) => {
 					if (err) {
 						return res.status(500).send({ message: err.message });
 					}
-					res.status(200).send({ message: 'Verification link sent to ' + user.local.email + '.' });
+					// res.status(200).send({ message: 'Verification link sent to ' + user.local.email + '.' });
 				});
 			});
 		})
@@ -129,5 +162,6 @@ router.post('/signup', (req, res) => {
 
 router.get('/confirmation', userController.confirmationPost);
 router.post('/resendVerificationLink', userController.resendTokenPost);
+router.post('/verifyToken', userController.verifyToken);
 
 module.exports = router

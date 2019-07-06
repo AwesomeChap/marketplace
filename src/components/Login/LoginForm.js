@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom';
-import { Form, Icon, Popover, Tooltip, Checkbox, message, Input, Button, Divider, Modal } from 'antd';
+import { Form, Icon, notification, Checkbox, message, Input, Button, Divider } from 'antd';
 import QueueAnim from "rc-queue-anim";
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -30,10 +30,9 @@ const NormalLoginForm = (props) => {
           return message.success(data.message);
         }).catch(e => {
           setLoading(false);
-          if(JSON.stringify(e.response.status) == 400){
-            return message.error(JSON.parse(JSON.stringify(e.response.data.message)));
-          }
-          return message.error(e.message);
+          const error = JSON.parse(JSON.stringify(e.response.data));
+          if(error.type == "info") return message.info(error.message);
+          return message.error(error.message);
         })
       }
     });
@@ -123,4 +122,4 @@ const NormalLoginForm = (props) => {
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(NormalLoginForm);
 
-export default connect(null, {saveUser})(WrappedNormalLoginForm);
+export default connect(null, { saveUser })(WrappedNormalLoginForm);
