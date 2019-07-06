@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { Form, Icon, Popover, Tooltip, Checkbox, message, Input, Button, Divider, Modal } from 'antd';
 import QueueAnim from "rc-queue-anim";
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { saveUser } from '../../redux/actions/actions';
 
 const NormalLoginForm = (props) => {
 
@@ -20,15 +22,18 @@ const NormalLoginForm = (props) => {
     e.preventDefault();
     props.form.validateFields((err, values) => {
       if (!err) {
-        // props.handleCancel();
-        console.log('Received values of form: ', values);
         setLoading(true);
         axios.post('/auth/login', values).then(({ data }) => {
           setLoading(false);
+          props.saveUser(data.user);
+          props.handleCancel();
           return message.success(data.message);
         }).catch(e => {
           setLoading(false);
-          return message.error(e.message)
+          if(JSON.stringify(e.response.status) == 401){
+            return message.error("Invalid Login Credentials");
+          }
+          return message.error(e.message);
         })
       }
     });
@@ -118,4 +123,4 @@ const NormalLoginForm = (props) => {
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(NormalLoginForm);
 
-export default WrappedNormalLoginForm;
+export default connect(null, {saveUser})(WrappedNormalLoginForm);

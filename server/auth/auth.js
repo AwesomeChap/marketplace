@@ -5,9 +5,25 @@ const passport = require('../passport')
 
 router.get('/user', (req, res, next) => {
 	if (req.user) {
-		return res.json({ user: req.user });
+		User.findOne({ 'local.email': req.user.local.email }, (err, user) => {
+			if (user) {
+				const freshUser = {...JSON.parse(JSON.stringify(user))}
+				console.log(freshUser.local.email);
+				delete freshUser.local.password;
+				return res.status(200).json({
+					message: "User found!",
+					user : freshUser
+				})
+			}
+		})
 	}
-	return res.json({ user: null });
+	else {
+		return res.status(200).json({
+			message: "User not found",
+			user: null
+		})
+	}
+
 })
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
@@ -16,10 +32,10 @@ router.post('/login', passport.authenticate('local'), (req, res) => {
 	const freshUser = { ...user }
 
 	if (freshUser.local) {
-		delete freshUser.local.password
+		delete freshUser.local.password;
 	}
 
-	res.status(200).json({ message: "Login successful!", user: freshUser });
+	res.status(200).json({ message: `Logged in as ${user.name.first}`, user: freshUser });
 }
 )
 
@@ -28,10 +44,10 @@ router.post('/logout', (req, res) => {
 	if (req.user) {
 		req.session.destroy();
 		res.clearCookie('connect.sid');
-		return res.status(200).json({ message: 'Successfully logged out' });
+		return res.status(200).json({ message: 'You have logged out sucessfully' });
 	}
 
-	return res.status(200).json({ error: 'User not found!' });
+	return res.status(500).json({ message: 'Unable to process your request' });
 })
 
 router.post('/signup', (req, res) => {
