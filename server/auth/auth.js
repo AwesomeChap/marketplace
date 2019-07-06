@@ -11,6 +11,8 @@ const axios = require('axios');
 // Email verification
 // Forgot Password
 // Oauth login
+// save lowercase emails to DB
+// remember me
 
 router.get('/user', (req, res, next) => {
 	if (req.user) {
@@ -135,7 +137,7 @@ router.post('/signup', (req, res) => {
 
 				// Send the email
 				var transporter = nodemailer.createTransport({
-					service: 'Gmail',
+					host: 'smtp.gmail.com',
 					auth: {
 						user: process.env.GMAIL_USERNAME,
 						pass: process.env.GMAIL_PASSWORD
@@ -153,7 +155,7 @@ router.post('/signup', (req, res) => {
 					if (err) {
 						return res.status(500).send({ message: err.message });
 					}
-					// res.status(200).send({ message: 'Verification link sent to ' + user.local.email + '.' });
+					res.status(200).send({ message: 'Verification link sent'});
 				});
 			});
 		})
