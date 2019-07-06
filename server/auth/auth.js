@@ -7,6 +7,9 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const userController = require('./helper');
 const axios = require('axios');
+const dotenv = require('dotenv');
+const result = dotenv.config();
+
 // Todo
 // Email verification
 // Forgot Password
@@ -136,14 +139,14 @@ router.post('/signup', (req, res) => {
 			token.save(function (err) {
 				if (err) { return res.status(500).send({ message: err.message }); }
 
-				console.log(process.env.GMAIL_USERNAME,process.env.GMAIL_PASSWORD);
+				const { GMAIL_USERNAME, GMAIL_PASSWORD } = result.parsed;
 
 				// Send the email
 				var transporter = nodemailer.createTransport({
 					host: 'smtp.gmail.com',
 					auth: {
-						user: process.env.GMAIL_USERNAME,
-						pass: process.env.GMAIL_PASSWORD
+						user: GMAIL_USERNAME,
+						pass: GMAIL_PASSWORD
 					}
 				});
 
