@@ -32,7 +32,7 @@ const SubNav = (props) => {
     if (e.key == "2") {
       axios.post('/auth/logout')
         .then(({ data }) => {
-          message.info(data.message);
+          message.success(data.message);
           props.removeUser();
         })
     }
@@ -47,8 +47,6 @@ const SubNav = (props) => {
       <Menu.Item key="2"><Icon className="prefix-icon" type="logout" />Logout</Menu.Item>
     </Menu>
   );
-
-  console.log(props.history);
 
   return (
     <div className="sub-nav">

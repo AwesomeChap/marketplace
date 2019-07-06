@@ -30,8 +30,8 @@ const NormalLoginForm = (props) => {
           return message.success(data.message);
         }).catch(e => {
           setLoading(false);
-          if(JSON.stringify(e.response.status) == 401){
-            return message.error("Invalid Login Credentials");
+          if(JSON.stringify(e.response.status) == 400){
+            return message.error(JSON.parse(JSON.stringify(e.response.data.message)));
           }
           return message.error(e.message);
         })

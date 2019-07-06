@@ -3,6 +3,14 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
 
 const userSchema = new Schema({
+	type: {
+		type: String,
+		default: "end user"
+	},
+	isVerified: {
+		type: Boolean,
+		default: false
+	},
 	name: {
 		first: {
 			type: String,
@@ -25,13 +33,16 @@ const userSchema = new Schema({
 			type: String,
 			unique: false,
 			required: true
-		}
+		},
+		passwordResetToken: String,
+		passwordResetExpires: Date,
 	}
 })
 
 userSchema.methods = {
 	checkPassword: function (inPwd) {
 		return bcrypt.compareSync(inPwd, this.local.password);
+
 	},
 	hashPassword: unEncPwd => {
 		return bcrypt.hashSync(unEncPwd, 15);
@@ -39,7 +50,6 @@ userSchema.methods = {
 }
 
 userSchema.pre('save', function (next) {
-	console.log(this);
 	if (!this.local.password) {
 		console.log('Password not provided');
 		next();

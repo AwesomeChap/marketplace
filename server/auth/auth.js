@@ -1,18 +1,25 @@
-const express = require('express')
-const router = express.Router()
-const User = require('../db/models/user')
-const passport = require('../passport')
+const express = require('express');
+const router = express.Router();
+const User = require('../db/models/user');
+const passport = require('../passport');
+const Token = require('../db/models/token');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const userController = require('./helper');
+// Todo
+// Email verification
+// Forgot Password
+// Oauth login
 
 router.get('/user', (req, res, next) => {
 	if (req.user) {
 		User.findOne({ 'local.email': req.user.local.email }, (err, user) => {
 			if (user) {
-				const freshUser = {...JSON.parse(JSON.stringify(user))}
-				console.log(freshUser.local.email);
+				const freshUser = { ...JSON.parse(JSON.stringify(user)) }
 				delete freshUser.local.password;
 				return res.status(200).json({
 					message: "User found!",
-					user : freshUser
+					user: freshUser
 				})
 			}
 		})
@@ -27,23 +34,37 @@ router.get('/user', (req, res, next) => {
 })
 
 router.post('/login', passport.authenticate('local'), (req, res) => {
-
 	const user = JSON.parse(JSON.stringify(req.user))
 	const freshUser = { ...user }
+
+	console.log(req.body);
+
+	console.log(user);
+
+	if (req.body.remember) {
+		req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // Cookie expires after 30 days
+	} else {
+		req.session.cookie.expires = false; // Cookie expires at end of session
+	}
 
 	if (freshUser.local) {
 		delete freshUser.local.password;
 	}
 
-	res.status(200).json({ message: `Logged in as ${user.name.first}`, user: freshUser });
-}
-)
+	User.findOne({ 'local.email': req.body.email }, function (err, user) {
+		if (!user.isVerified)
+			return res.status(400).json({ message: 'Your account has not been verified.' });
+		else
+			return res.status(200).json({ message: `Logged in as ${freshUser.name.first}`, user: freshUser });
+	});
+
+})
 
 router.post('/logout', (req, res) => {
-
 	if (req.user) {
 		req.session.destroy();
 		res.clearCookie('connect.sid');
+		req.logout();
 		return res.status(200).json({ message: 'You have logged out sucessfully' });
 	}
 
@@ -52,9 +73,9 @@ router.post('/logout', (req, res) => {
 
 router.post('/signup', (req, res) => {
 	const { name, email, password } = req.body;
-	console.log('req.body', { name, email, password });
 
 	User.findOne({ 'local.email': email }, (err, user) => {
+
 		if (user) {
 			return res.status(200).json({
 				error: 'Email already registered!'
@@ -70,14 +91,43 @@ router.post('/signup', (req, res) => {
 
 		const newUser = new User({ ...userData })
 
-		newUser.save((err, savedUser) => {
-			if (err) return res.status(200).json({ error: "Some error occured", err });
-			return res.status(200).json({
-				message: "Signup successful!",
-				user: savedUser
+		newUser.save((err, user) => {
+			if (err) return res.status(500).json({ message: "Some error occured", err });
+			// // Create a verification token for this user
+			var token = new Token({ _userId: user._id, token: crypto.randomBytes(16).toString('hex') });
+
+			// // Save the verification token
+			token.save(function (err) {
+				if (err) { return res.status(500).send({ message: err.message }); }
+
+				// Send the email
+				var transporter = nodemailer.createTransport({
+					service: 'Gmail',
+					auth: {
+						user: process.env.GMAIL_USERNAME,
+						pass: process.env.GMAIL_PASSWORD
+					}
+				});
+
+				var mailOptions = {
+					from: 'no-reply@marketplace.com',
+					to: user.local.email,
+					subject: 'Account Verification Token',
+					text: 'Hello,\n\n' + 'Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/auth/confirmation?token=' + token.token + '.\n'
+				};
+
+				transporter.sendMail(mailOptions, function (err) {
+					if (err) {
+						return res.status(500).send({ message: err.message });
+					}
+					res.status(200).send({ message: 'Verification link sent to ' + user.local.email + '.' });
+				});
 			});
 		})
 	})
 })
+
+router.get('/confirmation', userController.confirmationPost);
+router.post('/resendVerificationLink', userController.resendTokenPost);
 
 module.exports = router

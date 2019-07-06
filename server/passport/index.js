@@ -7,7 +7,7 @@ passport.serializeUser((user, done) => {
 })
 
 passport.deserializeUser((id, done) => {
-	User.findOne({ _id: id }, 'firstName lastName photos local.email', (err, user) => {done(null, user)});
+	User.findOne({ _id: id }, 'name.first name.last local.email', (err, user) => {done(null, user)});
 })
 
 passport.use(LocalStrategy)
