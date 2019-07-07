@@ -11,31 +11,63 @@ const userSchema = new Schema({
 		type: Boolean,
 		default: false
 	},
-	name: {
-		first: {
-			type: String,
-			unique: false,
-			required: true
-		},
-		last: {
-			type: String,
-			unique: false,
-			required: true
-		}
-	},
 	local: {
+		name: {
+			first: {
+				type: String,
+				unique: false,
+			},
+			last: {
+				type: String,
+				unique: false,
+			}
+		},
 		email: {
 			type: String,
 			unique: true,
-			required: true
 		},
 		password: {
 			type: String,
 			unique: false,
-			required: true
 		},
-		passwordResetToken: String,
-		passwordResetExpires: Date,
+	},
+	google: {
+		id: {
+			type: String
+		},
+		name: {
+			first: {
+				type: String
+			},
+			last: {
+				type: String
+			},
+		},
+		email: {
+			type: String
+		},
+		photo: {
+			type: String
+		}
+	},
+	linkedin: {
+		id: {
+			type: String
+		},
+		name: {
+			first: {
+				type: String
+			},
+			last: {
+				type: String
+			},
+		},
+		email: {
+			type: String
+		},
+		photo: {
+			type: String
+		}
 	}
 })
 

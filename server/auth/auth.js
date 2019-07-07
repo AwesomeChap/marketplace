@@ -2,24 +2,18 @@ const express = require('express');
 const router = express.Router();
 const User = require('../db/models/user');
 const passport = require('../passport');
-const Token = require('../db/models/token');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const userController = require('./helper');
-const axios = require('axios');
 const dotenv = require('dotenv');
 const result = dotenv.config();
 
-// Todo
-// Oauth login
-// save lowercase emails to DB
-
 router.get('/user', (req, res, next) => {
 	if (req.user) {
-		User.findOne({ 'local.email': req.user.local.email }, (err, user) => {
+		User.findById(req.user._id, (err, user) => {
 			if (user) {
-				const freshUser = { ...JSON.parse(JSON.stringify(user)) }
-				delete freshUser.local.password;
+				const freshUser = JSON.parse(JSON.stringify(user));
+				if (freshUser.hasOwnProperty("local")) {
+					delete freshUser.local.password;
+				}
 				return res.status(200).json({
 					message: "User found!",
 					user: freshUser
@@ -39,7 +33,7 @@ router.get('/user', (req, res, next) => {
 router.post('/login', function (req, res, next) {
 
 	console.log(req.body.email);
-	
+
 	passport.authenticate('local', function (err, user, info) {
 		if (err) { return next(err); }
 
@@ -52,7 +46,7 @@ router.post('/login', function (req, res, next) {
 				if (err) { return next(err); }
 				const freshUser = { ...JSON.parse(JSON.stringify(user)) };
 				delete freshUser.local.password;
-				return res.status(200).json({ verify: true, message: `Welcome ${freshUser.name.first}!`, user: freshUser })
+				return res.status(200).json({ verify: true, message: `Welcome ${freshUser.local.name.first}!`, user: freshUser })
 			});
 		}
 
@@ -80,9 +74,8 @@ router.post('/signup', (req, res) => {
 		}
 
 		const userData = {
-			name,
 			local: {
-				email, password
+				name, email, password
 			}
 		}
 
@@ -101,5 +94,20 @@ router.post('/resendVerificationLink', userController.resendTokenPost);
 router.post('/verifyToken', userController.verifyToken);
 router.post('/resetPassword', userController.resetPassword)
 router.post('/checkIfUserVerified', userController.checkVerifyUser);
+
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/google/callback', passport.authenticate('google'),
+	function (req, res) {
+		// Successful authentication, redirect home.
+		res.redirect('/');
+	}
+);
+
+router.get('/linkedin',	passport.authenticate('linkedin', { state: 'SOME STATE' }),);
+
+router.get('/linkedin/callback', passport.authenticate('linkedin', {
+	successRedirect: '/',
+}));
 
 module.exports = router

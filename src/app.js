@@ -32,23 +32,12 @@ function PrivateRoute({ component: Component, loggedIn, ...rest }) {
 const App = (props) => {
 
   useEffect(() => {
-    const queryParams = qs.parse(window.location.search);
-    if (Object.prototype.hasOwnProperty.call(queryParams, "verify")) {
-      // if(queryParams.hasOwnProperty("verify")){
-      const token = {
-        _userId: queryParams.verify
-      }
-      axios.post('/auth/verifyToken', { token }).then(({ data }) => {
-        history.pushState({}, null, "");
-        // setTimeout(()=>{window.location.search = "";},2000);
-        return message.success("Email verified");
-      })
-    }
     if (!props.loggedIn) {
       axios.get('/auth/user')
         .then(({ data: { user } }) => {
           if (user != null) {
             props.saveUser(user);
+            return message.success("Logged in!");
           }
         })
     }

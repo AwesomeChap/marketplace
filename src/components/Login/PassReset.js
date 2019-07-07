@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Form, Icon, message, Input, Button, Alert } from 'antd';
 import QueueAnim from "rc-queue-anim";
 import axios from 'axios';
-
+ 
 const PassResetForm = (props) => {
 
   const [show, setShow] = useState();

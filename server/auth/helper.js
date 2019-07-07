@@ -2,6 +2,7 @@ const Token = require('../db/models/token');
 const User = require('../db/models/user');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const smtpTransport = require('nodemailer-smtp-transport'); // this is important
 const mongoose = require('mongoose');
 
 const confirmationPost = function (req, res, next) {
@@ -45,7 +46,8 @@ const resendTokenPost = function (req, res, next) {
       token.save(function (err) {
         if (err) { return res.status(500).send({ message: err.message }); }
 
-        var transporter = nodemailer.createTransport({
+        var transporter = nodemailer.createTransport(smtpTransport({
+          service: "gmail",
           host: 'smtp.gmail.com',
           port: 465,
           secure: true, // use SSL
@@ -53,10 +55,10 @@ const resendTokenPost = function (req, res, next) {
             user: process.env.GMAIL_USERNAME,
             pass: process.env.GMAIL_PASSWORD
           }
-        });
+        }));
 
         var mailOptions = {
-          from: 'no-reply@marketplace.com',
+          from: 'jatin@jatinkumar.tech',
           to: user.local.email,
           subject: 'Account Verification Token',
           text: 'Hello,\n\n' + 'Your verificatin token is : ' + token.token + '\n'
@@ -113,10 +115,10 @@ const resetPassword = function (req, res, next) {
     if (err) {
       return res.status(500).json({ message: "Some error occured while finding token", error: err });
     }
-    if(!token){
-      return res.status(400).json({message: "Invalid Token!"});
+    if (!token) {
+      return res.status(400).json({ message: "Invalid Token!" });
     }
-    else{
+    else {
       User.findById(token._userId, function (err, user) {
         if (err) {
           return res.status(500).json({ message: "Some error occured while finding user", error: err });

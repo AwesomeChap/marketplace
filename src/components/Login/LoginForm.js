@@ -134,14 +134,11 @@ const NormalLoginForm = (props) => {
             <Divider key="e">OR</Divider>,
             <Form.Item key="f">
               <div className="space-between">
-                <Button disabled={loading} size="large" shape="circle" type="primary"
-                  // style={{backgroundColor:"rgb(226, 0, 0)"}} 
+                <Button disabled={loading} type="link" href="/auth/google" size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-google" /></Button>
-                <Button disabled={loading} size="large" shape="circle" type="primary"
-                  // style={{backgroundColor:"#3b5998"}} 
+                <Button disabled={loading} type="link" href="/auth/facebook"size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-facebook-f" /></Button>
-                <Button disabled={loading} size="large" shape="circle" type="primary"
-                  // style={{backgroundColor:"#0077B5"}} 
+                <Button disabled={loading} type="link" href="/auth/linkedin"size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-linkedin-in" /></Button>
               </div>
             </Form.Item>

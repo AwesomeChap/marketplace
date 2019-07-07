@@ -12,7 +12,7 @@ import VerifyEmailForm from '../Login/VerifyEmail';
 
 const SubNav = (props) => {
 
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [formIndex, setFormIndex] = useState(1);
   const [values, setValues] = useState({});
 
@@ -24,6 +24,7 @@ const SubNav = (props) => {
 
   const handleCancel = (e) => {
     setVisible(false);
+    setFormIndex(1);
   }
 
   const showLogin = () => setFormIndex(1);
