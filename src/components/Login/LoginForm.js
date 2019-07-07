@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom';
-import { Form, Icon, notification, Checkbox, message, Input, Button, Divider } from 'antd';
+import { Form, Icon, Checkbox, message, Input, Button, Divider } from 'antd';
 import QueueAnim from "rc-queue-anim";
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -23,24 +22,57 @@ const NormalLoginForm = (props) => {
     props.form.validateFields((err, values) => {
       if (!err) {
         setLoading(true);
-        axios.post('/auth/login', values).then(({ data }) => {
-          setLoading(false);
-          props.saveUser(data.user);
-          props.handleCancel();
-          return message.success(data.message);
-        }).catch(e => {
+        values.email = values.email.toLowerCase();
+
+        axios.post('/auth/checkIfUserVerified', values).then(({ data }) => {
+
+          //if user is already verified
+          axios.post('/auth/login', values).then(({ data }) => {
+            setLoading(false);
+            props.saveUser(data.user);
+            props.handleCancel();
+            return message.success(data.message);
+
+          }).catch(e => {
+
+            setLoading(false);
+            const error = JSON.parse(JSON.stringify(e.response.data));
+            
+            if (error.type == "info") {
+              setShow(false);
+              setTimeout(() => props.showVerifyEmail(), 600);
+              return message.info(error.message);
+            }
+            
+            return message.error(error.message);
+          })
+        }).catch((e) => {
+
+          // if user is not verified
           setLoading(false);
           const error = JSON.parse(JSON.stringify(e.response.data));
-          if(error.type == "info") return message.info(error.message);
+          
+          if (error.type == "warning") {
+            setShow(false);
+            setTimeout(() => props.showVerifyEmail(values), 600);
+            return message.warning(error.message);
+          }
+
           return message.error(error.message);
         })
+
       }
     });
   };
 
+  const handlePassReset = () => {
+    setShow(false);
+    setTimeout(() => props.showPassReset(), 600);
+  }
+
   const handleNewUserClick = () => {
     setShow(false);
-    setTimeout(() => props.showSignup(), 900);
+    setTimeout(() => props.showSignup(), 600);
   }
 
   const { getFieldDecorator } = props.form;
@@ -90,25 +122,25 @@ const NormalLoginForm = (props) => {
                   valuePropName: 'checked',
                   initialValue: true,
                 })(<Checkbox>Remember me</Checkbox>)}
-                <a href="">Forgot password?</a>
+                <Button disabled={loading} onClick={handlePassReset} type="link">Forgot password?</Button>
               </div>
             </Form.Item>,
             <Form.Item key="d">
               <div className="space-between">
-                <Button type="primary" onClick={handleNewUserClick} ghost={true}>New User?</Button>
+                <Button type="primary" disabled={loading} onClick={handleNewUserClick} ghost={true}>New User?</Button>
                 <Button type="primary" loading={loading} htmlType="submit" >Log in</Button>
               </div>
             </Form.Item>,
             <Divider key="e">OR</Divider>,
             <Form.Item key="f">
               <div className="space-between">
-                <Button size="large" shape="circle" type="primary"
+                <Button disabled={loading} size="large" shape="circle" type="primary"
                   // style={{backgroundColor:"rgb(226, 0, 0)"}} 
                   className="center-me" ><i className="fab fa-google" /></Button>
-                <Button size="large" shape="circle" type="primary"
+                <Button disabled={loading} size="large" shape="circle" type="primary"
                   // style={{backgroundColor:"#3b5998"}} 
                   className="center-me" ><i className="fab fa-facebook-f" /></Button>
-                <Button size="large" shape="circle" type="primary"
+                <Button disabled={loading} size="large" shape="circle" type="primary"
                   // style={{backgroundColor:"#0077B5"}} 
                   className="center-me" ><i className="fab fa-linkedin-in" /></Button>
               </div>

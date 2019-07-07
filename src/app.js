@@ -39,7 +39,7 @@ const App = (props) => {
         _userId: queryParams.verify
       }
       axios.post('/auth/verifyToken', { token }).then(({ data }) => {
-        history.pushState({}, null, "hello");
+        history.pushState({}, null, "");
         // setTimeout(()=>{window.location.search = "";},2000);
         return message.success("Email verified");
       })

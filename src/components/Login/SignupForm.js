@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Icon, Popover, Tooltip, message, Input, Button, Divider, Modal } from 'antd';
+import { Form, Icon, Tooltip, message, Input, Button, Divider} from 'antd';
 import QueueAnim from "rc-queue-anim";
 import axios from 'axios';
 
@@ -7,7 +7,7 @@ const SignupForm = (props) => {
   const [show, setShow] = useState();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => { 
     setShow(true)
     return () => {
       setShow(false);
@@ -18,20 +18,18 @@ const SignupForm = (props) => {
     e.preventDefault();
     props.form.validateFields((err, values) => {
       if (!err) {
-        // props.handleCancel();
-        console.log('Received values of form: ', values);
+        // console.log('Received values of form: ', values);
+        values.email = values.email.toLowerCase();
         setLoading(true);
         axios.post('/auth/signup', values).then(({data}) => {
           setLoading(false);
-          if(data.error){
-            return message.warning(data.error);
-          }
-          props.showLogin();
+          setShow(false);
+          setTimeout(() => props.showVerifyEmail(values), 600);
           return message.success(data.message);
         }).catch(e =>{
           setLoading(false);
-          console.log(e);
-          return message.error(e.message);
+          const error = JSON.parse(JSON.stringify(e.response.data));
+          return message.error(error.message);
         });
       }
     });
@@ -39,7 +37,7 @@ const SignupForm = (props) => {
 
   const handleAlreadyUserClick = () => {
     setShow(false);
-    setTimeout(() => props.showLogin(), 900);
+    setTimeout(() => props.showLogin(), 600);
   }
 
   const { getFieldDecorator } = props.form;
@@ -121,7 +119,7 @@ const SignupForm = (props) => {
             </Form.Item>,
             <Divider key="e" >OR</Divider>,
             <Form.Item key="f" >
-              <Button type="primary" onClick={handleAlreadyUserClick} ghost={true} className="center-me" >Already registered?</Button>
+              <Button type="primary" disabled={loading} onClick={handleAlreadyUserClick} ghost={true} className="center-me" >Already registered?</Button>
             </Form.Item>,
           ] : null
         }

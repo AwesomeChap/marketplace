@@ -7,26 +7,32 @@ import { NavLink, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { removeUser } from '../../redux/actions/actions';
 import axios from 'axios';
+import PassReset from '../Login/PassReset';
+import VerifyEmailForm from '../Login/VerifyEmail';
 
 const SubNav = (props) => {
 
-  const [visible, setVisible] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(true);
+  const [visible, setVisible] = useState(true);
+  const [formIndex, setFormIndex] = useState(1);
+  const [values, setValues] = useState({});
 
-  const title = showLoginForm ? "Log in" : "Sign up";
+  const title = ["Log in", "Sign up", "Verify Email", "Password Reset"];
 
   const showModal = (e) => {
     setVisible(true);
-    setShowLoginForm(true);
   }
 
   const handleCancel = (e) => {
     setVisible(false);
   }
 
-  const showLogin = () => setShowLoginForm(true);
+  const showLogin = () => setFormIndex(1);
 
-  const showSignup = () => setShowLoginForm(false);
+  const showSignup = () => setFormIndex(2);
+
+  const showVerifyEmail = (val) => {setValues(val); setFormIndex(3)};
+
+  const showPassReset = () => setFormIndex(4);
 
   function handleMenuClick(e) {
     if (e.key == "2") {
@@ -83,7 +89,7 @@ const SubNav = (props) => {
                 </span>
               </button >
               <Modal
-                title={title}
+                title={title[formIndex-1]}
                 visible={visible}
                 onCancel={handleCancel}
                 okText={null}
@@ -94,16 +100,13 @@ const SubNav = (props) => {
                 destroyOnClose={true}
                 maskClosable={false}
               >
-                {
-                  showLoginForm ? (
-                    <LoginForm showSignup={showSignup} handleCancel={handleCancel} />
-                  ) : (
-                      <SignupForm showLogin={showLogin} handleCancel={handleCancel} />
-                    )
-                }
+                {formIndex == 1 && <LoginForm showSignup={showSignup} showVerifyEmail={showVerifyEmail} showPassReset={showPassReset} handleCancel={handleCancel}/>}
+                {formIndex == 2 && <SignupForm showLogin={showLogin} showVerifyEmail={showVerifyEmail}/>}
+                {formIndex == 3 && <VerifyEmailForm email={values.email} showLogin={showLogin} />}
+                {formIndex == 4 && <PassReset showLogin={showLogin}/>}
               </Modal>
             </>
-          )
+        )
       }
 
     </div >
