@@ -73,7 +73,7 @@ const SubNav = (props) => {
               <span>
                 <Dropdown trigger={['click']} overlay={DropdownMenu} >
                   <Button type="primary">
-                    <Icon type="user" /> Me <Icon type="down" />
+                    <Icon type="user" /> Me {props.user.type == "admin" && <span style={{opacity: 0.7, padding: 0, border: 0}}>(admin)</span>}<Icon type="down" />
                   </Button>
                 </Dropdown>
               </span>

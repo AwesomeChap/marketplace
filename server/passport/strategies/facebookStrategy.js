@@ -19,8 +19,8 @@ const facebookStratefgy = new FacebookStrategy({
           facebook: {
             id: profile.id,
             name: {
-              first: profile.displayName.split('')[0],
-              last: profile.displayName.split('')[profile.displayName.split('').length-1] || ""
+              first: profile.displayName.split(' ')[0],
+              last: profile.displayName.split(' ')[profile.displayName.split('').length-1] || ""
              },
             email: profile.emails[0].value,
             photo: profile._json.picture.data.url

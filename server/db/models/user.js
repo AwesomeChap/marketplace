@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const userSchema = new Schema({
 	type: {
 		type: String,
-		default: "end user"
+		default: "user"
 	},
 	isVerified: {
 		type: Boolean,
@@ -13,11 +13,12 @@ const userSchema = new Schema({
 	},
 	local: {
 		name: {
-			first: { type: String },
-			last: { type: String }
+			first: { type: String},
+			last: { type: String}
 		},
 		email: {
-			type: String,
+			type: String, 
+			lowercase: true,
 			unique: true,
 		},
 		password: { type: String },
