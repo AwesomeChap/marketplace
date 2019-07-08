@@ -110,16 +110,12 @@ router.get('/linkedin/callback', passport.authenticate('linkedin', {
 	successRedirect: '/',
 }));
 
-router.get('/facebook', passport.authenticate('facebook'));
+router.get('/facebook', passport.authenticate('facebook',{ scope : ['email'] }));
 
-router.get('/facebook/callback', passport.authenticate('facebook', { 
-	failureRedirect: '/',
-	sucessRedirect: '/' 
-}),
-	// function(req, res) {
-	//   // Successful authentication, redirect home.
-	//   res.redirect('/');
-	// }
+router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }),
+function(req, res) {
+	res.redirect('/');
+}
 );
 
 module.exports = router
