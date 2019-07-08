@@ -13,61 +13,42 @@ const userSchema = new Schema({
 	},
 	local: {
 		name: {
-			first: {
-				type: String,
-				unique: false,
-			},
-			last: {
-				type: String,
-				unique: false,
-			}
+			first: { type: String },
+			last: { type: String }
 		},
 		email: {
 			type: String,
 			unique: true,
 		},
-		password: {
-			type: String,
-			unique: false,
-		},
+		password: { type: String },
+		photo: { type: String }
 	},
 	google: {
-		id: {
-			type: String
-		},
+		id: { type: String },
 		name: {
-			first: {
-				type: String
-			},
-			last: {
-				type: String
-			},
+			first: { type: String },
+			last: { type: String },
 		},
-		email: {
-			type: String
-		},
-		photo: {
-			type: String
-		}
+		email: { type: String },
+		photo: { type: String }
 	},
 	linkedin: {
-		id: {
-			type: String
-		},
+		id: { type: String },
 		name: {
-			first: {
-				type: String
-			},
-			last: {
-				type: String
-			},
+			first: { type: String },
+			last: { type: String },
 		},
-		email: {
-			type: String
+		email: { type: String },
+		photo: { type: String }
+	},
+	facebook: {
+		id: { type: String },
+		name: {
+			first: { type: String },
+			last: { type: String },
 		},
-		photo: {
-			type: String
-		}
+		email: { type: String },
+		photo: { type: String }
 	}
 })
 

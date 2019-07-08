@@ -104,10 +104,22 @@ router.get('/google/callback', passport.authenticate('google'),
 	}
 );
 
-router.get('/linkedin',	passport.authenticate('linkedin'));
+router.get('/linkedin', passport.authenticate('linkedin'));
 
 router.get('/linkedin/callback', passport.authenticate('linkedin', {
 	successRedirect: '/',
 }));
+
+router.get('/facebook', passport.authenticate('facebook'));
+
+router.get('/facebook/callback', passport.authenticate('facebook', { 
+	failureRedirect: '/',
+	sucessRedirect: '/' 
+}),
+	// function(req, res) {
+	//   // Successful authentication, redirect home.
+	//   res.redirect('/');
+	// }
+);
 
 module.exports = router
