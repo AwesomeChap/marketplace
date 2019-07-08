@@ -104,7 +104,7 @@ router.get('/google/callback', passport.authenticate('google'),
 	}
 );
 
-router.get('/linkedin',	passport.authenticate('linkedin', { state: 'SOME STATE' }),);
+router.get('/linkedin',	passport.authenticate('linkedin', { scope: ['r_basicprofile', 'r_emailaddress'] }));
 
 router.get('/linkedin/callback', passport.authenticate('linkedin', {
 	successRedirect: '/',

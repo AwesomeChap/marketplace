@@ -30,7 +30,10 @@ app.use(
 		secret: process.env.APP_SECRET || 'my sweet secret',
 		store: new MongoStore({ mongooseConnection: mongoose.connection }),
 		resave: false,
-		saveUninitialized: false
+		saveUninitialized: false,
+		cookie: {
+      secure: false
+    }
 	})
 )
 
