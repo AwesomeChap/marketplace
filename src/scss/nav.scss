@@ -1,9 +1,13 @@
 $ease-out : cubic-bezier(0.075, 0.82, 0.165, 1);
 
-.top-bar{
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
+.sticky{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.fixed{
+  position: fixed;
 }
 
 .selected{

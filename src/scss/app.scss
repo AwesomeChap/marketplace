@@ -14,13 +14,32 @@ body {
 #root {
   height: 100%;
   width: 100%;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
+// .content{
+//   height: ;  
+// }
+
 .wrapper {
-  width: 100vw;
+  max-height: 100%;
+  width: 100%;
+  overflow: hidden;
   display: flex;
   justify-content: center;
+
+  &.nav{
+    // height: auto !important;
+  }
+
+  &.scrollable{
+    scroll-behavior: smooth;
+    max-height: calc(100vh - 60px);
+    overflow: auto;
+  }
+
   &.primary {
     background: $blue;
     color: #fff;
@@ -45,7 +64,9 @@ body {
 }
 
 .container {
-  width: 1200px;
+  width: 90%;
+  max-width: 1200px;
+  // overflow: auto !important;
 }
 
 .space-between {
@@ -80,4 +101,9 @@ body {
   div{
     flex-basis: 48%;
   }
+}
+
+h3{
+  margin: 0;
+  padding: 0.5em 0;
 }

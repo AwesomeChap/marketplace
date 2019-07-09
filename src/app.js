@@ -10,13 +10,13 @@ import qs from 'query-string';
 import { message } from 'antd';
 import AdminDashboard from './components/Pages/AdminDashboard';
 
-function PrivateRoute({ component: Component, loggedIn, ...rest }) {
+function PrivateRoute({ component: Component, loggedIn, user, ...rest }) {
   return (
     <Route
       {...rest}
       render={props =>
         loggedIn ? (
-          <Component {...props} />
+          <Component user={user} {...props} />
         ) : (
             <Redirect
               to={{
@@ -47,6 +47,11 @@ const App = (props) => {
     }
   }, []);
 
+  const devDashboards = {
+    admin : <AdminDashboard user={user}/>,
+    user : <Dashboard user={user}/>
+  }
+
   const Dashboards = {
     admin : AdminDashboard,
     user : Dashboard
@@ -56,7 +61,8 @@ const App = (props) => {
     <Router>
       <Navbar />
       <Route exact path="/" component={Home} />
-      <PrivateRoute loggedIn={props.loggedIn} exact path="/me/Dashboard" component={Dashboards[user.type]} />
+      {/* <Route exact path="/me/dashboard" render = {()=>devDashboards[user.type]} /> */}
+      <PrivateRoute user={props.user} loggedIn={props.loggedIn} exact path="/me/dashboard" component={Dashboards[user.type]} />
     </Router>
   )
 }

@@ -15,7 +15,7 @@ const {MONGO_USERNAME, MONGO_PASSWORD} = process.env;
 const PORT = process.env.PORT || 8080 ;
 
 mongoose.connect(`mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0-egxif.mongodb.net/test?retryWrites=true&w=majority`, 
-{ useFindAndModify: false, useNewUrlParser: true, useCreateIndex:true })
+{ useFindAndModify: false, useNewUrlParser: true, useCreateIndex:true, autoIndex: false })
 	.then(() => console.log('MongoDB connected'))
 	.catch(e => console.log('MongoDB could not be connected due to ', e));
 
@@ -40,10 +40,11 @@ app.use(
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, '..', 'dist'))
-})
+app.use('/auth', require('./routes/auth'))
+app.use('/config', require('./routes/config'))
 
-app.use('/auth', require('./auth/auth'))
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'))
+})
 
 app.listen(PORT, () => console.log(`listening on port - ${PORT}`))

@@ -5,9 +5,9 @@ import SubNav from './SubNav';
 
 const Navbar = (props) => {
   return (
-    <div className="wrapper primary">
+    <div className="sticky nav wrapper primary">
       <div className="container">
-        <div className="top-bar">
+        <div className="space-between">
           <Link className="big link" to="/" >Market Place</Link>
           <SubNav />
         </div>
