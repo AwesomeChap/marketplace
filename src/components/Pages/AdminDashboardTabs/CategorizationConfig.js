@@ -28,20 +28,20 @@ const CustomizationConfig = (props) => {
     console.log('updated config', categoriesConfig);
   }, [categoriesConfig]);
 
-  const removeEmptyStrings = (obj) => {
-    Object.keys(obj).forEach(key => {
+  const updateCfg = (updatedConfig, nh, i, values) => {
+    if(nh.length - 1 > i){
+      updateCfg(updatedConfig[nh[i]], nh, i+1, values);
+    } 
+    else {
+      updatedConfig[nh[i]] = values;
+    }
+  } 
 
-      if (obj[key] === "") delete obj[key];
-
-      if (typeof obj[key] === 'object') {
-        removeEmptyStrings(obj[key])
-      }
-    })
-  }
-
-  const handleChange = (values, prop) => {
+  const handleChange = (values, prop, nh) => {
     let updatedConfig = { ...categoriesConfig };
-    updatedConfig[prop] = values;
+
+    updateCfg(updatedConfig, nh, 0, values);
+
     setCategoriesConfig(updatedConfig);
   }
 
@@ -66,25 +66,20 @@ const CustomizationConfig = (props) => {
 
   const origin = ["India", "Britain", "Canada", "US", "Russia"];
 
-  // const origin = {
-    // India : ["North India", "South India"],
-    // Britain: ["English","Irish"]
-  // }
-
   const {foodTimeOfServe, specialOccassion,
     foodType, specialRequirements, spiceLevel, priceRange,
     healthInfo, mainIngredient } = categoriesConfig;
 
   return (
     <div>
-      <GenericCrudField title={"Origin"} values={origin} name="origin" handleChange={handleChange} />
-      <GenericCrudField title={"Time Based"} values={foodTimeOfServe} name="foodTimeOfServe" handleChange={handleChange} />
-      <GenericCrudField title={"Special Occassions"} values={specialOccassion} name="specialOccassion" handleChange={handleChange} />
-      <GenericCrudField title={"Food Type"} values={foodType} name="foodType" handleChange={handleChange} />
-      <GenericCrudField title={"Special Requirements"} values={specialRequirements} name="specialRequirements" handleChange={handleChange} />
-      <GenericCrudField title={"Spice Level"} values={spiceLevel} name="spiceLevel" handleChange={handleChange} />
-      <GenericCrudField title={"Health Info"} values={healthInfo} name="healthInfo" handleChange={handleChange} />
-      <GenericCrudField title={"Main Ingredients"} values={mainIngredient} name="mainIngredient" handleChange={handleChange} />
+      <GenericCrudField nameHistory={["origin"]} title={"Origin"} values={origin} name="origin" handleChange={handleChange} />
+      <GenericCrudField nameHistory={["foodTimeOfServe"]} title={"Time Based"} values={foodTimeOfServe} name="foodTimeOfServe" handleChange={handleChange} />
+      {/* <GenericCrudField obj={categoriesConfig} title={"Special Occassions"} values={specialOccassion} name="specialOccassion" handleChange={handleChange} />
+      <GenericCrudField obj={categoriesConfig} title={"Food Type"} values={foodType} name="foodType" handleChange={handleChange} />
+      <GenericCrudField obj={categoriesConfig} title={"Special Requirements"} values={specialRequirements} name="specialRequirements" handleChange={handleChange} />
+      <GenericCrudField obj={categoriesConfig} title={"Spice Level"} values={spiceLevel} name="spiceLevel" handleChange={handleChange} />
+      <GenericCrudField obj={categoriesConfig} title={"Health Info"} values={healthInfo} name="healthInfo" handleChange={handleChange} />
+      <GenericCrudField obj={categoriesConfig} title={"Main Ingredients"} values={mainIngredient} name="mainIngredient" handleChange={handleChange} /> */}
     </div>
 
   )
