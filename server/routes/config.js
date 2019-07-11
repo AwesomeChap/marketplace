@@ -5,7 +5,7 @@ const User = require('../db/models/user');
 const dotenv = require('dotenv');
 const result = dotenv.config();
 
-router.get('/mail', (req, res) => {
+router.get('/', (req, res) => {
   if (!req.query.userId) {
     res.status(400).json({ message: "Insufficient parameters" });
   }
@@ -22,11 +22,22 @@ router.get('/mail', (req, res) => {
           else {
             Config.findOne({ _userId: user._id })
               .then((config) => {
-                if (config && config.mail) {
-                  res.status(200).json({message : "Previous config found", config: config.mail})
+                if (!req.query.prop) {
+                  if (config) {
+                    return res.status(200).json({ message: "Config found", config });
+                  }
+                  else {
+                    return res.status(200).json({ type: "info", message: "Config is empty", config: {} })
+                  }
                 }
                 else {
-                  res.status(200).json({type: "info", message: "Config needs initialisation", config: {}})
+                  const { prop } = req.query;
+                  if (config && config[prop]) {
+                    res.status(200).json({ message: `${prop} config found`, config: config[prop] })
+                  }
+                  else {
+                    res.status(200).json({ type: "info", message: `${prop} config requires initialisation`, config: {} })
+                  }
                 }
               })
               .catch(err =>
@@ -38,13 +49,14 @@ router.get('/mail', (req, res) => {
   }
 })
 
-router.post('/mail', (req, res) => {
+router.post('/', (req, res) => {
   // console.log(req.body);
-  if (!req.body.userId || !req.body.values) {
+  if (!req.body.userId || !req.body.values || !req.body.prop) {
     res.status(400).json({ message: "Insufficient parameters" });
   }
   else {
-    User.findById(req.body.userId)
+    const { userId, values, prop } = req.body;
+    User.findById(userId)
       .then((user) => {
         if (!user) {
           return res.status(400).json({ message: "User not found!" })
@@ -58,24 +70,21 @@ router.post('/mail', (req, res) => {
               .then((config) => {
                 if (config) {
                   // update it
-                  // console.log('came at right place')
-                  // res.status(500).send({message: "test"});
-                  // console.log(config);
-                  Config.findByIdAndUpdate(config._id, { mail: req.body.values }, { new: true })
+                  Config.findByIdAndUpdate(config._id, { [prop]: values }, { new: true })
                     .then((updatedConfig) => {
                       if (updatedConfig) {
-                        return res.status(200).json({ message: "Mail config updated successfully" });
+                        return res.status(200).json({ message: `${prop} config updated successfully` });
                       }
-                    }).catch(e => res.status(500).json({message: "error occured while updating schema", errors: e}))
+                    }).catch(e => res.status(500).json({ message: "error occured while updating schema", errors: e }))
                 }
                 else {
                   //create a new one
-                  const newConfig = new Config({ mail: req.body.values, _userId: user._id });
+                  const newConfig = new Config({ [prop]: values, _userId: user._id });
                   newConfig.save().then((savedConfig) => {
                     if (savedConfig) {
-                      return res.status(200).json({ message: "New Configuration created" });
+                      return res.status(200).json({ message: `New ${prop} Configuration created` });
                     }
-                  }).catch(e => res.status(500).json({message: "error occured while creating config", errors: e}))
+                  }).catch(e => res.status(500).json({ message: "error occured while creating config", errors: e }))
                 }
               })
               .catch(e =>

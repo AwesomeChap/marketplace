@@ -120,6 +120,42 @@
     min-width: 60px;
     text-align: left; }
 
+.category-values {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-between; }
+  .category-values div {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between; }
+  .category-values .ant-btn {
+    padding: 0 11px !important;
+    border-radius: 0; }
+  .category-values .ant-input-group-addon {
+    background-color: #fff;
+    border: 0px;
+    width: auto;
+    cursor: pointer; }
+  .category-values .ant-icon {
+    cursor: pointer; }
+  .category-values .ant-input {
+    border-radius: 0; }
+  .category-values .ant-input-group {
+    display: inline-flex;
+    width: 100%; }
+  .category-values .ant-input-group-wrapper {
+    margin-bottom: 20px;
+    width: 30%; }
+  .category-values .value.ant-input,
+  .category-values .ant-input-group-wrapper,
+  .category-values .ant-input-disabled,
+  .category-values .ant-input[disabled] {
+    background: #fafafa !important;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: default; }
+
 html,
 body {
   height: 100%;
@@ -144,7 +180,7 @@ body {
   justify-content: center; }
   .wrapper.scrollable {
     scroll-behavior: smooth;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 52px);
     overflow: auto; }
   .wrapper.primary {
     background: #2f54eb;

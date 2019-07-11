@@ -13,7 +13,7 @@ const VerifyEmailConfig = (props) => {
   const { getFieldDecorator } = form;
 
   useEffect(() => {
-    axios.get(`/config/mail?userId=${props.user._id}`).then(({data})=>{
+    axios.get(`/config?userId=${props.user._id}&prop=mail`).then(({data})=>{
       setMailConfig(data.config);
       if(data.type == "info"){
         return message.info(data.message);
@@ -66,7 +66,7 @@ const VerifyEmailConfig = (props) => {
         removeEmptyStrings(values);
 
         setLoading(true);
-        axios.post('/config/mail', {values, userId : props.user._id}).then(({data}) => {
+        axios.post('/config', {values, userId : props.user._id, prop: "mail"}).then(({data}) => {
           setLoading(false);
           return message.success(data.message);
         }).catch((e) => {

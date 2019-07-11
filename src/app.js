@@ -2,67 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { Route, BrowserRouter as Router, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './components/Nav/Navbar';
-import Dashboard from './components/Pages/Dashboard';
+import Dashboards from './components/Pages/Dashboards';
 import Home from './components/Pages/Home';
 import { connect } from 'react-redux';
-import { saveUser } from './redux/actions/actions';
-import qs from 'query-string';
+import { saveUser, setLoading, saveErrors } from './redux/actions/actions';
 import { message } from 'antd';
-import AdminDashboard from './components/Pages/AdminDashboard';
-
-function PrivateRoute({ component: Component, loggedIn, user, ...rest }) {
-  return (
-    <Route
-      {...rest}
-      render={props =>
-        loggedIn ? (
-          <Component user={user} {...props} />
-        ) : (
-            <Redirect
-              to={{
-                pathname: "/",
-                state: { from: props.location }
-              }}
-            />
-          )
-      }
-    />
-  );
-}
 
 const App = (props) => {
 
-  const [user, setUser] = useState({});
-
   useEffect(() => {
     if (!props.loggedIn) {
+
+      props.setLoading();
+
       axios.get('/auth/user')
         .then(({ data: { user } }) => {
+          props.saveUser(user);
           if (user != null) {
-            props.saveUser(user);
-            setUser(user);
             return message.success("Logged in!");
           }
         })
+        .catch(e => props.saveErrors(e.response.data));
     }
   }, []);
 
-  const devDashboards = {
-    admin : <AdminDashboard user={user}/>,
-    user : <Dashboard user={user}/>
-  }
-
-  const Dashboards = {
-    admin : AdminDashboard,
-    user : Dashboard
-  }
+  const {loggedIn, loaded, user} = props;
 
   return (
     <Router>
       <Navbar />
       <Route exact path="/" component={Home} />
-      {/* <Route exact path="/me/dashboard" render = {()=>devDashboards[user.type]} /> */}
-      <PrivateRoute user={props.user} loggedIn={props.loggedIn} exact path="/me/dashboard" component={Dashboards[user.type]} />
+      <Route exact path="/me/dashboard" render={(props) => <Dashboards {...props} user={user} loggedIn={loggedIn} loaded={loaded}/>} />
     </Router>
   )
 }
@@ -71,4 +41,4 @@ const mapStateToProps = (state) => {
   return state;
 }
 
-export default connect(mapStateToProps, { saveUser })(App);
+export default connect(mapStateToProps, { saveUser, setLoading, saveErrors })(App);

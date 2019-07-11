@@ -82,13 +82,13 @@ const SubNav = (props) => {
 
         ) : (
             <>
-              <button onClick={showModal} className={"sub-nav-item-without-pseudo"}>
+              <div onClick={showModal} className={"sub-nav-item-without-pseudo"}>
                 <span>
                   <Button type="primary">
                     <Icon type="login" /> Login
                 </Button>
                 </span>
-              </button >
+              </div >
               <Modal
                 title={title[formIndex-1]}
                 visible={visible}

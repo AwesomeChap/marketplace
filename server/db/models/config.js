@@ -3,6 +3,23 @@ const Schema = mongoose.Schema;
 const User = require('./user');
 // const Token = require()
 
+const countryBasedCategorizationSchema = new Schema({
+  country: {
+    type: String,
+    value: ""
+  },
+  region: [String]
+})
+
+const priceRangeSchema = new Schema({
+  high : {
+    type: Number
+  },
+  low: {
+    type: Number
+  }
+})
+
 const configSchema = new Schema({
   _userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -28,6 +45,17 @@ const configSchema = new Schema({
         close: { type: String, default: "Thanks" }
       }
     }
+  },
+  categories: {
+    origin: [countryBasedCategorizationSchema],
+    foodTimeOfServe: [String],
+    specialOccassion: [String],
+    foodType: [String],
+    specialRequirements: [String],
+    spiceLevel: [String],
+    priceRange: [priceRangeSchema],
+    healthInfo: [String],
+    mainIngredient: [String]
   }
 });
 

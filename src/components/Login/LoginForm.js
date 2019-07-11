@@ -36,7 +36,7 @@ const NormalLoginForm = (props) => {
           }).catch(e => {
 
             setLoading(false);
-            const error = JSON.parse(JSON.stringify(e.response.data));
+            const error = JSON.parse(JSON.stringify(e));
             
             if (error.type == "info") {
               setShow(false);
