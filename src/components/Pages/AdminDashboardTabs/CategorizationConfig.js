@@ -9,6 +9,7 @@ const { OptGroup, Option } = Select;
 const CustomizationConfig = (props) => {
 
   const [categoriesConfig, setCategoriesConfig] = useState();
+  const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,24 +26,51 @@ const CustomizationConfig = (props) => {
   }, [])
 
   useEffect(() => {
-    console.log('updated config', categoriesConfig);
+    // console.log('updated config', categoriesConfig);
+    if(categoriesConfig != undefined){
+      traverseObject(categoriesConfig, 0, []);
+      setFields(updatedFields);
+    }
   }, [categoriesConfig]);
 
   const updateCfg = (updatedConfig, nh, i, values) => {
-    if(nh.length - 1 > i){
-      updateCfg(updatedConfig[nh[i]], nh, i+1, values);
-    } 
+    if (nh.length - 1 > i) {
+      updateCfg(updatedConfig[nh[i]], nh, i + 1, values);
+    }
     else {
+      // console.log('updateCfg', updatedConfig);
+      console.log(`Before updateCfg[${nh[i]}]`,updatedConfig[nh[i]])
       updatedConfig[nh[i]] = values;
+      console.log(`After updateCfg[${nh[i]}]`,updatedConfig[nh[i]])
     }
   } 
 
-  const handleChange = (values, prop, nh) => {
+  const removeKey = (obj, targetKey) => {
+    Object.keys(obj).forEach(key => {
+
+      if (key === targetKey) delete obj[key];
+
+      if (typeof obj[key] === 'object') {
+        removeKey(obj[key])
+      }
+    })
+
+    return obj;
+  }
+
+  const handleDeleteKey = (k) => {
+    const updatedConfig = removeKey({ ...categoriesConfig }, k);
+    setCategoriesConfig({ ...updatedConfig });
+  }
+
+  const handleChange = (values, name, nh) => {
     let updatedConfig = { ...categoriesConfig };
+
+    console.log('values', values);
 
     updateCfg(updatedConfig, nh, 0, values);
 
-    setCategoriesConfig(updatedConfig);
+    setCategoriesConfig({...updatedConfig});
   }
 
   const handleSubmit = (e) => {
@@ -62,18 +90,30 @@ const CustomizationConfig = (props) => {
     return "loading..."
   }
 
-  const newConfig = JSON.stringify(categoriesConfig) == "{}";
+  const updatedFields = [];
 
-  const origin = ["India", "Britain", "Canada", "US", "Russia"];
+  const traverseObject = (obj, level, nameHistory) => {
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] === 'object') {
+        if (Array.isArray(obj[key])) {
+          const newField = <GenericCrudField handleDeleteKey={handleDeleteKey} title={key} 
+          level={level} values={obj[key]} name={key} handleChange={handleChange} 
+          nameHistory={[...nameHistory, key]} obj={categoriesConfig} />
 
-  const {foodTimeOfServe, specialOccassion,
-    foodType, specialRequirements, spiceLevel, priceRange,
-    healthInfo, mainIngredient } = categoriesConfig;
+          setFields(updatedFields.push(newField));
+        }
+        else {
+          traverseObject(obj[key], level + 1, key)
+        }
+      }
+    })
+  }
 
   return (
     <div>
-      <GenericCrudField nameHistory={["origin"]} title={"Origin"} values={origin} name="origin" handleChange={handleChange} />
-      <GenericCrudField nameHistory={["foodTimeOfServe"]} title={"Time Based"} values={foodTimeOfServe} name="foodTimeOfServe" handleChange={handleChange} />
+      {/* {fields.map((field) => field)} */}
+      <GenericCrudField obj={categoriesConfig} handleDeleteKey={handleDeleteKey} level={0} nameHistory={["origin"]} title={"Origin"} values={categoriesConfig.origin} name="origin" handleChange={handleChange} />
+      {/* <GenericCrudField handleDeleteKey={handleDeleteKey} nameHistory={["foodTimeOfServe"]} title={"Time Based"} values={categoriesConfig.foodTimeOfServe} name="foodTimeOfServe" handleChange={handleChange} /> */}
       {/* <GenericCrudField obj={categoriesConfig} title={"Special Occassions"} values={specialOccassion} name="specialOccassion" handleChange={handleChange} />
       <GenericCrudField obj={categoriesConfig} title={"Food Type"} values={foodType} name="foodType" handleChange={handleChange} />
       <GenericCrudField obj={categoriesConfig} title={"Special Requirements"} values={specialRequirements} name="specialRequirements" handleChange={handleChange} />

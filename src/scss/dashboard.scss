@@ -2,12 +2,16 @@
   display: flex;
   width: 100%;
   flex-wrap: wrap;
-  justify-content: space-between;
+  // justify-content: space-between;
   div {
     display: flex;
     width: 100%;
     flex-wrap: wrap;
     justify-content: space-between;
+  }
+
+  .ant-input-group-wrapper{
+    background: #fff;
   }
 
   .ant-btn {
@@ -21,6 +25,10 @@
     border: 0px;
     width: auto;
     cursor: pointer;
+
+    &:nth-child(1){
+      padding: 0 !important;
+    }
   }
 
   .ant-icon {
@@ -37,8 +45,8 @@
   }
 
   .ant-input-group-wrapper {
-    margin-bottom: 20px;
-    width: 30%;
+    margin: 8px 0;
+    width: 100%;
   }
 
   .value.ant-input,
@@ -49,4 +57,42 @@
     color: rgba(0, 0, 0, 0.5);
     cursor: default;
   }
+}
+
+.title-icon{
+  transform: scale(0.9);
+  border-radius: 50%;
+  background-color: #fff !important;
+  transition: all 0.3s;
+  cursor: pointer;
+  padding: 15px;
+
+  &:hover{
+    transform: scale(0.7);
+    background-color: #ffecec !important;
+  }
+}
+
+.generic-field-value-wrapper{
+  display: flex !important;
+  width: 100% !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+}
+
+.subcategory-indent-icon{
+  // transform: rotateY(180deg) translateY(-6px) !important;
+  opacity: 0.4;
+  font-size: 24px;
+  padding-right: 4px !important;
+}
+
+.add-on-before{
+  height: 100%;
+  margin: 0;
+  display: flex;
+  padding: 0 11px;
+  align-items: center;
+  background: #f3f3f3;
+  border: 1px solid #ddd;
 }

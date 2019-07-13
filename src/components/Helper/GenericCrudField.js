@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Divider, Typography, Button, Input, Form, message, Icon } from 'antd';
+import { Popconfirm, Typography, Button, Input, Form, message, Icon } from 'antd';
 
 import QueueAnim from 'rc-queue-anim';
 const { Title } = Typography;
 // add id to titles
+// addition bug fix
+// key rename when value name is changed
+
+const hasChildren = (obj, nh, i) => {
+  if (nh.length - 1 > i) {
+    return hasChildren(obj[nh[i]], nh, i + 1);
+  }
+  else {
+    if (obj[nh[i]] != undefined) {
+      return true;
+    }
+    return false;
+  }
+}
 
 const Value = (props) => {
 
@@ -11,7 +25,12 @@ const Value = (props) => {
   const [val, setVal] = useState(props.value);
   const [editMode, setEditMode] = useState(false);
   const [addSub, setAddSub] = useState(false);
-  const [nameHistory, setNameHistory] = useState(props.nameHistory);
+  const [popConfirmVisibility, setPopConfirmVisibility] = useState(false);
+
+  useEffect(() => {
+    if (Array.isArray(props.value));
+    setAddSub(false);
+  }, [])
 
   const handleEdit = () => {
     setEditMode(true);
@@ -32,12 +51,34 @@ const Value = (props) => {
   }
 
   const handleDelete = () => {
+    if(hasChildren(props.obj, [...props.nameHistory, val], 0)) setPopConfirmVisibility(true);
+    else props.handleDelete(props.index);
+  }
+
+  const handleYes = () => {
     props.handleDelete(props.index);
+    setPopConfirmVisibility(false);
+  }
+  
+  const handleNo = () => {
+    setPopConfirmVisibility(false);
   }
 
   const handleAddSub = () => {
-    setNameHistory([...nameHistory, val]);
     setAddSub(true);
+    console.log()
+  }
+
+  const handleHideSub = () => {
+    setAddSub(false);
+  }
+
+  let indent = [];
+
+  const indentIcon = <Icon type="ellipsis" className="subcategory-indent-icon" />
+
+  for (var i = 0; i < props.level*2; i++) {
+    indent.push(indentIcon);
   }
 
   const addOnBtns = editMode ? (
@@ -48,28 +89,34 @@ const Value = (props) => {
   ) : (
       <>
         <Button onClick={handleEdit} icon="edit" />
-        <Button onClick={handleDelete} type="danger" icon="delete" />
-        <Button onClick={handleAddSub} icon="apartment" />
+        <Popconfirm
+          title={"This action would also delete it's children"}
+          visible={popConfirmVisibility}
+          onConfirm={handleYes}
+          onCancel={handleNo}
+          okText="Continue"
+          cancelText="Abort"
+        >
+          <Button onClick={handleDelete} type="danger" icon="delete" />
+        </Popconfirm>
+        <Button onClick={handleAddSub} disabled={hasChildren(props.obj, [...props.nameHistory, val], 0)} icon="apartment" />
       </>
     );
 
   return (
     <>
-      <Input addonAfter={addOnBtns} onChange={handleChange} disabled={!editMode} className="value" value={val} />
-      {addSub && <GenericCrudField nameHistory={nameHistory} title={val} values={[]} name={val} handleChange={props.parentHandleChange} />}
+      <div className="generic-field-value-wrapper">
+        {indent.map((icon, i) => <span key={`ident-icon-${props.name}-${i}`} >{icon}</span>)}
+        <Input addonBefore={<span className="add-on-before" >{props.name}</span>} addonAfter={addOnBtns} onChange={handleChange} disabled={!editMode} className="value" value={val} />
+      </div>
+      {addSub && <GenericCrudField title={val} level={props.level + 1} values={[]} hideSub={handleHideSub} nameHistory={[...props.nameHistory, val]} name={val} handleChange={props.parentHandleChange} handleDeleteKey={props.parentHandleDeleteKey} />}
     </>
   )
 }
 
 const GenericCrudField = (props) => {
 
-  
   const [inputValue, setInputValue] = useState("");
-  const [values, setValues] = useState(props.values);
-
-  useEffect(() => {
-    props.handleChange(values, props.name, props.nameHistory);
-  }, [values])
 
   const handleAddItemChange = ({ target: { value } }) => {
     setInputValue(value);
@@ -79,7 +126,7 @@ const GenericCrudField = (props) => {
     if (nothinChanged) {
       return message.info("Nothing changed!")
     }
-    if (values.includes(val)) {
+    if (props.values.includes(val)) {
       return message.warning("This value already exists");
     }
 
@@ -87,21 +134,30 @@ const GenericCrudField = (props) => {
       return message.warning("Empty input not allowed");
     }
 
-    let updatedValues = [...values];
+    let updatedValues = [];
+    Object.keys(props.values).forEach(key => updatedValues[key] = props.values[key]);
+    
+    if(updatedValues[updatedValues[index]]){
+      updatedValues[val] = updatedValues[updatedValues[index]] 
+      delete updatedValues[updatedValues[index]];
+    }
     updatedValues[index] = val;
-    setValues(updatedValues);
+
+    props.handleChange(updatedValues, props.name, props.nameHistory);
   }
 
   const handleDelete = (index) => {
-    let updatedValues = [...values];
-    updatedValues = updatedValues.filter((v, i) => index !== i);
-    setValues(updatedValues);
+    let updatedValues = [];
+    Object.keys(props.values).forEach(key => updatedValues[key] = props.values[key]);
+    // updatedValues = updatedValues.filter((v, i) => index !== i);
+    updatedValues.splice(index,1);
+    props.handleChange(updatedValues, props.name, props.nameHistory);
   }
 
-  const handleAddClick = (e) => {
+  const handleAddClick = async (e) => {
     e.preventDefault();
 
-    if (values.includes(inputValue)) {
+    if (props.values.includes(inputValue)) {
       return message.warning("This value already exists");
     }
 
@@ -109,29 +165,59 @@ const GenericCrudField = (props) => {
       return message.warning("Empty input not allowed");
     }
 
-    setValues([...values, inputValue]);
+    if (props.hideSub) {
+      props.hideSub();
+    }
+    
+    let updatedValues = [];
+    Object.keys(props.values).forEach(key => updatedValues[key] = props.values[key]);
+    updatedValues.push(inputValue)
+
+    props.handleChange(updatedValues, props.name, props.nameHistory);
     setInputValue("");
   }
 
+  const dynamicTitle = props.name;
+
+  let indent = [];
+
+  const indentIcon = <Icon type="ellipsis" className="subcategory-indent-icon" />
+
+  for (var i = 0; i < props.level*2; i++) {
+    indent.push(indentIcon);
+  }
 
   return (
-    <div>
-      <Title level={3} >{props.title}</Title>
+    <div className={props.level == 0 ? "" : "generic-field-wrapper"} key={props.name + "-wrapper-div"}>
+      {props.level == 0 && (
+        <Title level={3} >
+          {dynamicTitle}
+          {/* <Icon className="title-icon" key={props.name + "-delete-btn"}
+            onClick={() => props.handleDeleteKey(props.name)} theme="twoTone" twoToneColor="#ff4d4f" type="delete" /> */}
+        </Title>
+      )}
       <div className="category-values" >
         {/* <QueueAnim type="scale"> */}
-        {values.map((val, i) => {
-          return <Value nameHistory={props.nameHistory} name={props.name} key={props.name + "-" + val}
-            index={i} value={val} handleChange={handleChange}
-            parentHandleChange={props.handleChange} handleDelete={handleDelete} />
+        {Object.keys(props.values).map((Key, i) => {
+          if (typeof props.values[Key] === "object" && Array.isArray(props.values[Key])) {
+            return <GenericCrudField obj={props.obj} handleDeleteKey={props.handleDeleteKey}
+              title={Key} level={props.level + 1} values={props.values[Key]} name={Key}
+              handleChange={props.handleChange} nameHistory={[...props.nameHistory, Key]} />
+          }
+          else {
+            return <Value name={props.name} key={props.name + "-" + props.values[Key]} index={i}
+              nameHistory={props.nameHistory} value={props.values[Key]} handleChange={handleChange}
+              parentHandleDeleteKey={props.handleDeleteKey} parentHandleChange={props.handleChange}
+              level={props.level} handleDelete={handleDelete} obj={props.obj} />
+          }
         })}
-        <Form key={props.name + "-button"} layout={"inline"} style={{ width: "30%" }} onSubmit={handleAddClick}>
-          <Input addonAfter={<Button htmlType="submit" type="primary" icon="plus"></Button>} style={{ width: "100%" }} value={inputValue} onChange={handleAddItemChange} />
+        <Form key={props.name + "-button"} className="generic-field-value-wrapper" layout={"inline"} style={{ width: "100%" }} onSubmit={handleAddClick}>
+          {indent.map((icon) => icon)} <Input placeholder={`Enter some thing related to ${props.name}`} addonBefore={<span className="add-on-before" >{props.name}</span>} addonAfter={<Button htmlType="submit" type="primary" icon="plus"></Button>} style={{ width: "100%" }} value={inputValue} onChange={handleAddItemChange} />
         </Form>
-        {/* </QueueAnim> */}
       </div>
-      <Divider />
     </div>
   )
 }
 
 export default GenericCrudField;
+

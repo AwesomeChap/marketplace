@@ -8,8 +8,6 @@ const { SubMenu } = Menu;
 
 const AdminDashboard = (props) => {
 
-  console.log(props)
-
   const [tabIndex, setTabIndex] = useState("sub2");
 
   const tabs = {
