@@ -96,3 +96,18 @@
   background: #f3f3f3;
   border: 1px solid #ddd;
 }
+
+.category-wrapper{
+  // margin-top: 3%;
+  width: 100%;
+  min-height: 100%;
+  position: absolute;
+
+  .ant-tabs {
+    padding-top: 5vh;
+  }
+  
+  .ant-tabs-tab-active{
+    font-weight: 400 !important;
+  }
+}

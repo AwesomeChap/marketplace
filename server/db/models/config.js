@@ -11,8 +11,14 @@ const countryBasedCategorizationSchema = new Schema({
   region: [String]
 })
 
+const approvalSchema = new Schema({
+  name: String,
+  providerId: String,
+  Description: String,
+})
+
 const priceRangeSchema = new Schema({
-  high : {
+  high: {
     type: Number
   },
   low: {
@@ -47,17 +53,20 @@ const configSchema = new Schema({
     }
   },
   categories: {
-    origin: [countryBasedCategorizationSchema],
-    foodTimeOfServe: [String],
-    specialOccassion: [String],
+    food: [String],
+    flavour: [String],
+    time: [String],
+    specialOccasions: [String],
     foodType: [String],
     specialRequirements: [String],
-    spiceLevel: [String],
-    priceRange: [priceRangeSchema],
-    healthInfo: [String],
-    mainIngredient: [String]
-  }
-});
+    spices: [String],
+    origin: [String],
+    allergy: [String],
+    nutrition: [String],
+    mainIngredient: [String],
+  },
+  approval: [Schema.Types.Mixed]
+},{strict: false});
 
 const Config = mongoose.model('Config', configSchema)
 module.exports = Config;
