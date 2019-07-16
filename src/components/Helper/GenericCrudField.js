@@ -204,7 +204,6 @@ const GenericCrudField = (props) => {
         </Title>
       )}
       <div className="category-values" >
-        {/* <QueueAnim type="top"> */}
         {Object.keys(props.values).map((Key, i) => {
           if (typeof props.values[Key] === "object" && Array.isArray(props.values[Key])) {
             return <GenericCrudField obj={props.obj} handleDeleteKey={props.handleDeleteKey}
@@ -221,7 +220,6 @@ const GenericCrudField = (props) => {
         <Form key={props.name + "-button"} className="generic-field-value-wrapper" layout={"inline"} style={{ width: "100%" }} onSubmit={handleAddClick}>
           {indent.map((icon) => icon)} <Input placeholder={`Enter some thing related to ${props.title}`} addonBefore={<span className="add-on-before" >{props.title}</span>} addonAfter={<Button htmlType="submit" type="primary" icon="plus"></Button>} style={{ width: "100%" }} value={inputValue} onChange={handleAddItemChange} />
         </Form>
-        {/* </QueueAnim> */}
       </div>
     </div>
   )

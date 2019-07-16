@@ -2,6 +2,9 @@ export const SAVE = "save user to store"
 export const REMOVE = "remove user from store";
 export const LOADING = "loading...";
 export const SAVE_ERRORS = "save found errors";
+export const SET_CONFIG = "set config";
+export const UPDATE_MAIL_CONFIG = "update mail config";
+export const UPDATE_CATEGORIES_CONFIG = "update categories config";
 
 export const saveUser = (user) => ({
   type: SAVE,
@@ -16,7 +19,22 @@ export const setLoading = () => ({
   type: LOADING
 })
 
+export const setConfig = (config) => ({
+  type: SET_CONFIG,
+  payload: { config }
+})
+
+export const updateMailConfig = (mail) => ({
+  type: UPDATE_MAIL_CONFIG,
+  payload: { mail }
+})
+
+export const updateCategoriesConfig = (categories) => ({
+  type: UPDATE_CATEGORIES_CONFIG,
+  payload: { categories }
+})
+
 export const saveErrors = (err) => ({
   type: SAVE_ERRORS,
-  payload : { err }
+  payload: { err }
 })

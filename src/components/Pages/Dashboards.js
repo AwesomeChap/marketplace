@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import AdminDashboard from './Dashboards/AdminDashboard';
 import Dashboard from './Dashboards/Dashboard';
 import '../../scss/dashboard.scss';
+import Loader from '../Helper/Loader';
 
 const Dashboards = (props) => {
 
@@ -20,7 +21,11 @@ const Dashboards = (props) => {
     return _Dashboards_[props.user.type];
   }
   else {
-    return "Loading"
+    return (
+      <div className="menu-item-page">
+        
+      </div>
+    )
   }
 }
 

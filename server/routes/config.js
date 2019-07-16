@@ -33,6 +33,7 @@ router.get('/', (req, res) => {
                 else {
                   const { prop } = req.query;
                   if (config && config[prop]) {
+
                     res.status(200).json({ message: `${prop} config found`, config: config[prop] })
                   }
                   else {
@@ -73,7 +74,7 @@ router.post('/', (req, res) => {
                   Config.findByIdAndUpdate(config._id, { [prop]: values }, { new: true })
                     .then((updatedConfig) => {
                       if (updatedConfig) {
-                        return res.status(200).json({ message: `${prop} config updated successfully` });
+                        return res.status(200).json({ message: `${prop} config updated successfully`, config: updatedConfig[prop]});
                       }
                     }).catch(e => res.status(500).json({ message: "error occured while updating schema", errors: e }))
                 }
@@ -82,7 +83,7 @@ router.post('/', (req, res) => {
                   const newConfig = new Config({ [prop]: values, _userId: user._id });
                   newConfig.save().then((savedConfig) => {
                     if (savedConfig) {
-                      return res.status(200).json({ message: `New ${prop} Configuration created` });
+                      return res.status(200).json({ message: `New ${prop} Configuration created`, config: savedConfig[prop] });
                     }
                   }).catch(e => res.status(500).json({ message: "error occured while creating config", errors: e }))
                 }

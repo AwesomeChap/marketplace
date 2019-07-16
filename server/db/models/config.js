@@ -11,6 +11,11 @@ const countryBasedCategorizationSchema = new Schema({
   region: [String]
 })
 
+const basicSchema = new Schema({
+  name : String,
+  description : String,
+})
+
 const approvalSchema = new Schema({
   name: String,
   providerId: String,
@@ -53,19 +58,9 @@ const configSchema = new Schema({
     }
   },
   categories: {
-    food: [String],
-    flavour: [String],
-    time: [String],
-    specialOccasions: [String],
-    foodType: [String],
-    specialRequirements: [String],
-    spices: [String],
-    origin: [String],
-    allergy: [String],
-    nutrition: [String],
-    mainIngredient: [String],
+    values: [],
+    approval: []
   },
-  approval: [Schema.Types.Mixed]
 },{strict: false});
 
 const Config = mongoose.model('Config', configSchema)

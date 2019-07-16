@@ -25,6 +25,11 @@ const CustomizationConfig = (props) => {
       const error = JSON.parse(JSON.stringify(e.response.data));
       return message.error(error.message);
     })
+
+    if(!window.location.hash){
+      window.location.hash = "#1";
+      // console.log(visibileCategoryId);
+    }
   }, [])
 
   useEffect(() => {
@@ -110,7 +115,7 @@ const CustomizationConfig = (props) => {
                 visibileCategoryId == i + 1 ? [
                   <div key={`category-${i + 1}`} className="category-wrapper" id={i + 1}>
                     <Tabs type="card">
-                      <TabPane tab="Manage" key="1">
+                      <TabPane tab="Manage" key="1"> 
                         <GenericCrudField handleDeleteKey={handleDeleteKey} title={_.startCase(key)}
                           level={0} values={categoriesConfig[key]} name={key} handleChange={handleChange}
                           nameHistory={[key]} obj={categoriesConfig} />
