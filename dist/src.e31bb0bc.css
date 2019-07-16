@@ -207,6 +207,10 @@ body {
   margin-right: auto !important;
   margin-left: auto !important; }
 
+.center-me-vertical {
+  margin-top: auto !important;
+  margin-bottom: auto !important; }
+
 .inline-form {
   display: flex;
   justify-content: space-between; }
@@ -257,10 +261,6 @@ h3 {
 
 .table-container {
   padding-top: 5vh; }
-  .table-container .ant-row.ant-form-item {
-    margin: -9px 0 !important; }
-  .table-container .inline-form .ant-row.ant-form-item {
-    margin: -3.5px 0 !important; }
   .table-container .ant-form-explain {
     display: none; }
   .table-container .ant-table-footer {
@@ -279,6 +279,23 @@ h3 {
       margin-left: 0; }
     .table-operation-buttons button:nth-last-child(1) {
       margin-right: 0; }
+
+.flex-inline-form {
+  display: flex;
+  width: 100%; }
+  .flex-inline-form .ant-form-item-label {
+    margin: 0 10px; }
+  .flex-inline-form .ant-form-item-control-wrapper {
+    flex: 1; }
+  .flex-inline-form .ant-row.ant-form-item.switch-fix {
+    width: auto; }
+  .flex-inline-form .ant-row.ant-form-item.options-fix {
+    width: 200% !important; }
+  .flex-inline-form .ant-row.ant-form-item {
+    display: flex;
+    width: 100%;
+    margin-top: -3.5px !important;
+    margin-bottom: -3.5px !important; }
 
 .simple-choice-card {
   display: flex;
