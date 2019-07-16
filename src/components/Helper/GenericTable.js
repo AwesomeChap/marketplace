@@ -1,6 +1,6 @@
 import React from "react";
 import "../../scss/table.scss";
-import { Table, Input, InputNumber, Popconfirm, Form, Button, message, Select, Switch, Tag } from "antd";
+import { Table, Input, InputNumber, Popconfirm, Form, Button, message, Select, Switch, Row, Col } from "antd";
 import Loader from "./Loader";
 import CreateCategoryForm from "./CategoryConfigForm";
 
@@ -25,17 +25,18 @@ const AddForm = (props) => {
     })
   }
 
+
   return (
     <Form layout={"inline"} onSubmit={handleSubmit}>
-      <div className="inline-form">
+      <div className="flex-inline-form">
         <Button onClick={() => resetFields()} icon="undo" />
         {props.columns.map((col, i) => {
           const inputField = {
-            text: <Input style={{ width: "160px" }} placeholder={col.title} />,
-            number: <InputNumber style={{ width: "160px" }} placeholder={col.title} />,
-            select: <Select style={{ width: "160px" }} placeholder={col.title}>{col.type == "select" ? col.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>) : undefined}</Select>,
+            text: <Input placeholder={col.title} />,
+            number: <InputNumber placeholder={col.title} />,
+            select: <Select placeholder={col.title}>{col.type == "select" ? col.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>) : undefined}</Select>,
             switch: <Switch />,
-            tagSelect: <Select style={{ width: "180px" }} disabled={!typeIsSelect} placeholder={"Only for Select field"} dropdownStyle={{ display: "none" }} mode="tags" />
+            tagSelect: <Select disabled={!typeIsSelect} placeholder={"Only for Select field"} dropdownStyle={{ display: "none" }} mode="tags" />
 
           }
           if (col.dataIndex == "operation") {
@@ -53,13 +54,13 @@ const AddForm = (props) => {
           if (col.type == "tagSelect") options = {};
 
           return (
-            <Form.Item label={col.title}>
+            <Form.Item className={col.type == "switch" && "switch-fix" || col.type == "tagSelect" && "options-fix"} label={col.title}>
               {getFieldDecorator(col.dataIndex, { ...options })(inputField[col.type])}
             </Form.Item>
           )
         })}
       </div>
-    </Form>
+    </Form >
   )
 }
 
@@ -317,7 +318,7 @@ class EditableTable extends React.Component {
       }
     }
 
-    if(!(this.props.hasOwnProperty("addForm") && !this.props.addForm)) tableProps = {...tableProps, footer}
+    if (!(this.props.hasOwnProperty("addForm") && !this.props.addForm)) tableProps = { ...tableProps, footer }
 
     return (
       <EditableContext.Provider value={this.props.form}>
