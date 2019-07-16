@@ -99,7 +99,7 @@ const CreateRootCategory = (props) => {
   return (
     <div className="menu-item-page">
       <Tabs type="card" animated={true}>
-        <TabPane tab="Manage" key="1">
+        <TabPane tab="Manage" key="1"> 
           <WrappedAddRootCateogryField loading={loading} handleCreateCategory={handleCreateCategory} />
           <div>
             <RcQueueAnim style={{ paddingTop: "10vh", padding: "20px" }} className="space-between" >
