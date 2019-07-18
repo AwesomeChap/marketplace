@@ -59,6 +59,11 @@ const configSchema = new Schema({
     values: [],
     approval: []
   },
+  ingredients: {
+    values: [],
+    approval: [],
+    colData: [],
+  },
   flavours: {
     values: [],
     approval: [],
@@ -120,9 +125,19 @@ const configSchema = new Schema({
     colData: []
   },
   courier: {
-    values: [],
-    colData: [],
-    approval: []
+    values: {
+      type: Array,
+      default: ["Courier Classes", "Registered Couriers"]
+    },
+    courierClasses: {
+      values: [],
+      colData: [],
+      approval: []
+    },
+    registeredCouriers: {
+      values: [],
+      colData: [],
+    }
   },
   payment: {
     id: { type: String },

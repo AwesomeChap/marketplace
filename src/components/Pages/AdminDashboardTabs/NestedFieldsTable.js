@@ -18,6 +18,10 @@ const addForm = {
   advertisement: {
     addPricing : true,
     subscribedSellers: false
+  },
+  courier: {
+    courierClasses: true,
+    registeredCouriers: true,
   }
 }
 
@@ -223,7 +227,7 @@ const OtherFieldsTable = (props) => {
               }
               else if (props.config[props.rootName][subName].hasOwnProperty('approval') && key == "approval") {
                 return (
-                  <TabPane tab="Approval" key={`${val}-${(i + 1) * 3}`}>
+                  <TabPane tab={"Approval "+val} key={`${val}-${(i + 1) * 3}`}>
                     <CategoryApprovalTable loading={loading} name={subName} handleSave={handleSaveApproval} dataSource={props.config[props.rootName][subName]["approval"]} />
                   </TabPane>
                 )

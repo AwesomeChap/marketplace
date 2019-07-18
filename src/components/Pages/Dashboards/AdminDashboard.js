@@ -49,11 +49,12 @@ const AdminDashboard = (props) => {
     window.location.hash = `#${i}`;
   };
 
-  const keys = ["sub1", "flavours", "nutrition", "spices", "allergy", "priceRange", "time", "foodProvider",
+  const keys = ["sub1", "ingredients", "flavours", "nutrition", "spices", "allergy", "priceRange", "time", "foodProvider",
     "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment"]
 
   const tabs = {
     "sub1": <CreateRootCategory key="sub1" setTabIndexMenu={setTabIndexMenu} user={props.user} />,
+    "ingredients": <OtherFieldsTable key="ingredients" name="ingredients" user={props.user} />,
     "flavours": <OtherFieldsTable key="flavours" name="flavours" user={props.user} />,
     "nutrition": <OtherFieldsTable key="nutrition" name="nutrition" user={props.user} />,
     "spices": <OtherFieldsTable key="spices" name="spices" user={props.user} />,
@@ -66,7 +67,7 @@ const AdminDashboard = (props) => {
     "complain": <OtherFieldsTable key="complain" name="complain" user={props.user} />,
     "advertisement": <NestedFieldsTable key="advertisment" rootName="advertisement" user={props.user} />,
     "customer": <OtherFieldsTable key="customer" name="customer" user={props.user} />,
-    "courier": <OtherFieldsTable key="courier" name="courier" user={props.user} />,
+    "courier": <NestedFieldsTable key="courier" rootName="courier" user={props.user} />,
     "mailConfig": <VerifyEmailConfig key="mailConfig" user={props.user} />,
     "payment": <PaymentConfig key="payment" user={props.user} />,
   }
@@ -87,12 +88,13 @@ const AdminDashboard = (props) => {
                 </Menu.Item>
               ))}
             </SubMenu> */}
+            <Menu.Item onClick={handleClick} key="ingredients"><Icon type="appstore" />Ingredients</Menu.Item>
             <Menu.Item onClick={handleClick} key="flavours"><Icon type="appstore" />Flavours</Menu.Item>
             <Menu.Item onClick={handleClick} key="nutrition"><Icon type="appstore" />Nutrition</Menu.Item>
-            <Menu.Item onClick={handleClick} key="spices"><Icon type="appstore" />Spices</Menu.Item>
+            <Menu.Item onClick={handleClick} key="spices"><Icon type="appstore" />Spice Levels</Menu.Item>
             <Menu.Item onClick={handleClick} key="allergy"><Icon type="appstore" />Allergy</Menu.Item>
             <Menu.Item onClick={handleClick} key="priceRange"><Icon type="appstore" />Price Range</Menu.Item>
-            <Menu.Item onClick={handleClick} key="time"><Icon type="appstore" />Time</Menu.Item>
+            <Menu.Item onClick={handleClick} key="time"><Icon type="appstore" />Serve Time</Menu.Item>
             <Menu.Item onClick={handleClick} key="foodProvider"><Icon type="shop" />Food Provider</Menu.Item>
             <Menu.Item onClick={handleClick} key="commission"><Icon type="pound" />Commission</Menu.Item>
             <Menu.Item onClick={handleClick} key="payment"><Icon type="credit-card" />Payment</Menu.Item>
