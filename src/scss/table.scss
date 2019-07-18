@@ -17,7 +17,9 @@
   padding-top: 5vh;
 
   .ant-row.ant-form-item {
-    // margin: -9px 10px !important;
+    margin-top: -9px !important;
+    margin-bottom: -9px !important;
+    // margin: -9px 3px !important;
   }
 
   .ant-form-explain {
@@ -57,17 +59,11 @@
   width: 100%;
 
   .ant-form-item-label {
-    // flex-basis: 40%;
     margin: 0 10px;
-    // padding: 0 20px !important;
   }
 
   .ant-form-item-control-wrapper {
     flex: 1;
-
-    // div.ant-select{
-    //   flex-basis: 100%;
-    // }
   }
 
   .ant-row.ant-form-item.switch-fix {
@@ -81,10 +77,6 @@
   .ant-row.ant-form-item {
     display: flex;
     width: 100%;
-
-    // input, .ant-select-selection>div {
-    //   width: 100%;
-    // }
     margin-top: -3.5px !important;
     margin-bottom: -3.5px !important;
   }

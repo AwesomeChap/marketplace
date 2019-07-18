@@ -20,7 +20,7 @@ const CategoryConfigForm = (props) => {
       type: "select",
       // editable: true,
       width: "20%",
-      options: ["text", "number", "switch", "select"]
+      options: ["text", "number", "price", "switch", "select", "date", "multiSelect"]
     },
     {
       title: "Editable",
@@ -60,9 +60,11 @@ const CategoryConfigForm = (props) => {
   const dataSource = props.dataSource ? props.dataSource : [];
   console.log(dataSource);
 
+  const addFormParamater = props.hasOwnProperty("addForm") ? addForm : true;
+
   return (
     <>
-      <GenericEditabelTable loading={props.loading} colData={colData} handleSave={handleSave} dataSource={dataSource} />
+      <GenericEditabelTable addForm={addFormParamater} loading={props.loading} colData={colData} handleSave={handleSave} dataSource={dataSource} />
     </>
   )
 }

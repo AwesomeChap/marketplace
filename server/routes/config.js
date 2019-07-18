@@ -73,6 +73,7 @@ router.post('/', (req, res) => {
                   // update it
                   Config.findByIdAndUpdate(config._id, { [prop]: values }, { new: true })
                     .then((updatedConfig) => {
+                      console.log(prop, updatedConfig[prop]);
                       if (updatedConfig) {
                         return res.status(200).json({ message: `${prop} config updated successfully`, config: updatedConfig[prop]});
                       }
