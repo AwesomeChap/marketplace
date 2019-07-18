@@ -174,3 +174,8 @@ h3 {
 .ant-select-selection__placeholder{
   // left: 9px !important;
 }
+
+.center-me-force{
+  margin-left: 50% !important;
+  transform: translate(-50%);
+}

@@ -19,7 +19,7 @@ const CategoryConfigForm = (props) => {
       dataIndex: "type",
       type: "select",
       // editable: true,
-      width: "20%",
+      width: "25%",
       options: ["text", "number", "price", "switch", "select", "date", "multiSelect"]
     },
     {
@@ -34,7 +34,7 @@ const CategoryConfigForm = (props) => {
       dataIndex: "options",
       type: "tagSelect",
       editable: true,
-      width: "25%",
+      width: "30%",
       render: tags => (
         <span>
           {tags && tags.map((tag, i) => {

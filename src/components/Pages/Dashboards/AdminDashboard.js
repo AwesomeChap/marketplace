@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Icon, message } from 'antd';
+import PaymentConfig from '../AdminDashboardTabs/PaymentConfig';
 import VerifyEmailConfig from '../AdminDashboardTabs/VerifyEmailConfig';
-import Categories from '../../Misc/Categories';
-import CommissionConfig from '../AdminDashboardTabs/GenericTableExample';
 import CreateRootCategory from '../AdminDashboardTabs/CreateRootCategory';
 import Loader from '../../Helper/Loader';
 import axios from 'axios';
@@ -11,8 +10,6 @@ import { setConfig, updateCategoriesConfig } from '../../../redux/actions/action
 import OtherFieldsTable from '../AdminDashboardTabs/OtherFieldsTable';
 import NestedFieldsTable from '../AdminDashboardTabs/NestedFieldsTable';
 import QueueAnim from 'rc-queue-anim';
-
-const { SubMenu } = Menu;
 
 const AdminDashboard = (props) => {
 
@@ -53,11 +50,10 @@ const AdminDashboard = (props) => {
   };
 
   const keys = ["sub1", "flavours", "nutrition", "spices", "allergy", "priceRange", "time", "foodProvider",
-    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig"]
+    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment"]
 
   const tabs = {
     "sub1": <CreateRootCategory key="sub1" setTabIndexMenu={setTabIndexMenu} user={props.user} />,
-    // "sub2": <Categories categories={props.config.categories} updateCategoriesConfig={props.updateCategoriesConfig} user={props.user} />,
     "flavours": <OtherFieldsTable key="flavours" name="flavours" user={props.user} />,
     "nutrition": <OtherFieldsTable key="nutrition" name="nutrition" user={props.user} />,
     "spices": <OtherFieldsTable key="spices" name="spices" user={props.user} />,
@@ -72,6 +68,7 @@ const AdminDashboard = (props) => {
     "customer": <OtherFieldsTable key="customer" name="customer" user={props.user} />,
     "courier": <OtherFieldsTable key="courier" name="courier" user={props.user} />,
     "mailConfig": <VerifyEmailConfig key="mailConfig" user={props.user} />,
+    "payment": <PaymentConfig key="payment" user={props.user} />,
   }
 
 
@@ -98,9 +95,8 @@ const AdminDashboard = (props) => {
             <Menu.Item onClick={handleClick} key="time"><Icon type="appstore" />Time</Menu.Item>
             <Menu.Item onClick={handleClick} key="foodProvider"><Icon type="shop" />Food Provider</Menu.Item>
             <Menu.Item onClick={handleClick} key="commission"><Icon type="pound" />Commission</Menu.Item>
-            {/* <Menu.Item onClick={handleClick} key="sub6"><Icon type="credit-card" />Payment</Menu.Item> */}
+            <Menu.Item onClick={handleClick} key="payment"><Icon type="credit-card" />Payment</Menu.Item>
             <Menu.Item onClick={handleClick} key="order"><Icon type="container" />Order</Menu.Item>
-            {/* <Menu.Item onClick={handleClick} key="complain"><Icon type="frown" />Complain</Menu.Item> */}
             <Menu.Item onClick={handleClick} key="advertisement"><Icon type="global" />Advertisement</Menu.Item>
             <Menu.Item onClick={handleClick} key="customer"><Icon type="team" />Customer</Menu.Item>
             <Menu.Item onClick={handleClick} key="courier"><Icon type="red-envelope" />Courier</Menu.Item>
