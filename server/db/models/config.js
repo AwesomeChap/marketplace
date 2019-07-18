@@ -22,13 +22,11 @@ const approvalSchema = new Schema({
   Description: String,
 })
 
-const priceRangeSchema = new Schema({
-  high: {
-    type: Number
-  },
-  low: {
-    type: Number
-  }
+const fooProviderDetailsSchema = new Schema({
+  id: String,
+  pendingRequest: Number,
+  status: String,
+  key: String
 })
 
 const configSchema = new Schema({
@@ -61,6 +59,71 @@ const configSchema = new Schema({
     values: [],
     approval: []
   },
+  flavours: {
+    values: [],
+    approval: [],
+    colData: [],
+  },
+  time: {
+    values: [],
+    approval: [],
+    colData: [],
+  },
+  nutrition: {
+    values: [],
+    approval: [],
+    colData: [],
+  },
+  spices: {
+    values: [],
+    approval: [],
+    colData: [],
+  },
+  allergy: {
+    values: [],
+    approval: [],
+    colData: [],
+  },
+  priceRange: {
+    values: [],
+    approval: [],
+    colData: [],
+  },
+  foodProvider: {
+    values: []
+  },
+  order: {
+    values: []
+  },
+  complain: {
+    values: []
+  },
+  commission: {
+    values: []
+  },
+  advertisement: {
+    values: {
+      type: Array,
+      default: ["Add Pricing", "Subscribed Sellers"]
+    },
+    addPricing: {
+      values: [],
+      colData: []
+    },
+    subscribedSellers : {
+      values: [],
+      colData: []
+    }
+  }, 
+  customer: {
+    values: [],
+    colData: []
+  }, 
+  courier: {
+    values: [],
+    colData: [],
+    approval: []
+  }
 },{strict: false});
 
 const Config = mongoose.model('Config', configSchema)

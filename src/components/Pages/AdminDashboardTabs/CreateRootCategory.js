@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../../Helper/Loader';
 import RcQueueAnim from 'rc-queue-anim';
-import { Form, Input, Button, Tabs, message, Icon } from 'antd';
+import { Form, Input, Button, Tabs, message, Icon, Modal } from 'antd';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { updateCategoriesConfig } from '../../../redux/actions/actions';
 import CategoryApprovalTable from '../../Helper/CategoryApprovals';
+import { CustomTitle } from '../../Helper/ChoiceCards';
 
+const { confirm } = Modal;
 const { TabPane } = Tabs;
 
 const AddRootCategoryField = (props) => {
@@ -27,7 +29,7 @@ const AddRootCategoryField = (props) => {
   }
   return (
     <div className="add-root-category">
-      <Form style={{ width: "50vw" }} className="inline-form" onSubmit={handleCreateField} layout="inline" >
+      <Form style={{ width: "100%" }} className="inline-form" onSubmit={handleCreateField} layout="inline" >
         {
           getFieldDecorator("newCategory")(
             <Input disabled={props.loading} size="large" placeholder="Create a root category (eg. Food Type)" />
@@ -41,32 +43,101 @@ const AddRootCategoryField = (props) => {
 
 const WrappedAddRootCateogryField = Form.create({ name: "add-root-category" })(AddRootCategoryField);
 
+const CategoryTab = (props) => {
+  const [editing, setEditing] = useState(false);
+  const [text, setText] = useState(props.subCategory);
+
+  return (
+    <div className="simple-choice-card">
+      {!editing ? (
+        <div className="heading">
+          <span>{props.subCategory}</span>
+        </div>
+      ) : (
+          <input style={{ backgroundImage: "linear-gradient(to right, #E100FF, #7F00FF)" }}
+            value={text} autoFocus={true} onChange={e => setText(e.target.value)} className="heading" type="text" />
+        )}
+      <div className="body">
+        <div className="footer">
+          {
+            !editing ? (
+              <>
+                <Button onClick={() => { setEditing(true); setText(props.subCategory) }} shape={"round"} size={"large"}><Icon type="edit" /></Button>
+                <Button onClick={() => props.handldeNameHistoryChange(props.subCategory)} type="primary" shape={"round"} size={"large"}><Icon type="eye" /></Button>
+                <Button onClick={() => props.hanldeDelete(props.subCategory)} shape={"round"} type="danger" size={"large"}><Icon type="delete" /></Button>
+              </>
+            ) : (
+                <>
+                  <Button onClick={() => setEditing(false)} shape={"round"} type="danger" ghost={true} size={"large"}><Icon type="close" /></Button>
+                  <Button onClick={() => { setEditing(false); props.handleUpdate(text, props.subCategory); }} type="primary" ghost={true} shape={"round"} size={"large"}><Icon type="check" /></Button>
+                </>
+              )
+          }
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const CreateRootCategory = (props) => {
 
   const { categories } = props.config;
   const [loading, setLoading] = useState(false);
+  const [nameHistory, setNameHistory] = useState(["categories"]);
+
 
   useEffect(() => {
-    console.log(categories);
-  }, [categories])
+    console.log('useEffect', nameHistory);
+  }, [nameHistory])
 
   const handleCreateCategory = (newCategory) => {
-    if (categories.values.includes(newCategory) || categories[_.camelCase(newCategory)]) {
+    let categoriesClone = { ...categories }
+    let nameHistoryClone = [...nameHistory];
+
+    nameHistoryClone[0] = "categoriesClone";
+
+    let obj = eval(nameHistoryClone.join('.'));
+
+    if (obj.values.includes(newCategory) || obj[_.camelCase(newCategory)]) {
       return message.warning("This category already exists!");
     }
 
     setLoading(true);
-    let categoriesClone = { ...categories }
-    categoriesClone.values = [...categories.values, _.startCase(newCategory)];
-    categoriesClone[_.camelCase(newCategory)] = { values: [], approval: [], colData: [] };
+    obj.values = [...obj.values, _.startCase(newCategory)];
+    obj[_.camelCase(newCategory)] = { values: [] };
 
-    axios.post('/config', {
-      values: categoriesClone,
-      userId: props.user._id,
-      prop: "categories",
-    }).then(({ data }) => {
+    console.log(categoriesClone);
+
+    axios.post('/config', { values: categoriesClone, userId: props.user._id, prop: "categories", })
+      .then(({ data }) => {
+        setLoading(false);
+        props.updateCategoriesConfig(data.config);
+        return message.success(data.message);
+      }).catch((e) => {
+        const error = JSON.parse(JSON.stringify(e.response.data));
+        setLoading(false);
+        return message.error(error.message);
+      })
+  }
+
+  const handleDeleteCategory = (category) => {
+    let categoriesClone = { ...categories };
+    let nameHistoryClone = [...nameHistory];
+
+    nameHistoryClone[0] = "categoriesClone";
+
+    let obj = eval(nameHistoryClone.join('.'));
+
+    obj.values = obj.values.filter((val) => val != category);
+    delete obj[_.camelCase(category)];
+    const values = categoriesClone;
+
+    setLoading(true)
+    axios.post('/config', { values, userId: props.user._id, prop: "categories" }).then(({ data }) => {
       setLoading(false);
+
       props.updateCategoriesConfig(data.config);
+
       return message.success(data.message);
     }).catch((e) => {
       const error = JSON.parse(JSON.stringify(e.response.data));
@@ -94,29 +165,79 @@ const CreateRootCategory = (props) => {
     })
   }
 
-  const Fragment = (props) => <>{props.children}</>;
+  function showPropsConfirm(category) {
+    confirm({
+      title: 'Are you sure ?',
+      content: `This action would result in permanent deletion of ${category}`,
+      okText: "Yes I'm",
+      okType: 'danger',
+      cancelText: "Abort",
+      centered: true,
+      onOk() {
+        handleDeleteCategory(category);
+      },
+      onCancel() {
+        // console.log('Cancel');
+      },
+    });
+  }
+
+  const handleCrumbClick = (nh) => {
+    const index = nameHistory.indexOf(nh);
+    console.log(index);
+    const updatedNH = [...nameHistory]
+    updatedNH.length = index + 1;
+    console.log(updatedNH);
+    setNameHistory(updatedNH);
+  }
+
+  const updateSubcategory = (changedText, category) => {
+    let categoriesClone = { ...categories };
+    let nameHistoryClone = [...nameHistory];
+
+    nameHistoryClone[0] = "categoriesClone";
+
+    let obj = eval(nameHistoryClone.join('.'));
+
+    const index = obj.values.indexOf(category);
+    obj.values[index] = changedText;
+    obj[_.camelCase(changedText)] = obj[_.camelCase(category)];
+    delete obj[_.camelCase(category)];
+    const values = categoriesClone;
+
+    setLoading(true)
+    axios.post('/config', { values, userId: props.user._id, prop: "categories" }).then(({ data }) => {
+      setLoading(false);
+
+      props.updateCategoriesConfig(data.config);
+
+      return message.success(data.message);
+    }).catch((e) => {
+      const error = JSON.parse(JSON.stringify(e.response.data));
+      setLoading(false);
+      return message.error(error.message);
+    })
+  }
 
   return (
     <div className="menu-item-page">
       <Tabs type="card" animated={true}>
         <TabPane tab="Manage" key="1">
+          <div className="bread-crumb">
+            {nameHistory.map((nh) => (
+              <><span onClick={() => handleCrumbClick(nh)} className="route">{_.startCase(nh)}</span><span>/</span></>
+            ))}
+          </div>
           <WrappedAddRootCateogryField loading={loading} handleCreateCategory={handleCreateCategory} />
           <div>
-            <RcQueueAnim style={{ paddingTop: "10vh", padding: "20px" }} className="space-between" >
+            <RcQueueAnim className="space-evenly" >
               {
-                categories.values.map((category, i) => (
-                  <div className="simple-choice-card">
-                    <div className="heading">
-                      <span>{category}</span>
-                    </div>
-                    <div className="body">
-                      {/* <div className="sub-heading">{subHeading}</div> */}
-                      <div className="footer">
-                        <Button shape={"round"} type="danger" size={"large"}><Icon type="delete" /></Button>
-                        <Button onClick={()=>props.setTabIndexMenu('sub2',  i+1)} className="custom" shape={"round"} size={"large"}><Icon type="eye" /></Button>
-                      </div>
-                    </div>
-                  </div>
+                eval(nameHistory.join('.')).values.map((subCategory, i) => (
+                  <CategoryTab subCategory={subCategory}
+                    hanldeDelete={(subCategory) => showPropsConfirm(subCategory)}
+                    handleUpdate={updateSubcategory}
+                    handldeNameHistoryChange={(sc) => setNameHistory([...nameHistory, _.camelCase(sc)])}
+                  />
                 ))
               }
             </RcQueueAnim>
