@@ -15,13 +15,10 @@ import { setConfig } from '../../../redux/actions/actions';
 const { TabPane } = Tabs;
 
 const addForm = {
-  foodProvider: false,
-  order: true,
-  complain: false,
-  commission: true,
-  advertisement: false, //colData
-  customer: true, //colData
-  courier: true, //colData Approval 
+  advertisement: {
+    addPricing : true,
+    subscribedSellers: false
+  }
 }
 
 const OtherFieldsTable = (props) => {
