@@ -19,7 +19,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 60px;
+  height: 50px;
   font-weight: 100;
   font-size: 16px;
   cursor: pointer;
@@ -38,7 +38,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 60px;
+  height: 50px;
   font-weight: 100;
   font-size: 17px;
   cursor: pointer;
@@ -159,7 +159,7 @@ body {
   display: flex;
   justify-content: center; }
   .wrapper.nav {
-    height: 60px !important;
+    height: 50px !important;
     align-items: center;
     flex-shrink: 0; }
   .wrapper.scrollable {
@@ -372,6 +372,10 @@ h3 {
     margin-top: -3.5px !important;
     margin-bottom: -3.5px !important; }
 
+.thumbnail {
+  width: 50px;
+  border-radius: 5px; }
+
 .category-values {
   display: flex;
   width: 100%;
@@ -491,6 +495,9 @@ h3 {
     .bread-crumb .route:hover {
       color: #1890ff;
       opacity: 1; }
+
+.hide-menu-btn {
+  position: absolute; }
 
 /*!
  * 

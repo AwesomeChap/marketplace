@@ -161,4 +161,9 @@ const resetPassword = function (req, res, next) {
   })
 }
 
-module.exports = { resendTokenPost, confirmationPost, verifyToken, resetPassword, checkVerifyUser }
+const uploadFile = (req, res, next) => {
+  const {body} = req;
+  console.log(req.files);
+}
+
+module.exports = { resendTokenPost, confirmationPost, verifyToken, resetPassword, checkVerifyUser, uploadFile }

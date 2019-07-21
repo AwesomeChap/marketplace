@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
         }
         else {
           if (user.type != 'admin') {
-            return res.status(401).json({ message: "Unauthorized access" })
+            return res.status(403).json({ message: "Access forbidden" })
           }
           else {
             Config.findOne({ _userId: user._id })
@@ -63,7 +63,7 @@ router.post('/', (req, res) => {
         }
         else {
           if (user.type != 'admin') {
-            return res.status(401).json({ message: "Unauthorized access" })
+            return res.status(403).json({ message: "Access forbidden" })
           }
           else {
             Config.findOne({ _userId: user._id })

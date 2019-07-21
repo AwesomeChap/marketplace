@@ -3,6 +3,7 @@ import AdminDashboard from './Dashboards/AdminDashboard';
 import Dashboard from './Dashboards/Dashboard';
 import '../../scss/dashboard.scss';
 import Loader from '../Helper/Loader';
+import SellerDashboard from './Dashboards/SellerDashboard';
 
 const Dashboards = (props) => {
 
@@ -14,7 +15,8 @@ const Dashboards = (props) => {
 
   const _Dashboards_ = {
     admin: <AdminDashboard {...props} />,
-    user: <Dashboard {...props} />
+    user: <Dashboard {...props} />,
+    seller: <SellerDashboard {...props} />
   }
 
   if (props.loaded && props.loggedIn) {

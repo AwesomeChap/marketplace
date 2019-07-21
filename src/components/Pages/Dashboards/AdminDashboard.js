@@ -30,8 +30,9 @@ const AdminDashboard = (props) => {
       }
       // return message.success(data.message)
     }).catch((e) => {
-      const error = JSON.parse(JSON.stringify(e.response.data));
-      return message.error(error.message);
+      const error = JSON.parse(JSON.stringify(e.response));
+      if(error.status == "403") props.history.push('/'); 
+      return message.error(error.data.message);
     })
   }, [])
 
@@ -110,7 +111,7 @@ const AdminDashboard = (props) => {
             {
               keys.map((key) => {
                 return <QueueAnim
-                  key={`${key}-tab`}
+                  key={`${key}-tab`} 
                   delay={tabIndex == key ? 300 : 0}
                   duration={400}
                   ease={"easeOutCirc"}
