@@ -48,7 +48,7 @@ const CategoryTab = (props) => {
   const [text, setText] = useState(props.subCategory);
 
   return (
-    <div className="simple-choice-card">
+    <form onSubmit={(e) => {e.preventDefault(); setEditing(false); props.handleUpdate(text, props.subCategory); }} className="simple-choice-card">
       {!editing ? (
         <div className="heading">
           <span>{props.subCategory}</span>
@@ -69,13 +69,13 @@ const CategoryTab = (props) => {
             ) : (
                 <>
                   <Button onClick={() => setEditing(false)} shape={"round"} type="danger" ghost={true} size={"large"}><Icon type="close" /></Button>
-                  <Button onClick={() => { setEditing(false); props.handleUpdate(text, props.subCategory); }} type="primary" ghost={true} shape={"round"} size={"large"}><Icon type="check" /></Button>
+                  <Button htmlType="submit" type="primary" ghost={true} shape={"round"} size={"large"}><Icon type="check" /></Button>
                 </>
               )
           }
         </div>
       </div>
-    </div>
+    </form>
   )
 }
 
@@ -97,6 +97,10 @@ const CreateRootCategory = (props) => {
     nameHistoryClone[0] = "categoriesClone";
 
     let obj = eval(nameHistoryClone.join('.'));
+
+    newCategory = _.startCase(_.toLower(newCategory));
+
+    console.log(newCategory);
 
     if (obj.values.includes(newCategory) || obj[_.camelCase(newCategory)]) {
       return message.warning("This category already exists!");
@@ -195,12 +199,18 @@ const CreateRootCategory = (props) => {
     let categoriesClone = { ...categories };
     let nameHistoryClone = [...nameHistory];
 
+    if(_.toLower(changedText) == _.toLower(category)){
+      return messsage.warning("Nothing changed");
+    }
+
     nameHistoryClone[0] = "categoriesClone";
 
     let obj = eval(nameHistoryClone.join('.'));
 
     const index = obj.values.indexOf(category);
-    obj.values[index] = changedText;
+    changedText = _.toLower(changedText);
+    console.log(changedText);
+    obj.values[index] = _.startCase(changedText);
     obj[_.camelCase(changedText)] = obj[_.camelCase(category)];
     delete obj[_.camelCase(category)];
     const values = categoriesClone;

@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
         }
         else {
           if (user.type != 'admin') {
-            return res.status(401).json({ message: "Unauthorized access" })
+            return res.status(403).json({ message: "Access forbidden" })
           }
           else {
             Config.findOne({ _userId: user._id })
@@ -51,7 +51,6 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-  // console.log(req.body);
   if (!req.body.userId || !req.body.values || !req.body.prop) {
     res.status(400).json({ message: "Insufficient parameters" });
   }
@@ -64,7 +63,7 @@ router.post('/', (req, res) => {
         }
         else {
           if (user.type != 'admin') {
-            return res.status(401).json({ message: "Unauthorized access" })
+            return res.status(403).json({ message: "Access forbidden" })
           }
           else {
             Config.findOne({ _userId: user._id })
@@ -73,7 +72,6 @@ router.post('/', (req, res) => {
                   // update it
                   Config.findByIdAndUpdate(config._id, { [prop]: values }, { new: true })
                     .then((updatedConfig) => {
-                      console.log(prop, updatedConfig[prop]);
                       if (updatedConfig) {
                         return res.status(200).json({ message: `${prop} config updated successfully`, config: updatedConfig[prop]});
                       }

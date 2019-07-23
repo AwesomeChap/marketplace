@@ -40,32 +40,33 @@ const SubNav = (props) => {
       axios.post('/auth/logout')
         .then(({ data }) => {
           message.success(data.message);
+          props.history.push('/');
           props.removeUser();
         })
     }
     else {
-      props.history.push('/me/dashboard');
+      props.history.push(props.dashboardPath);
     }
   }
 
   const DropdownMenu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1"><Icon className="prefix-icon" type="deployment-unit" />Dashboard</Menu.Item>
+      <Menu.Item key="1"><Icon className="prefix-icon" type="layout" theme="filled" />Dashboard</Menu.Item>
       <Menu.Item key="2"><Icon className="prefix-icon" type="logout" />Logout</Menu.Item>
     </Menu>
   );
 
   return (
-    <div className="sub-nav">
+    <div className="sub-nav"> 
       <NavLink exact to="/" className="sub-nav-item" activeClassName="selected">
         <span><Icon type="home" /> Home </span>
       </NavLink>
-      <NavLink exact to="/rider" className="sub-nav-item" activeClassName="selected">
-        <span><BikeIcon style={{ transform: "scale(1.35)" }} /> Become a Rider </span>
+      {/* <NavLink exact to="/rider" className="sub-nav-item" activeClassName="selected">
+        <span><BikeIcon style={{ transform: "scale(1.35)" }} /> Rider Area</span>
       </NavLink>
       <NavLink exact to="/partner" className="sub-nav-item" activeClassName="selected">
-        <span><Icon type="shop" /> Sell with us </span>
-      </NavLink>
+        <span><Icon type="shop" /> Seller Area </span>
+      </NavLink> */}
       {
         props.loggedIn ? (
           <>
@@ -73,7 +74,7 @@ const SubNav = (props) => {
               <span>
                 <Dropdown trigger={['click']} overlay={DropdownMenu} >
                   <Button type="primary">
-                    <Icon type="user" /> Me {props.user.type == "admin" && <span style={{opacity: 0.7, padding: 0, border: 0}}>(admin)</span>}<Icon type="down" />
+                    <Icon type="user" /> Me {props.user.type != "user" && <span style={{opacity: 0.7, padding: 0, border: 0}}>({props.user.type})</span>}<Icon type="down" />
                   </Button>
                 </Dropdown>
               </span>

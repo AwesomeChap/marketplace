@@ -67,14 +67,12 @@ $linear-gradient: linear-gradient(to right, #1488cc, #2b32b2);
 
 .custom-title {
   display: inline-block !important;
-  margin: 3vh 0 !important;
-  margin-left: 50% !important;
+  // margin: 3vh auto !important;
   background: linear-gradient(to left, #6a3093, #a044ff);
   color: #fff !important;
   font-weight: 300 !important;
   padding: 10px 20px;
   border-radius: 5px;
-  transform: translate(-50%);
   letter-spacing: 0.1em;
   text-transform: uppercase !important;
 }
@@ -85,4 +83,24 @@ $linear-gradient: linear-gradient(to right, #1488cc, #2b32b2);
   width: 100%;
   justify-content: space-evenly;
   flex-wrap: wrap;
+}
+
+.config-form{
+  margin: 2vh auto 5vh auto;
+  width: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .config-header{
+    transform: translateY(50%);
+  }
+
+  .config-body{
+    width: 100%;
+    box-shadow:0 0 10px #aaa;
+    border-radius: 10px;
+    padding: 60px 50px 10px 50px;
+  }
 }

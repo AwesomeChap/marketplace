@@ -51,7 +51,7 @@ const userSchema = new Schema({
 		email: { type: String },
 		photo: { type: String }
 	}
-})
+}, {strict: false})
 
 userSchema.methods = {
 	checkPassword: function (inPwd) {

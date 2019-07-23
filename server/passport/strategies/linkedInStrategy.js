@@ -33,12 +33,27 @@ const linkedInStrategy = new LinkedInStrategy({
           }
         }
 
-        new User({...newUser}).save().then(user => {
-          if(user){
-            return done(null, user);
+        const email = profile.emails[0].value;
+        User.findOne({$or: [{ 'local.email': email }, { 'google.email': email }, { 'facebook.email': email }]}).then((user) => {
+          if (!user) {
+            new User({ ...newUser }).save().then(user => {
+              if (user) {
+                done(null, user);
+              }
+              else {
+                done(null, false);
+              }
+            })
           }
-          else{
-            return done(null, false);
+          else {
+            User.findByIdAndUpdate(user._id, {linkedin: newUser.linkedin}).then((user) => {
+              if(user){
+                done(null, user);
+              }
+              else{
+                done(null, false);
+              }
+            })
           }
         })
       }

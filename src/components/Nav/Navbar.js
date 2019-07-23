@@ -9,7 +9,7 @@ const Navbar = (props) => {
       {/* <div className="container"> */}
         <div className="space-between">
           <Link className="big link" to="/" >Market Place</Link>
-          <SubNav />
+          <SubNav dashboardPath = {props.dashboardPath} />
         </div>
       {/* </div> */}
     </div>

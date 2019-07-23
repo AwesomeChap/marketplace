@@ -19,8 +19,8 @@ const CategoryConfigForm = (props) => {
       dataIndex: "type",
       type: "select",
       // editable: true,
-      width: "20%",
-      options: ["text", "number", "price", "switch", "select", "date", "multiSelect"]
+      width: "25%",
+      options: ["text", "number", "price", "select", "multiSelect", "upload"]
     },
     {
       title: "Editable",
@@ -34,7 +34,7 @@ const CategoryConfigForm = (props) => {
       dataIndex: "options",
       type: "tagSelect",
       editable: true,
-      width: "25%",
+      width: "30%",
       render: tags => (
         <span>
           {tags && tags.map((tag, i) => {
@@ -64,7 +64,7 @@ const CategoryConfigForm = (props) => {
 
   return (
     <>
-      <GenericEditabelTable addForm={addFormParamater} loading={props.loading} colData={colData} handleSave={handleSave} dataSource={dataSource} />
+      <GenericEditabelTable disableFilters={true} addForm={addFormParamater} loading={props.loading} colData={colData} handleSave={handleSave} dataSource={dataSource} />
     </>
   )
 }

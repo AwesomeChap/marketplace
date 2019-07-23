@@ -12,8 +12,8 @@ const countryBasedCategorizationSchema = new Schema({
 })
 
 const basicSchema = new Schema({
-  name : String,
-  description : String,
+  name: String,
+  description: String,
 })
 
 const approvalSchema = new Schema({
@@ -58,6 +58,11 @@ const configSchema = new Schema({
   categories: {
     values: [],
     approval: []
+  },
+  ingredients: {
+    values: [],
+    approval: [],
+    colData: [],
   },
   flavours: {
     values: [],
@@ -110,21 +115,35 @@ const configSchema = new Schema({
       values: [],
       colData: []
     },
-    subscribedSellers : {
+    subscribedSellers: {
       values: [],
       colData: []
     }
-  }, 
+  },
   customer: {
     values: [],
     colData: []
-  }, 
+  },
   courier: {
-    values: [],
-    colData: [],
-    approval: []
+    values: {
+      type: Array,
+      default: ["Courier Classes", "Registered Couriers"]
+    },
+    courierClasses: {
+      values: [],
+      colData: [],
+      approval: []
+    },
+    registeredCouriers: {
+      values: [],
+      colData: [],
+    }
+  },
+  payment: {
+    id: { type: String },
+    secret: { type: String }
   }
-},{strict: false});
+}, { strict: false });
 
 const Config = mongoose.model('Config', configSchema)
 module.exports = Config;

@@ -111,7 +111,7 @@
 .menu-item-page {
   min-height: 100%;
   width: 100%;
-  padding: 5vh 0;
+  padding: 2vh 0 10vh 0;
 }
 
 .ant-tabs-tab-active {
@@ -167,5 +167,12 @@
       color: #1890ff;
       opacity: 1;
     }
+  }
+}
+
+.hide-menu-btn{
+  color: #1890ff !important;
+  &:hover{
+    color: #4aa8ff;
   }
 }

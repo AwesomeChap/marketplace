@@ -15,13 +15,14 @@ import { setConfig } from '../../../redux/actions/actions';
 const { TabPane } = Tabs;
 
 const addForm = {
-  foodProvider: false,
-  order: true,
-  complain: false,
-  commission: true,
-  advertisement: false, //colData
-  customer: true, //colData
-  courier: true, //colData Approval 
+  advertisement: {
+    addPricing : true,
+    subscribedSellers: false
+  },
+  courier: {
+    courierClasses: true,
+    registeredCouriers: true,
+  }
 }
 
 const OtherFieldsTable = (props) => {
@@ -226,7 +227,7 @@ const OtherFieldsTable = (props) => {
               }
               else if (props.config[props.rootName][subName].hasOwnProperty('approval') && key == "approval") {
                 return (
-                  <TabPane tab="Approval" key={`${val}-${(i + 1) * 3}`}>
+                  <TabPane tab={"Approval "+val} key={`${val}-${(i + 1) * 3}`}>
                     <CategoryApprovalTable loading={loading} name={subName} handleSave={handleSaveApproval} dataSource={props.config[props.rootName][subName]["approval"]} />
                   </TabPane>
                 )

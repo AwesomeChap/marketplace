@@ -4,6 +4,7 @@ import axios from 'axios';
 import Loader from '../../Helper/Loader';
 import { connect } from 'react-redux';
 import { setConfig, updateMailConfig } from '../../../redux/actions/actions';
+import ConfigForm from '../../Helper/ConfigForm';
 
 const { Title } = Typography;
 const { OptGroup, Option } = Select;
@@ -80,112 +81,109 @@ const VerifyEmailConfig = (props) => {
   return (
     <div className="menu-item-page">
       <Form layout={"vertical"} {...formItemLayout} onSubmit={handleSubmit}>
-        <Title id="1" level={3} >Transporter Config</Title>
 
-        <Form.Item label="Host">
-          {getFieldDecorator('smtpConfig.host', {
-            initialValue: !newConfig && mail.smtpConfig.host || "",
-            rules: [{ required: true, message: 'Please enter a host' }],
-          })(<Input placeholder="eg. smtp.gmail.com" style={{ width: 330 }} />)}
-        </Form.Item>
+        <ConfigForm title="Transporter Config">
+          <Form.Item label="Host">
+            {getFieldDecorator('smtpConfig.host', {
+              initialValue: !newConfig && mail.smtpConfig.host || "",
+              rules: [{ required: true, message: 'Please enter a host' }],
+            })(<Input placeholder="eg. smtp.gmail.com" />)}
+          </Form.Item>
 
-        <Form.Item label="Port">
-          {getFieldDecorator('smtpConfig.port', {
-            initialValue: !newConfig && mail.smtpConfig.port || undefined,
-            rules: [{ required: true, message: "Please specify a port" }]
-          })(
-            <Select placeholder="eg. 465" style={{ width: 330 }}>
-              <OptGroup label="SSL connections">
-                <Option value={465}>465</Option>
-              </OptGroup>
-              <OptGroup label="TLS connections">
-                <Option value={25}>25</Option>
-                <Option value={587}>587</Option>
-              </OptGroup>
-            </Select>
-          )}
-        </Form.Item>
+          <Form.Item label="Port">
+            {getFieldDecorator('smtpConfig.port', {
+              initialValue: !newConfig && mail.smtpConfig.port || undefined,
+              rules: [{ required: true, message: "Please specify a port" }]
+            })(
+              <Select placeholder="eg. 465">
+                <OptGroup label="SSL connections">
+                  <Option value={465}>465</Option>
+                </OptGroup>
+                <OptGroup label="TLS connections">
+                  <Option value={25}>25</Option>
+                  <Option value={587}>587</Option>
+                </OptGroup>
+              </Select>
+            )}
+          </Form.Item>
 
-        <Form.Item label="Username" >
-          {getFieldDecorator('smtpConfig.auth.user', {
-            initialValue: !newConfig && mail.smtpConfig.auth.user || "",
-            rules: [{ required: true, message: "Please enter a username" }]
-          })(
-            <Input placeholder="Username" style={{ width: 330 }} />
-          )}
-        </Form.Item>
+          <Form.Item label="Username" >
+            {getFieldDecorator('smtpConfig.auth.user', {
+              initialValue: !newConfig && mail.smtpConfig.auth.user || "",
+              rules: [{ required: true, message: "Please enter a username" }]
+            })(
+              <Input placeholder="Username" />
+            )}
+          </Form.Item>
 
-        <Form.Item label="Password" >
-          {getFieldDecorator('smtpConfig.auth.pass', {
-            initialValue: !newConfig && mail.smtpConfig.auth.pass || "",
-            rules: [{ required: true, message: "Please enter a password" }]
-          })(
-            <Input type="password" placeholder="Password" style={{ width: 330 }} />
-          )}
-        </Form.Item>
+          <Form.Item label="Password" >
+            {getFieldDecorator('smtpConfig.auth.pass', {
+              initialValue: !newConfig && mail.smtpConfig.auth.pass || "",
+              rules: [{ required: true, message: "Please enter a password" }]
+            })(
+              <Input type="password" placeholder="Password" />
+            )}
+          </Form.Item>
+        </ConfigForm>
 
-        <Divider></Divider>
+        <ConfigForm title="Mail Options">
+          <Form.Item label="From" >
+            {getFieldDecorator('mailOptions.from', {
+              initialValue: !newConfig && mail.mailOptions.from || "",
+              rules: [
+                { type: "email", message: "Please enter a valid email address" },
+                { required: true, message: "Sender's address is required" }
+              ]
+            })(
+              <Input placeholder="eg. alex@domain.com" />
+            )}
+          </Form.Item>
 
-        <Title id="2" level={3} >Mail Options</Title>
+          <Form.Item label="Subject" >
+            {getFieldDecorator('mailOptions.subject', {
+              initialValue: !newConfig && mail.mailOptions.subject || ""
+            })(
+              <Input placeholder="eg. Activation Token Email" />
+            )}
+          </Form.Item>
 
-        <Form.Item label="From" >
-          {getFieldDecorator('mailOptions.from', {
-            initialValue: !newConfig && mail.mailOptions.from || "",
-            rules: [
-              { type: "email", message: "Please enter a valid email address" },
-              { required: true, message: "Sender's address is required" }
-            ]
-          })(
-            <Input placeholder="eg. alex@domain.com" style={{ width: 330 }} />
-          )}
-        </Form.Item>
+          <Form.Item label="Salutation" >
+            {getFieldDecorator("mailOptions.text.salutation", {
+              initialValue: !newConfig && mail.mailOptions.text.salutation || ""
+            })(
+              <Input placeholder="eg. Hello," />
+            )}
+          </Form.Item>
 
-        <Form.Item label="Subject" >
-          {getFieldDecorator('mailOptions.subject', {
-            initialValue: !newConfig && mail.mailOptions.subject || ""
-          })(
-            <Input placeholder="eg. Activation Token Email" style={{ width: 330 }} />
-          )}
-        </Form.Item>
+          <Form.Item label="Body" >
+            {getFieldDecorator("mailOptions.text.body", {
+              initialValue: !newConfig && mail.mailOptions.text.body || "",
+              rules: [
+                { validator: hasToken }
+              ]
+            })(
+              <Input.TextArea allowClear
+                suffix={
+                  <Tooltip title={"Please include {{token}} in your text, It specifies position of the auth token"}>
+                    <Icon type="info-circle" style={{ color: 'rgba(0,0,0,.45)' }} />
+                  </Tooltip>
+                }
+                autosize={{ minRows: 2, maxRows: 6 }}
+                placeholder="eg. Your verification token is {{token}}"
+              />
+            )}
+          </Form.Item>
 
-        <Form.Item label="Salutation" >
-          {getFieldDecorator("mailOptions.text.salutation", {
-            initialValue: !newConfig && mail.mailOptions.text.salutation || ""
-          })(
-            <Input placeholder="eg. Hello," style={{ width: 330 }} />
-          )}
-        </Form.Item>
+          <Form.Item label="Close" >
+            {getFieldDecorator("mailOptions.text.close", {
+              initialValue: !newConfig && mail.mailOptions.text.close || ""
+            })(
+              <Input placeholder="eg. Thanks," />
+            )}
+          </Form.Item>
+        </ConfigForm>
 
-        <Form.Item label="Body" >
-          {getFieldDecorator("mailOptions.text.body", {
-            initialValue: !newConfig && mail.mailOptions.text.body || "",
-            rules: [
-              { validator: hasToken }
-            ]
-          })(
-            <Input.TextArea allowClear
-              suffix={
-                <Tooltip title={"Please include {{token}} in your text, It specifies position of the auth token"}>
-                  <Icon type="info-circle" style={{ color: 'rgba(0,0,0,.45)' }} />
-                </Tooltip>
-              }
-              autosize={{ minRows: 2, maxRows: 6 }}
-              placeholder="eg. Your verification token is {{token}}"
-              style={{ width: 330 }} />
-          )}
-        </Form.Item>
-
-        <Form.Item label="Close" >
-          {getFieldDecorator("mailOptions.text.close", {
-            initialValue: !newConfig && mail.mailOptions.text.close || ""
-          })(
-            <Input placeholder="eg. Thanks," style={{ width: 330 }} />
-          )}
-        </Form.Item>
-
-        <Form.Item>
-          <Button loading={loading} htmlType={"submit"} type="primary">Save</Button>
-        </Form.Item>
+        <Button className="center-me" shape={"round"} size="large" loading={loading} htmlType={"submit"} type="primary">Save</Button>
 
       </Form>
     </div>

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "../../scss/table.scss";
-import { Table, Input, InputNumber, Form, Button, message, Select, Switch, DatePicker, Tag } from "antd";
+import { Table, Input, InputNumber, Form, Button, message, Select, Switch, DatePicker, Tag, Upload, Icon } from "antd";
 import CreateCategoryForm from "./CategoryConfigForm";
+import Highlighter from 'react-highlight-words';
 
 let typeIsSelect = false;
 
 const AddForm = (props) => {
 
   const { form } = props;
-  const { getFieldDecorator, validateFields, resetFields } = form;
+  const { getFieldDecorator, validateFields, resetFields, getFieldValue } = form;
+  const [uploadButtonDisplay, setUploadButtonDisplay] = useState(true);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,13 +19,31 @@ const AddForm = (props) => {
         return message.warning("fields should not be empty")
       }
       else {
+        console.log(values);
         if (values.hasOwnProperty("editable") && (values.editable == true || values.editable == false)) values.editable = JSON.stringify(values.editable);
         props.handleAddition(values);
         resetFields();
+        setUploadButtonDisplay(true);
       }
     })
   }
 
+  function beforeUpload(file, fileList) {
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isLt2M;
+  }
+
+  const normFile = e => {
+    console.log('Upload event:', e);
+    if (e.fileList.length) setUploadButtonDisplay(false);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
 
   return (
     <Form layout={"inline"} onSubmit={handleSubmit}>
@@ -38,7 +58,13 @@ const AddForm = (props) => {
             tagSelect: <Select disabled={!typeIsSelect} placeholder={"Only for Select field"} dropdownStyle={{ display: "none" }} mode="tags" />,
             price: <InputNumber placeholder={col.title} formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />,
             multiSelect: <Select mode="multiple" placeholder={col.title}>{col.type == "multiSelect" ? col.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>) : undefined}</Select>,
-            date: <DatePicker placeholder="date" />
+            date: <DatePicker placeholder="date" />,
+            upload: (<Upload listType="picture"
+              action={"/upload"}
+              onRemove={(file) => { setUploadButtonDisplay(true) }}
+              name="file" beforeUpload={beforeUpload}>
+              {uploadButtonDisplay && <Button><Icon type="upload" />Upload</Button>}
+            </Upload>)
           }
           if (col.dataIndex == "operation") {
             return <Button htmlType={"submit"} type="primary" icon="plus" />
@@ -52,10 +78,14 @@ const AddForm = (props) => {
             options = { initialValue: false, valuePropName: 'checked' };
           }
 
+          if (col.type == "upload") {
+            options = { ...options, valuePropName: 'fileList', getValueFromEvent: normFile, }
+          }
+
           if (col.type == "tagSelect") options = {};
 
           return (
-            <Form.Item className={col.type == "switch" && "switch-fix" || col.type == "tagSelect" && "options-fix"} label={col.title}>
+            <Form.Item key={`col-${col.type}-${col.dataIndex}`} className={col.type == "switch" && "switch-fix" || col.type == "tagSelect" && "options-fix"} label={col.title}>
               {getFieldDecorator(col.dataIndex, { ...options })(inputField[col.type])}
             </Form.Item>
           )
@@ -80,10 +110,39 @@ const WrappedAddForm = Form.create({ name: "add-form", onValuesChange: handleVal
 const EditableContext = React.createContext();
 
 const EditableCell = (props) => {
+  const [uploadButtonDisplay, setUploadButtonDisplay] = useState(false);
+
+  function beforeUpload(file, fileList) {
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isLt2M;
+  }
+
+  const normFile = e => {
+    console.log('Upload event:', e);
+    if (e.fileList.length) setUploadButtonDisplay(false);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
+  };
 
   const getInput = (type) => {
     if (props.inputType === "number") {
       return <InputNumber />;
+    }
+
+    if (props.inputType === "upload") {
+      return (
+        <Upload listType="picture"
+          action={"/upload"}
+          onRemove={(file) => { setUploadButtonDisplay(true) }}
+          name="file" beforeUpload={beforeUpload}>
+          {uploadButtonDisplay && <Button><Icon type="upload" />Upload</Button>}
+        </Upload>
+      )
     }
 
     else if (props.inputType === "multiSelect") {
@@ -135,6 +194,7 @@ const EditableCell = (props) => {
 
     if (inputType === "switch") options = { valuePropName: 'checked' };
     if (inputType === "tagSelect") options = {};
+    if (inputType == "upload") { options = { valuePropName: 'fileList', getValueFromEvent: normFile } }
 
     return (
       <td {...restProps}>
@@ -159,15 +219,19 @@ const EditableCell = (props) => {
 const EditableTable = (props) => {
   const [data, setData] = useState(props.dataSource);
   const [editingKey, setEditingKey] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [name, setName] = useState(props.name);
+  const [searchText, setSearchText] = useState("");
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [sortedInfo, setSortedInfo] = useState({});
 
   useEffect(() => {
     if (name != props.name) {
-      setData(props.dataSource);
-      setName(props.name);
-      setEditingKey("");
-      setSelectedRows([]);
+      // setData(props.dataSource);
+      // setName(props.name);
+      // setEditingKey("");
+      // setSelectedRowKeys([]);
+      // setSearchText("");
     }
   }, [props])
 
@@ -177,22 +241,22 @@ const EditableTable = (props) => {
     {
       title: "Operation",
       dataIndex: "operation",
-      width: "20%",
+      width: "8%",
       render: (text, record) => {
         const editable = isEditing(record);
         return editable ? (
           <div className="table-operation-buttons">
             <EditableContext.Consumer>
               {form => (
-                <Button block type="primary" onClick={() => save(form, record.key)}>Save</Button>
+                <Button type="primary" icon="save" onClick={() => save(form, record.key)}></Button>
               )}
             </EditableContext.Consumer>
-            <Button block type="danger" ghost={true} onClick={() => cancel(record.key)} >Cancel</Button>
+            <Button type="danger" icon="close" ghost={true} onClick={() => cancel(record.key)} ></Button>
           </div>
         ) : (
             <div className="table-operation-buttons">
-              <Button block disabled={selectedRows.length || editingKey !== '' || loading} onClick={() => edit(record.key)}>Edit</Button>
-              <Button block type="danger" onClick={() => handleDelete(record.key)} disabled={selectedRows.length || loading} >Delete</Button>
+              <Button icon="edit" disabled={selectedRowKeys.length || editingKey !== '' || loading} onClick={() => edit(record.key)}></Button>
+              <Button icon="delete" type="danger" onClick={() => handleDelete(record.key)} disabled={selectedRowKeys.length || loading} ></Button>
             </div>
           );
       }
@@ -248,17 +312,17 @@ const EditableTable = (props) => {
     setData(updatedData);
   }
 
+  useEffect(() => {
+    console.log(selectedRowKeys);
+  }, [selectedRowKeys])
+
   const handleMultiDelete = () => {
-    let keys = [...selectedRows];
+    let keys = [...selectedRowKeys];
     let updatedData = [...data];
     updatedData = updatedData.filter((item) => !keys.includes(item.key));
 
     setData(updatedData);
-    setSelectedRows([]);
-  }
-
-  const onSelectedRowsChange = (selectedRows) => {
-    setSelectedRows(selectedRows)
+    setSelectedRowKeys([]);
   }
 
   const handleAddFormData = (values) => {
@@ -275,10 +339,92 @@ const EditableTable = (props) => {
     }
   };
 
+  let searchInput = React.useRef(null);
+  let filterDropDown = React.useRef(null);
+
+  const FilterDropDown = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, dataIndex }) => (
+    <div style={{ padding: 8 }}>
+      <Input
+        ref={node => { searchInput = node; }}
+        placeholder={`Search ${dataIndex}`}
+        size="small"
+        value={selectedKeys[0]}
+        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        onPressEnter={() => handleSearch(selectedKeys, confirm)}
+        style={{ width: 188, marginBottom: 8, display: 'block' }}
+      />
+      <Button
+        type="primary"
+        onClick={() => handleSearch(selectedKeys, confirm)}
+        icon="search"
+        size="small"
+        style={{ width: 90, marginRight: 8 }}
+      >
+        Search
+        </Button>
+      <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+        Reset
+        </Button>
+    </div>
+  )
+
+  const getColumnSearchProps = dataIndex => ({
+    filterDropdown: (props) => <FilterDropDown ref={node => filterDropDown = node} {...props} dataIndex={dataIndex} />,
+    filterIcon: filtered => (
+      <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
+    ),
+    onFilter: (value, record) => {
+      return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+    },
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => searchInput.select());
+      }
+    },
+    render: (text) => (
+      <Highlighter
+        highlightStyle={{ backgroundColor: '#00eeff', padding: 0 }}
+        searchWords={[searchText]}
+        autoEscape
+        textToHighlight={text.toString()}
+      />
+    ),
+  });
+
+  const handleSearch = (selectedKeys, confirm) => {
+    console.log(selectedKeys[0]);
+    confirm();
+    setSearchText(selectedKeys[0]);
+  };
+
+  const handleReset = clearFilters => {
+    clearFilters();
+    setSearchText('');
+  };
+
   const cols = columns.map(col => {
+    if (!props.disableFilters) {
+      if (!(col.dataIndex == "operation" || col.type == "upload" || col.type == "select")) {
+        col = { ...col, ...getColumnSearchProps(col.dataIndex) }
+
+        if (col.type == "number" || col.type == "price") {
+          col["sorter"] = (a, b) => a[col.dataIndex] - b[col.dataIndex];
+        }
+      }
+
+      if (col.type == "select") {
+        col["filters"] = col.options.map(opt => ({ text: opt, value: opt }));
+        col["filteredValue"] = filteredInfo[col.dataIndex] || null;
+        col["onFilter"] = (value, record) => record[col.dataIndex] === value;
+      }
+    }
+
+    col.key = col.dataIndex;
+
     if (col.type == "multiSelect") {
-      col["render"] = options => (
-        <span>
+      col["render"] = options => {
+        console.log(options);
+        return <span>
           {options && options.map((opt, i) => {
             let color = i % 3 == 1 ? 'geekblue' : 'green';
             if (i % 3 == 0) {
@@ -291,7 +437,12 @@ const EditableTable = (props) => {
             );
           })}
         </span>
-      )
+      }
+    }
+    if (col.type == "upload") {
+      col["render"] = (file) => {
+        return <img className="thumbnail" src={file[0].thumbUrl || file[0].response.url} />
+      };
     }
     if (!col.editable) {
       return col;
@@ -311,8 +462,11 @@ const EditableTable = (props) => {
   });
 
   const rowSelection = {
-    selectedRows,
-    onChange: onSelectedRowsChange,
+    selectedRowKeys,
+    onChange: (selectedRowKeys) => {
+      console.log('onChange', selectedRowKeys);
+      setSelectedRowKeys(selectedRowKeys)
+    },
   };
 
   if (!props.colData.length) {
@@ -323,19 +477,36 @@ const EditableTable = (props) => {
     <WrappedAddForm columns={columns} handleAddition={handleAddFormData} />
   )
 
+  const handleChange = (pagination, filters, sorter) => {
+    console.log('Various parameters', pagination, filters, sorter);
+    setFilteredInfo(filters); setSortedInfo(sorter);
+  }
+
+  const [tableIndex, setTableIndex] = useState("table");
+  const [count, setCount] = useState(0);
+
+  const clearAll = () => {
+    setFilteredInfo({}); setSortedInfo({}); setSearchText("");
+    console.log(filteredInfo, sortedInfo);
+    setTableIndex(`table-${count}`);
+    setCount(count + 1);
+  };
+
   let tableProps = {
+    key: props.name + "-" + tableIndex,
     size: "middle",
     rowSelection: rowSelection,
     components: components,
     bordered: true,
     dataSource: data,
     columns: cols,
+    onChange: handleChange,
+    // size: "small",
     pagination: {
       showSizeChanger: true,
       showQuickJumper: true,
       onChange: cancel,
       total: data.length,
-      // size: "small",
     }
   }
 
@@ -345,8 +516,9 @@ const EditableTable = (props) => {
     <EditableContext.Provider value={props.form}>
       <div style={{ paddingTop: 0 && !props.colData.length }} className="table-container">
         <div className="table-buttons">
-          <Button disabled={props.loading} type="danger" onClick={handleMultiDelete} disabled={!selectedRows.length}>Remove</Button>
-          <Button loading={props.loading} type="primary" onClick={() => props.handleSave(data, props.name)} disabled={selectedRows.length}>Save</Button>
+          <Button disabled={props.loading} type="danger" onClick={handleMultiDelete} disabled={!selectedRowKeys.length}>Remove</Button>
+          <Button loading={props.loading} type="primary" onClick={() => props.handleSave(data, props.name)} disabled={selectedRowKeys.length}>Save</Button>
+          {!props.disableFilters && <Button onClick={clearAll}>Clear All</Button>}
         </div>
         <Table
           {...tableProps}
