@@ -2,8 +2,8 @@ $blue: #2f54eb;
 
 html,
 body {
-  height: 100vw;
-  width: 100vh;
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
   padding: 0;
   margin: 0;
@@ -179,3 +179,18 @@ h3 {
   margin-left: 50% !important;
   transform: translate(-50%);
 }
+
+.sticky{
+  position: sticky;
+  align-self: flex-start;
+  top: 0;
+  z-index: 10;
+}
+
+// .ant-tabs-bar{
+//   all: unset;
+//   position: sticky;
+//   align-self: flex-start;
+//   top: 0;
+//   z-index: 10;
+// }

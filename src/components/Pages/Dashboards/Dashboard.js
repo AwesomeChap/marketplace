@@ -17,14 +17,14 @@ const Dashboard = (props) => {
 
   const CurrentView = {
     user_profile: <div key="user_profile" >User Profile</div>,
-    seller_dashboard: <SellerDashBoard key="seller_dashboard"/>,
+    seller_dashboard: <SellerDashBoard key="seller_dashboard" />,
     courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>
   }
 
   return (
     <div className="wrapper">
-      <Menu style={{maxWidth: 240}} onClick={handleClick} selectedKeys={[current]} mode="inline" inlineCollapsed={collapsed}>
-        <Menu.Item style={{cursor: "default"}} disabled key="toggle_menu">
+      <Menu style={{ maxWidth: 240 }} onClick={handleClick} selectedKeys={[current]} mode="inline" inlineCollapsed={collapsed}>
+        <Menu.Item style={{ cursor: "default" }} disabled key="toggle_menu">
           <Icon className="hide-menu-btn" type={collapsed ? "menu-unfold" : "menu-fold"} onClick={() => setCollapsed(!collapsed)} />
           <span onClick={() => setCollapsed(!collapsed)}>Toggle Menu</span>
         </Menu.Item>
@@ -43,10 +43,13 @@ const Dashboard = (props) => {
       </Menu>
       <div className="scrollable wrapper">
         <div className="container">
-          {
+          {CurrentView[current]}
+          {/* <div className="container"> */}
+          {/* {
             Object.keys(CurrentView).map((key) => (
               <QueueAnim
                   key={`${key}-tab`} 
+                  component={"span"}
                   delay={current == key ? 300 : 0}
                   duration={400}
                   ease={"easeOutCirc"}
@@ -58,7 +61,8 @@ const Dashboard = (props) => {
                   {current == key ? [CurrentView[key]] : [null]}
                 </QueueAnim>
             ))
-          }
+          } */}
+          {/* </div> */}
         </div>
       </div>
     </div>

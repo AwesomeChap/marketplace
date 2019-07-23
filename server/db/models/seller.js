@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const User = require('./user');
 
-const ingreidientsSchema = new Schema({
+const ingredientsSchema = new Schema({
   name: String,
   image: {},
   quantity: String
@@ -10,14 +10,15 @@ const ingreidientsSchema = new Schema({
 
 const sellerProfileSchema = new Schema({
   branchName: String,
-  service: [String], //dining in, take away, delivery
+  serviceOptions: [String], //dining in, take away, delivery
+  logo: {},
   photos: [],
   address: String,
   cateringService: {
     available: Boolean,
     coverageArea: Number,
     quantityOfFoodPerMember: Number,
-    serviceType: String // food is delivered, service personnel, 
+    modeOfService: [String] // food is delivered, service personnel, 
   }
 },{strict: false})
 
@@ -25,10 +26,13 @@ const foodItemSchema = new Schema({
   name: String, 
   image: {},
   type: String, // veg or non-veg
+  price: Number,
   leadTime: String,
+  serveTime: [String],
   category: [String],
+  flavours: [String],
   recipie: [String],
-  ingreidients: [ingreidientsSchema],
+  ingredients: [ingredientsSchema],
   spiceLevel: String,
   allergies: [String],
   nutrition: {
@@ -75,7 +79,7 @@ const sellerConfigSchema = new Schema({
     required: true,
     ref: 'User'
   },
-  mainBranchId: String,
+  // mainBranchId: String,
   branches: [restaurantBranchConfig]
 }, { strict: false });
 
