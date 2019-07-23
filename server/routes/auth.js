@@ -79,12 +79,26 @@ router.post('/signup', (req, res) => {
 			}
 		}
 
-		const newUser = new User({ ...userData })
+		User.findOne({ $or: [{ 'google.email': email }, { 'linkedin.email': email }, { 'facebook.email': email }] }).then((user) => {
+			if (!user) {
+				const newUser = new User({ ...userData })
+				newUser.save((err, user) => {
+					if (err) return res.status(500).json({ message: "Some error occured", err });
 
-		newUser.save((err, user) => {
-			if (err) return res.status(500).json({ message: "Some error occured", err });
-
-			res.status(200).json({ message: "Signed up successfully" });
+					res.status(200).json({ message: "Signed up successfully" });
+				})
+			}
+			else {
+				userData.local.password = user.hashPassword(userData.local.password);
+				User.findByIdAndUpdate(user._id, { local: userData.local }).then((user) => {
+					if (user) {
+						res.status(200).json({ message: "Signed up successfully" });
+					}
+					else {
+						res.status(500).json({ message: "Some error occured", err });
+					}
+				})
+			}
 		})
 	})
 })
@@ -110,12 +124,12 @@ router.get('/linkedin/callback', passport.authenticate('linkedin', {
 	successRedirect: '/',
 }));
 
-router.get('/facebook', passport.authenticate('facebook',{ scope : ['email'] }));
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
 
 router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }),
-function(req, res) {
-	res.redirect('/');
-}
+	function (req, res) {
+		res.redirect('/');
+	}
 );
 
 module.exports = router

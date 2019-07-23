@@ -501,6 +501,7 @@ const EditableTable = (props) => {
     dataSource: data,
     columns: cols,
     onChange: handleChange,
+    // size: "small",
     pagination: {
       showSizeChanger: true,
       showQuickJumper: true,

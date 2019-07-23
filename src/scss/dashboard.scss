@@ -171,5 +171,8 @@
 }
 
 .hide-menu-btn{
-  position: absolute;
+  color: #1890ff !important;
+  &:hover{
+    color: #4aa8ff;
+  }
 }

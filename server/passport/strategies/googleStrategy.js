@@ -21,16 +21,30 @@ const googleStrategy = new GoogleStrategy({
               last: profile.name.familyName
             },
             email: profile.emails[0].value,
-            photo : profile.photos[0].value
+            photo: profile.photos[0].value
           }
         }
-
-        new User({...newUser}).save().then(user => {
-          if(user){
-            done(null, user);
+        const email = profile.emails[0].value;
+        User.findOne({$or: [{ 'local.email': email },{ 'linkedin.email': email },{ 'facebook.email': email }]}).then((user) => {
+          if (!user) {
+            new User({ ...newUser }).save().then(user => {
+              if (user) {
+                done(null, user);
+              }
+              else {
+                done(null, false);
+              }
+            })
           }
-          else{
-            done(null, false);
+          else {
+            User.findByIdAndUpdate(user._id, {google: newUser.google}).then((user) => {
+              if(user){
+                done(null, user);
+              }
+              else{
+                done(null, false);
+              }
+            })
           }
         })
       }

@@ -51,7 +51,7 @@ const SubNav = (props) => {
 
   const DropdownMenu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1"><Icon className="prefix-icon" type="deployment-unit" />Dashboard</Menu.Item>
+      <Menu.Item key="1"><Icon className="prefix-icon" type="layout" theme="filled" />Dashboard</Menu.Item>
       <Menu.Item key="2"><Icon className="prefix-icon" type="logout" />Logout</Menu.Item>
     </Menu>
   );
@@ -61,12 +61,12 @@ const SubNav = (props) => {
       <NavLink exact to="/" className="sub-nav-item" activeClassName="selected">
         <span><Icon type="home" /> Home </span>
       </NavLink>
-      <NavLink exact to="/rider" className="sub-nav-item" activeClassName="selected">
+      {/* <NavLink exact to="/rider" className="sub-nav-item" activeClassName="selected">
         <span><BikeIcon style={{ transform: "scale(1.35)" }} /> Rider Area</span>
       </NavLink>
       <NavLink exact to="/partner" className="sub-nav-item" activeClassName="selected">
         <span><Icon type="shop" /> Seller Area </span>
-      </NavLink>
+      </NavLink> */}
       {
         props.loggedIn ? (
           <>
