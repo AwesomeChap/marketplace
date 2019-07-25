@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, Button, Icon, Dropdown, Menu, message, Input } from 'antd';
 import _ from 'lodash';
-import SellerProfile from '../SellerDashboardTabs/SellerProfileModal';
+import FoodItemsTab from '../SellerDashboardTabs/FoodItems';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { setSellerConfig } from '../../../redux/actions/actions';
@@ -12,10 +12,8 @@ const { TabPane } = Tabs;
 
 const SellerDashBoard = (props) => {
 
-  const [currentKey, setCurrentKey] = useState("sellerProfile");
+  const [currentKey, setCurrentKey] = useState("foodItems");
   const [loading, setLoading] = useState(false);
-  const [branchIndex, setBranchIndex] = useState(0);
-  // const [branchId, setBranchId] = useState(undefined);
 
   useEffect(() => {
     setLoading(true);
@@ -28,17 +26,6 @@ const SellerDashBoard = (props) => {
       return message.success(data.message);
     }).catch((e) => { setLoading(false); return message.error(e.message) });
   }, [])
-
-  // useEffect(() => {
-  //   if (!!props.sellerConfig && JSON.stringify(props.sellerConfig) != '{}' && !!props.sellerConfig.branches[branchIndex]) {
-  //     console.log(props.sellerConfig.branches[branchIndex]["_id"]);
-  //     setBranchId(props.sellerConfig.branches[branchIndex]["_id"]);
-  //   }
-  // }, [props.sellerConfig])
-
-  // useEffect(() => {
-  //   console.log('branchId', branchId);
-  // }, [branchId])
 
   const handleMenuClick = (e) => {
     message.info('Click on menu item.');
@@ -117,15 +104,9 @@ const SellerDashBoard = (props) => {
   const newConfig = JSON.stringify(props.sellerConfig) === '{}';
 
   const TabPanes = {
-    // sellerProfile: newConfig ? (
-    //   <StartSelling centered={true} heading={"Start Selling"} handleClick={(restaurantName) => props.setSellerConfig({ restaurantName, branches: [] })} />
-    // ) : (
-    //     <SellerProfile totalBranches={props.sellerConfig.branches.length} handleDeleteBranch={handleDeleteBranch} handleSaveConfig={handleSaveConfig} loading={loading}
-    //       sellerConfig={{ restaurantName: props.sellerConfig.restaurantName, ...props.sellerConfig.branches[branchIndex] }} />
-    //   ),
     sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch}
       handleSaveConfig={handleSaveConfig} loading={loading} sellerConfig={props.sellerConfig} />,
-    foodItems: <div>Food Items</div>,
+    foodItems: <FoodItemsTab/>,
     seatArrangement: <div>Seat Arrangement</div>,
     order: <div>Order</div>,
     courier: <div>Courier</div>,
@@ -137,7 +118,7 @@ const SellerDashBoard = (props) => {
   return (
     <>
       <div className="menu-item-page">
-        <Tabs onChange={handleChange} tabBarExtraContent={operations}>
+        <Tabs onChange={handleChange} activeKey={currentKey} tabBarExtraContent={operations}>
           {
             Object.keys(TabPanes).map((key) => {
               return (

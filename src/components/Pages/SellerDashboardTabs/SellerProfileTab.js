@@ -48,7 +48,7 @@ const CommonSettings = (props) => {
           </Form.Item>
 
         </div>
-        <Button className="custom" style={{ marginTop: -30, marginBottom: 10 }} shape={"round"} size={"large"} htmlType="submit" >{oldConfig ? "Save" : "Continue"}</Button>
+        <Button className="custom" style={{ marginTop: -30, marginBottom: 10 }} shape={"round"} size={"large"} htmlType="submit" >{oldConfig ? "Update" : "Continue"}</Button>
       </Form>
     </div>
   )

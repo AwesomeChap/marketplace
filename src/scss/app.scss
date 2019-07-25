@@ -107,7 +107,17 @@ html {
   background: $blue;
 }
 
+.ant-modal{
+  padding-bottom: 0 !important;
+}
+
+.ant-modal-body{
+  overflow: overlay !important; 
+  max-height: 90vh !important
+}
+
 .ant-modal-content {
+  overflow: hidden;
   transition: all 0.5s !important;
 }
 
@@ -120,10 +130,6 @@ html {
   display: block !important;
   margin-right: auto !important;
   margin-left: auto !important;
-  // .ant-upload.ant-upload-select-picture-card, .ant-upload-list-item.ant-upload-list-item-done {
-  //   margin-right: auto !important;
-  //   margin-left: auto !important;
-  // }
 }
 
 .center-me-vertical {
@@ -176,14 +182,6 @@ h3 {
   align-items: center;
 }
 
-.ant-select-selection__rendered {
-  // padding: 0px 9px;
-}
-
-.ant-select-selection__placeholder {
-  // left: 9px !important;
-}
-
 .center-me-force {
   margin-left: 50% !important;
   transform: translate(-50%);
@@ -203,10 +201,4 @@ h3 {
   width: 40px;
 }
 
-// .ant-tabs-bar{
-//   all: unset;
-//   position: sticky;
-//   align-self: flex-start;
-//   top: 0;
-//   z-index: 10;
-// }
+

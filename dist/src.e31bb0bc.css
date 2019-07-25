@@ -193,7 +193,15 @@ html {
   width: 100%;
   background: #2f54eb; }
 
+.ant-modal {
+  padding-bottom: 0 !important; }
+
+.ant-modal-body {
+  overflow: overlay !important;
+  max-height: 90vh !important; }
+
 .ant-modal-content {
+  overflow: hidden;
   transition: all 0.5s !important; }
 
 .ant-modal-title {

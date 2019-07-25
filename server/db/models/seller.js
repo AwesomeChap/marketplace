@@ -43,7 +43,6 @@ const foodItemSchema = new Schema({
     fats: [],
     sugar: []
   },
-  promotion: {}
 }, { strict: false })
 
 const seatArrangementSchema = new Schema({
@@ -58,10 +57,9 @@ const seatArrangementSchema = new Schema({
 }, { strict: false })
 
 const advtSchema = new Schema({
-  foodItemId: String,
   planDetails: {
-    view: String,
     visibility: String,
+    photos: []
   }
 }, { strict: false })
 

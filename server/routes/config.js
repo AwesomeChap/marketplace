@@ -16,14 +16,15 @@ router.get('/', (req, res) => {
           return res.status(400).json({ message: "User not found!" })
         }
         else {
-          Config.findOne({ _userId: user._id })
-            .then((config) => {
+          Config.find({})
+            .then((configs) => {
               if(user.type != "admin"){
-                delete config.mail;
-                delete config.payment;
-                delete config.customer;
-                delete config._userId;
+                delete configs[0].mail;
+                delete configs[0].payment;
+                delete configs[0].customer;
+                delete configs[0]._userId;
               }
+              const config = configs[0];
               if (!req.query.prop) {
                 
                 if (config) {
