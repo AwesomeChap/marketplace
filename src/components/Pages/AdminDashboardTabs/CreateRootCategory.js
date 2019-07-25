@@ -257,7 +257,6 @@ const CreateRootCategory = (props) => {
           <CategoryApprovalTable loading={loading} name={'categories'} handleSave={handleSaveApproval} dataSource={categories["approval"]} />
         </TabPane>
       </Tabs>
-
     </div>
   )
 }

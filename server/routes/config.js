@@ -18,13 +18,14 @@ router.get('/', (req, res) => {
         else {
           Config.findOne({ _userId: user._id })
             .then((config) => {
-              if(user.type != admin){
+              if(user.type != "admin"){
                 delete config.mail;
                 delete config.payment;
                 delete config.customer;
                 delete config._userId;
               }
               if (!req.query.prop) {
+                
                 if (config) {
                   return res.status(200).json({ message: "Config found", config });
                 }

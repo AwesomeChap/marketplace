@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Redirect } from 'react-router';
 import { Menu, Icon, Button } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 import '../../../scss/dashboard.scss'
 import SellerDashBoard from './SellerDashboard';
+import ScrollToTop from '../../Helper/ScrollToTop';
 
 const Dashboard = (props) => {
   const [current, setCurrent] = useState("seller_dashboard");
   const [collapsed, setCollapsed] = useState(true);
+  let wrapperRef = useRef(null);
 
   const handleClick = ({ key }) => setCurrent(key);
 
@@ -17,7 +19,7 @@ const Dashboard = (props) => {
 
   const CurrentView = {
     user_profile: <div key="user_profile" >User Profile</div>,
-    seller_dashboard: <SellerDashBoard key="seller_dashboard" />,
+    seller_dashboard: <SellerDashBoard key="seller_dashboard" user={props.user}/>,
     courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>
   }
 
@@ -41,28 +43,29 @@ const Dashboard = (props) => {
           <span>Courier Dashboard</span>
         </Menu.Item>
       </Menu>
-      <div className="scrollable wrapper">
-        <div className="container">
+      <div ref={(node) => wrapperRef = node} className="scrollable wrapper">
+        {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef} />}
+        {/* <div className="container">
           {CurrentView[current]}
-          {/* <div className="container"> */}
-          {/* {
+        </div> */}
+        <div className="container">
+          {
             Object.keys(CurrentView).map((key) => (
               <QueueAnim
-                  key={`${key}-tab`} 
-                  component={"span"}
-                  delay={current == key ? 300 : 0}
-                  duration={400}
-                  ease={"easeOutCirc"}
-                  animConfig={[
-                    { opacity: [1, 0], translateY: [0, 50] },
-                    { opacity: [1, 0], translateY: [0, -50] }
-                  ]}
-                >
-                  {current == key ? [CurrentView[key]] : [null]}
-                </QueueAnim>
+                key={`${key}-tab`}
+                component={"span"}
+                delay={current == key ? 300 : 0}
+                duration={400}
+                ease={"easeOutCirc"}
+                animConfig={[
+                  { opacity: [1, 0], translateY: [0, 50] },
+                  { opacity: [1, 0], translateY: [0, -50] }
+                ]}
+              >
+                {current == key ? [CurrentView[key]] : [null]}
+              </QueueAnim>
             ))
-          } */}
-          {/* </div> */}
+          }
         </div>
       </div>
     </div>

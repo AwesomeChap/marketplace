@@ -47,6 +47,8 @@ app.use(fileUpload());
 
 app.use('/auth', require('./routes/auth'))
 app.use('/config', require('./routes/config'))
+app.use('/seller', require('./routes/seller'))
+
 
 app.get('/upload', (req, res) => {
 	res.sendFile(path.join(uploadDataPath, req.query.location));
@@ -60,9 +62,10 @@ app.post('/upload', (req, res, next) => {
 
 	if (Object.keys(req.files).length == 0) {
     return res.status(400).json({message: 'No files were uploaded.'});
-  }
+	}
+	
 
-	let uploadFile = req.files.file;
+	let uploadFile = req.files[Object.keys(req.files)[0]];
 	
 	const uniqueNumber = new Date().getTime();
 
@@ -72,9 +75,9 @@ app.post('/upload', (req, res, next) => {
 
     res.status(200).json({
 			message :'File uploaded!', 
-			name: req.files.file.name, 
+			name: req.files[Object.keys(req.files)[0]].name, 
 			status: "done", 
-			url: `/upload?location=file-${req.files.file.name}`
+			url: `/upload?location=file-${req.files[Object.keys(req.files)[0]].name}`
 		});
   });
 });

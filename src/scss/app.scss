@@ -1,20 +1,25 @@
 $blue: #2f54eb;
 
-html,
 body {
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  // overflow: hidden;
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
 }
 
+html {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
 #root {
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  // overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -42,6 +47,7 @@ body {
 .wrapper {
   height: 100%;
   width: 100%;
+  position: relative;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -114,9 +120,13 @@ body {
   display: block !important;
   margin-right: auto !important;
   margin-left: auto !important;
+  // .ant-upload.ant-upload-select-picture-card, .ant-upload-list-item.ant-upload-list-item-done {
+  //   margin-right: auto !important;
+  //   margin-left: auto !important;
+  // }
 }
 
-.center-me-vertical{
+.center-me-vertical {
   margin-top: auto !important;
   margin-bottom: auto !important;
 }
@@ -125,32 +135,31 @@ body {
   display: flex;
   justify-content: space-between;
 
-  button{
+  button {
     margin-right: 8px;
     margin-left: 8px;
 
-    &:nth-child(1){
+    &:nth-child(1) {
       margin-left: 0;
     }
 
-    &:nth-last-child(1){
+    &:nth-last-child(1) {
       margin-right: 0;
     }
   }
 
-  div{
+  div {
     flex-basis: 100%;
     margin-right: 8px;
     margin-left: 8px;
 
-    &:nth-child(1){
+    &:nth-child(1) {
       margin-left: 0;
     }
 
-    &:nth-last-child(1){
+    &:nth-last-child(1) {
       margin-right: 0;
     }
-
   }
 }
 
@@ -159,32 +168,39 @@ h3 {
   padding: 0.5em 0;
 }
 
-.loader-wrapper{
+.loader-wrapper {
   height: 100%;
-  width:100%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.ant-select-selection__rendered{
+.ant-select-selection__rendered {
   // padding: 0px 9px;
 }
 
-.ant-select-selection__placeholder{
+.ant-select-selection__placeholder {
   // left: 9px !important;
 }
 
-.center-me-force{
+.center-me-force {
   margin-left: 50% !important;
   transform: translate(-50%);
 }
 
-.sticky{
+.sticky {
   position: sticky;
   align-self: flex-start;
   top: 0;
   z-index: 10;
+}
+
+#scroll-top-button {
+  position: fixed;
+  right: 25px;
+  bottom: 20px;
+  width: 40px;
 }
 
 // .ant-tabs-bar{

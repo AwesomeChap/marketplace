@@ -17,9 +17,20 @@ const UploadImage = props => {
 
   const { getFieldDecorator } = props.form;
 
+  useEffect(()=>{
+    if(!!props.options.initialValue){
+      if(props.options.initialValue.length >= props.limit){
+        setUploadButtonVisible(false);
+      }
+    }
+  },[]);
+
   const normFile = e => {
     console.log("Upload event:", e);
-    if (!!props.limit) if (e.fileList.length >= props.limit) setUploadButtonVisible(false);
+    if (!!props.limit) {
+      if (e.fileList.length >= props.limit) setUploadButtonVisible(false);
+      else {console.log('I am here'); setUploadButtonVisible(true);}
+    }
     if (Array.isArray(e)) {
       return e;
     }
@@ -27,28 +38,29 @@ const UploadImage = props => {
   };
 
   const handlePreview = async file => {
-    if (!file.url && !file.preview) {
+    if (!file.response.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
 
-    setPreviewImage(file.url || file.preview);
+    setPreviewImage(file.response.url || file.preview);
     setPreviewVisible(true);
   };
 
   const handleCancel = () => setPreviewVisible(false);
 
-  const uploadButton = (
+  const UploadButton = () => (
     <div>
-      <Icon type="plus" />
+      {props.placeholder ? props.placeholder : <Icon type="plus" />}
     </div>
   );
 
   return (
     <React.Fragment>
-      <Form.Item label={props.label}>
+      <Form.Item {...props.layout} label={props.label}>
         {getFieldDecorator(props.name, {
           valuePropName: "fileList",
-          getValueFromEvent: normFile
+          getValueFromEvent: normFile,
+          ...props.options
         })(
           <Upload
             onPreview={handlePreview}
@@ -59,7 +71,7 @@ const UploadImage = props => {
               setUploadButtonVisible(true);
             }}
           >
-            {uploadButtonVisible ? uploadButton : null}
+            {uploadButtonVisible ? <UploadButton placeholder={props.placeholder}/> : null}
           </Upload>
         )}
       </Form.Item>
