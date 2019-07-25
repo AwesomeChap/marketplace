@@ -32,22 +32,6 @@ const SellerDashBoard = (props) => {
     console.log('click', e);
   }
 
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1"><Icon type="environment" />Branch 1</Menu.Item>
-      <Menu.Item key="2"><Icon type="environment" />Branch 2</Menu.Item>
-      <Menu.Item key="3"><Icon type="environment" />Branch 3</Menu.Item>
-    </Menu>
-  );
-
-  const operations = (
-    <>
-      <Dropdown overlay={menu}>
-        <Button type="branches">Branches <Icon type="down" /></Button>
-      </Dropdown>
-    </>
-  )
-
   const handleSaveConfig = (values, name, branchId, done) => {
     setLoading(true);
     console.log(branchId);
@@ -100,6 +84,20 @@ const SellerDashBoard = (props) => {
   if (props.sellerConfig == null) {
     return <Loader />
   }
+
+  const menu = (
+    <Menu onClick={handleMenuClick}>
+      {props.sellerConfig.branches.map((branch, i) => <Menu.Item key={`${branch.profile.branchName}-${i}`}><Icon type="environment" />{branch.profile.branchName}</Menu.Item>)}
+    </Menu>
+  );
+
+  const operations = (
+    <>
+      <Dropdown overlay={menu}>
+        <Button type="branches">Branches <Icon type="down" /></Button>
+      </Dropdown>
+    </>
+  )
 
   const newConfig = JSON.stringify(props.sellerConfig) === '{}';
 
