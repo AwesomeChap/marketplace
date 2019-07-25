@@ -2,33 +2,38 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const User = require('./user');
 
-const ingreidientsSchema = new Schema({
+const ingredientsSchema = new Schema({
   name: String,
-  image: {},
+  image: [],
   quantity: String
-},{strict: false})
+}, { strict: false })
 
 const sellerProfileSchema = new Schema({
   branchName: String,
-  service: [String], //dining in, take away, delivery
+  serviceOptions: [String], //dining in, take away, delivery
   photos: [],
+  openingTime: String,
+  closingTime: String,
   address: String,
   cateringService: {
     available: Boolean,
     coverageArea: Number,
     quantityOfFoodPerMember: Number,
-    serviceType: String // food is delivered, service personnel, 
+    modeOfService: [String] // food is delivered, service personnel, 
   }
-},{strict: false})
+}, { strict: false })
 
 const foodItemSchema = new Schema({
-  name: String, 
-  image: {},
+  name: String,
+  image: [],
   type: String, // veg or non-veg
+  price: Number,
   leadTime: String,
+  serveTime: [String],
   category: [String],
+  flavours: [String],
   recipie: [String],
-  ingreidients: [ingreidientsSchema],
+  ingredients: [ingredientsSchema],
   spiceLevel: String,
   allergies: [String],
   nutrition: {
@@ -39,7 +44,7 @@ const foodItemSchema = new Schema({
     sugar: []
   },
   promotion: {}
-}, {strict: false})
+}, { strict: false })
 
 const seatArrangementSchema = new Schema({
   capacity: Number,
@@ -50,7 +55,7 @@ const seatArrangementSchema = new Schema({
   layout: {},
   levy: Number,
   hourlyCharge: Number
-},{strict: false})
+}, { strict: false })
 
 const advtSchema = new Schema({
   foodItemId: String,
@@ -58,16 +63,16 @@ const advtSchema = new Schema({
     view: String,
     visibility: String,
   }
-},{strict: false})
+}, { strict: false })
 
 const restaurantBranchConfig = new Schema({
   foodItems: [foodItemSchema],
-  seatArrangement:seatArrangementSchema,
+  seatArrangement: seatArrangementSchema,
   profile: sellerProfileSchema,
   order: [],
   courier: [],
   advertisement: [advtSchema]
-},{strict: false})
+}, { strict: false })
 
 const sellerConfigSchema = new Schema({
   _userId: {
@@ -75,9 +80,12 @@ const sellerConfigSchema = new Schema({
     required: true,
     ref: 'User'
   },
-  mainBranchId: String,
+  commonSettings: {
+    restaurantName: String,
+    logo: {},
+  },
   branches: [restaurantBranchConfig]
 }, { strict: false });
 
-const sellerConfig = mongoose.model('SellerConfig', sellerConfigSchema)
+const sellerConfig = mongoose.model('Seller', sellerConfigSchema)
 module.exports = sellerConfig;

@@ -3,32 +3,6 @@ const Schema = mongoose.Schema;
 const User = require('./user');
 // const Token = require()
 
-const countryBasedCategorizationSchema = new Schema({
-  country: {
-    type: String,
-    value: ""
-  },
-  region: [String]
-})
-
-const basicSchema = new Schema({
-  name: String,
-  description: String,
-})
-
-const approvalSchema = new Schema({
-  name: String,
-  providerId: String,
-  Description: String,
-})
-
-const fooProviderDetailsSchema = new Schema({
-  id: String,
-  pendingRequest: Number,
-  status: String,
-  key: String
-})
-
 const configSchema = new Schema({
   _userId: {
     type: mongoose.Schema.Types.ObjectId,

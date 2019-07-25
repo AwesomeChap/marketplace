@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, Icon, message } from 'antd';
 import PaymentConfig from '../AdminDashboardTabs/PaymentConfig';
 import VerifyEmailConfig from '../AdminDashboardTabs/VerifyEmailConfig';
@@ -10,10 +10,12 @@ import { setConfig, updateCategoriesConfig } from '../../../redux/actions/action
 import OtherFieldsTable from '../AdminDashboardTabs/OtherFieldsTable';
 import NestedFieldsTable from '../AdminDashboardTabs/NestedFieldsTable';
 import QueueAnim from 'rc-queue-anim';
+import ScrollToTop from '../../Helper/ScrollToTop';
 
 const AdminDashboard = (props) => {
 
   const [tabIndex, setTabIndex] = useState("sub1");
+  let wrapperRef = useRef(null);
 
   const handleClick = e => {
     console.log(e.key);
@@ -75,7 +77,6 @@ const AdminDashboard = (props) => {
 
 
   const { values } = props.config.categories;
-
   return (
     <div className="wrapper">
       <>
@@ -106,7 +107,8 @@ const AdminDashboard = (props) => {
             <Menu.Item onClick={handleClick} key="mailConfig"><Icon type="mail" />SMTP Config</Menu.Item>
           </Menu>
         </div>
-        <div className="scrollable wrapper">
+        <div ref={(node) => wrapperRef = node} className="scrollable wrapper">
+          {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef}/>}
           <div className="container">
             {
               keys.map((key) => {

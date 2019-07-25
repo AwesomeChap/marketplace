@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { saveUser, setLoading, saveErrors } from './redux/actions/actions';
 import { message } from 'antd';
 import Loader from './components/Helper/Loader';
+import ScrollToTop from './components/Helper/ScrollToTop';
 
 const App = (props) => {
   const [loading, setLoading] = useState(true);
@@ -43,11 +44,13 @@ const App = (props) => {
   }
 
   return (
-    <Router>
-      <Navbar dashboardPath={dashboardPath} />
-      <Route exact path="/" component={Home} />
-      <Route exact path={dashboardPath} render={(props) => <Dashboards {...props} user={user} loggedIn={loggedIn} loaded={loaded} />} />
-    </Router>
+    <>
+      <Router>
+        <Navbar dashboardPath={dashboardPath} />
+        <Route exact path="/" component={Home} />
+        <Route exact path={dashboardPath} render={(props) => <Dashboards {...props} user={user} loggedIn={loggedIn} loaded={loaded} />} />
+      </Router>
+    </>
   )
 }
 

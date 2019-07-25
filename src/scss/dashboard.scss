@@ -176,3 +176,10 @@
     color: #4aa8ff;
   }
 }
+
+.top-right-absolute{
+  position: absolute !important;
+  top: 0px !important;
+  z-index: 10;
+  left: 4px !important;
+}

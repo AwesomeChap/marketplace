@@ -16,35 +16,37 @@ router.get('/', (req, res) => {
           return res.status(400).json({ message: "User not found!" })
         }
         else {
-          if (user.type != 'admin') {
-            return res.status(403).json({ message: "Access forbidden" })
-          }
-          else {
-            Config.findOne({ _userId: user._id })
-              .then((config) => {
-                if (!req.query.prop) {
-                  if (config) {
-                    return res.status(200).json({ message: "Config found", config });
-                  }
-                  else {
-                    return res.status(200).json({ type: "info", message: "Config is empty", config: {} })
-                  }
+          Config.findOne({ _userId: user._id })
+            .then((config) => {
+              if(user.type != "admin"){
+                delete config.mail;
+                delete config.payment;
+                delete config.customer;
+                delete config._userId;
+              }
+              if (!req.query.prop) {
+                
+                if (config) {
+                  return res.status(200).json({ message: "Config found", config });
                 }
                 else {
-                  const { prop } = req.query;
-                  if (config && config[prop]) {
-
-                    res.status(200).json({ message: `${prop} config found`, config: config[prop] })
-                  }
-                  else {
-                    res.status(200).json({ type: "info", message: `${prop} config requires initialisation`, config: {} })
-                  }
+                  return res.status(200).json({ type: "info", message: "Config is empty", config: {} })
                 }
-              })
-              .catch(err =>
-                res.status(500).json({ message: "Error occured while finding config", errors: err })
-              )
-          }
+              }
+              else {
+                const { prop } = req.query;
+                if (config && config[prop]) {
+
+                  res.status(200).json({ message: `${prop} config found`, config: config[prop] })
+                }
+                else {
+                  res.status(200).json({ type: "info", message: `${prop} config requires initialisation`, config: {} })
+                }
+              }
+            })
+            .catch(err =>
+              res.status(500).json({ message: "Error occured while finding config", errors: err })
+            )
         }
       }).catch(err => res.status(500).json({ message: "Some error occured while fetching data", errors: err }));
   }
@@ -73,7 +75,7 @@ router.post('/', (req, res) => {
                   Config.findByIdAndUpdate(config._id, { [prop]: values }, { new: true })
                     .then((updatedConfig) => {
                       if (updatedConfig) {
-                        return res.status(200).json({ message: `${prop} config updated successfully`, config: updatedConfig[prop]});
+                        return res.status(200).json({ message: `${prop} config updated successfully`, config: updatedConfig[prop] });
                       }
                     }).catch(e => res.status(500).json({ message: "error occured while updating schema", errors: e }))
                 }
