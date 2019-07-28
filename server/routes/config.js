@@ -19,10 +19,14 @@ router.get('/', (req, res) => {
           Config.find({})
             .then((configs) => {
               if(user.type != "admin"){
-                delete configs[0].mail;
-                delete configs[0].payment;
-                delete configs[0].customer;
-                delete configs[0]._userId;
+                configs[0].mail = undefined;
+                configs[0].payment = undefined;
+                configs[0].customer = undefined;
+                configs[0]._userId = undefined;
+                configs[0].commission = undefined;
+                configs[0].complain = undefined;
+                configs[0].foodProvider = undefined;
+                configs[0].order = undefined;
               }
               const config = configs[0];
               if (!req.query.prop) {

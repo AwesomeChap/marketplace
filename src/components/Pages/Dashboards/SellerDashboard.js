@@ -4,7 +4,7 @@ import _ from 'lodash';
 import FoodItemsTab from '../SellerDashboardTabs/FoodItems';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { setSellerConfig } from '../../../redux/actions/actions';
+import { setSellerConfig, setBranchId } from '../../../redux/actions/actions';
 import Loader from '../../Helper/Loader';
 import SellerProfileTab from '../SellerDashboardTabs/SellerProfileTab';
 
@@ -20,6 +20,7 @@ const SellerDashBoard = (props) => {
     axios.get(`/seller?userId=${props.user._id}`).then(({ data }) => {
       setLoading(false);
       props.setSellerConfig(data.config);
+      props.setBranchId(data.config.branches[0]._id);
       if (data.type == "info") {
         return message.info(data.message);
       }
@@ -28,8 +29,7 @@ const SellerDashBoard = (props) => {
   }, [])
 
   const handleMenuClick = (e) => {
-    message.info('Click on menu item.');
-    console.log('click', e);
+    props.setBranchId(e.key);
   }
 
   const handleSaveConfig = (values, name, branchId, done) => {
@@ -86,8 +86,8 @@ const SellerDashBoard = (props) => {
   }
 
   const menu = (
-    <Menu onClick={handleMenuClick}>
-      {props.sellerConfig.branches.map((branch, i) => <Menu.Item key={`${branch.profile.branchName}-${i}`}><Icon type="environment" />{branch.profile.branchName}</Menu.Item>)}
+    <Menu selectedKeys={[props.branchId]} onClick={handleMenuClick}>
+      {props.sellerConfig.branches.map((branch, i) => <Menu.Item key={branch._id}><Icon type="environment" />{branch.profile.branchName}</Menu.Item>)}
     </Menu>
   );
 
@@ -104,7 +104,7 @@ const SellerDashBoard = (props) => {
   const TabPanes = {
     sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch}
       handleSaveConfig={handleSaveConfig} loading={loading} sellerConfig={props.sellerConfig} />,
-    foodItems: <FoodItemsTab/>,
+    foodItems: <FoodItemsTab />,
     seatArrangement: <div>Seat Arrangement</div>,
     order: <div>Order</div>,
     courier: <div>Courier</div>,
@@ -134,4 +134,4 @@ const SellerDashBoard = (props) => {
 
 const mapStateToProps = state => state;
 
-export default connect(mapStateToProps, { setSellerConfig })(SellerDashBoard);
+export default connect(mapStateToProps, { setSellerConfig, setBranchId })(SellerDashBoard);

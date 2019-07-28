@@ -4,7 +4,16 @@ const User = require('./user');
 
 const ingredientsSchema = new Schema({
   name: String,
-  image: [],
+  upload: [],
+  type: String,
+  description: String,
+  quantity: String
+}, { strict: false })
+
+const nutritionSchema = new Schema({
+  name: String,
+  type: String,
+  description: String,
   quantity: String
 }, { strict: false })
 
@@ -32,17 +41,11 @@ const foodItemSchema = new Schema({
   serveTime: [String],
   category: [String],
   flavours: [String],
-  recipie: [String],
+  recipe: [String],
   ingredients: [ingredientsSchema],
   spiceLevel: String,
   allergies: [String],
-  nutrition: {
-    protein: [],
-    vitamin: [],
-    mineral: [],
-    fats: [],
-    sugar: []
-  },
+  nutrition: [nutritionSchema],
 }, { strict: false })
 
 const seatArrangementSchema = new Schema({

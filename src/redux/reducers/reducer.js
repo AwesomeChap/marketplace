@@ -7,7 +7,7 @@ const initialState = {
   loaded: null,
   config: null,
   sellerConfig: null,
-  branchId: [],
+  branchId: null,
   errors: null,
 }
 
@@ -18,7 +18,7 @@ export default function (state = initialState, action) {
     case REMOVE: return { ...state, loggedIn: false, loaded: true, user: null };
     case LOADING: return { ...state, loaded: false };
     case SET_CONFIG: return { ...state, config: { ...action.payload.config } };
-    case SET_BRANCH_ID: return { ...state, branchId: { ...action.payload.branchId } };
+    case SET_BRANCH_ID: return { ...state, branchId: action.payload.branchId  };
     case SET_SELLER_CONFIG: return { ...state, sellerConfig: { ...action.payload.sellerConfig } };
     case UPDATE_MAIL_CONFIG: let newConfig1 = { ...state.config }; newConfig1["mail"] = action.payload.mail; return { ...state, config: newConfig1 };
     case UPDATE_CATEGORIES_CONFIG: let newConfig2 = { ...state.config }; newConfig2["categories"] = action.payload.categories; return { ...state, config: newConfig2 };

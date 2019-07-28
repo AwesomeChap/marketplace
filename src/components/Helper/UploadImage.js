@@ -75,7 +75,7 @@ const UploadImage = props => {
           </Upload>
         )}
       </Form.Item>
-      <Modal visible={previewVisible} footer={null} onCancel={handleCancel}>
+      <Modal centered={true} visible={previewVisible} footer={null} onCancel={handleCancel}>
         <img alt="example" style={{ width: "100%" }} src={previewImage} />
       </Modal>
     </React.Fragment>

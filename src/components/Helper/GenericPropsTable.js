@@ -214,7 +214,6 @@ const EditableCell = (props) => {
 }
 
 const EditableTable = (props) => {
-  const [data, setData] = useState(props.dataSource);
   const [editingKey, setEditingKey] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [name, setName] = useState(props.name);
@@ -222,13 +221,42 @@ const EditableTable = (props) => {
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
 
+  // useEffect(() => {
+  //   if(props.handleDataChange)props.name, {
+  //     props.handleDataChange(props.name, data, props.name);
+  //   }
+  // }, [data]);
+
   useEffect(() => {
+
+    // let sameContent;
+
+    // console.log('dataSource', props.dataSource)
+
+    // if (props.dataSource.length == data.length) {
+    //   sameContent = true;
+    //   props.dataSource.forEach((ds, i) => {
+    //     if (JSON.stringify(ds) != JSON.stringify(data[i])) {
+    //       console.log('difference > ',ds, data[i]);
+    //       sameContent = false;
+    //     }
+    //   })
+    // }
+    // else {
+    //   sameContent = false;
+    // }
+
+    // // debugger;
+
+    // if (!sameContent) {
+    //   setData(props.dataSource)
+    // }
+
     if (name != props.name) {
       setName(props.name);
       setEditingKey("");
       setSelectedRowKeys([]);
       setSearchText("");
-      setData(props.dataSource)
     }
   }, [props.name, props.dataSource])
 
@@ -271,6 +299,7 @@ const EditableTable = (props) => {
       if (error) {
         return message.warning("Input fields are empty")
       }
+      const data = [...props.dataSource];
       const newData = [...data];
 
       const index = newData.findIndex(item => key === item.key);
@@ -285,11 +314,11 @@ const EditableTable = (props) => {
           ...row
         });
 
-        setData(newData);
+        props.handleDataChange(props.name, newData);
         setEditingKey("");
       } else {
         newData = [...newData, row];
-        setData(newData);
+        props.handleDataChange(props.name, newData);
         setEditingKey("");
       }
     });
@@ -300,24 +329,27 @@ const EditableTable = (props) => {
   }
 
   const handleDelete = (key) => {
+    const data = [...props.dataSource]
     let updatedData = [...data];
     updatedData = updatedData.filter((item) => item.key !== key);
-    setData(updatedData);
+    props.handleDataChange(props.name, updatedData);
   }
 
   const handleMultiDelete = () => {
+    const data = [...props.dataSource]
     let keys = [...selectedRowKeys];
     let updatedData = [...data];
     updatedData = updatedData.filter((item) => !keys.includes(item.key));
 
-    setData(updatedData);
+    props.handleDataChange(props.name, updatedData);
     setSelectedRowKeys([]);
   }
 
   const handleAddFormData = (values) => {
+    const data = [...props.dataSource];
     const newData = { key: data.length + 1, ...values };
     const updatedData = [...data, newData];
-    setData(updatedData);
+    props.handleDataChange(props.name, updatedData);
   }
 
   const components = {
@@ -369,6 +401,12 @@ const EditableTable = (props) => {
       }
     },
     render: (text) => {
+      if(dataIndex == "price"){
+        text = `£ ${text}`;
+      }
+      if(Array.isArray(text)){
+        text = text.join(', ');
+      }
       return (
         <Highlighter
           highlightStyle={{ backgroundColor: '#00eeff', padding: 0 }}
@@ -482,7 +520,7 @@ const EditableTable = (props) => {
     rowSelection: rowSelection,
     components: components,
     bordered: true,
-    dataSource: data,
+    dataSource: props.dataSource,
     columns: cols,
     onChange: handleChange,
     // size: "small",
@@ -490,7 +528,7 @@ const EditableTable = (props) => {
       showSizeChanger: true,
       showQuickJumper: true,
       onChange: cancel,
-      total: data.length,
+      total: props.dataSource.length,
     }
   }
 
@@ -512,6 +550,6 @@ const EditableTable = (props) => {
   );
 }
 
-const GenericEditabelTable = Form.create()(EditableTable);
+const GenericPropsTable = Form.create({name: "generic-props-editable"})(EditableTable);
 
-export default GenericEditabelTable
+export default GenericPropsTable
