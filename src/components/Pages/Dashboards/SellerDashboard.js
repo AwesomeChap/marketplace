@@ -12,7 +12,7 @@ const { TabPane } = Tabs;
 
 const SellerDashBoard = (props) => {
 
-  const [currentKey, setCurrentKey] = useState("foodItems");
+  const [currentKey, setCurrentKey] = useState("seatArrangement");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

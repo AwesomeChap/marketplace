@@ -123,10 +123,7 @@ router.post('/foodItem', (req, res) => {
  
         const branchIndex = sellerConfig.branches.map(obj => obj._id).indexOf(branchId);
         const foodItemIndex = sellerConfig.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItem._id);
-        console.log("branchIndex", branchIndex)
-        console.log("foodItemIndex", foodItemIndex);
         
-        console.log("foodItemId", sellerConfig.branches.id(branchId).foodItems[foodItemIndex]._id)
         sellerConfig.branches.id(branchId).foodItems[foodItemIndex] = foodItem;
 
         sellerConfig.save().then((updatedConfig) => {

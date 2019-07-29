@@ -21,6 +21,7 @@ const sellerProfileSchema = new Schema({
   branchName: String,
   serviceOptions: [String], //dining in, take away, delivery
   photos: [],
+  offers: [String],
   openingTime: String,
   closingTime: String,
   address: String,
@@ -60,10 +61,9 @@ const seatArrangementSchema = new Schema({
 }, { strict: false })
 
 const advtSchema = new Schema({
-  planDetails: {
-    visibility: String,
-    photos: []
-  }
+  visibility: String,
+  photo: [],
+  text: String
 }, { strict: false })
 
 const restaurantBranchConfig = new Schema({

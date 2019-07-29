@@ -60,12 +60,6 @@ const FoodItemsTab = (props) => {
     })
   }, [])
 
-  // useEffect(() => {
-  //   if(props.branchId && props.br){
-  //     console.log(props.sellerConfig.branches[props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId)]);
-  //   }
-  // },[props.branchId])
-
   useEffect(() => {
     if (!!props.config && Object.keys(props.config).length) {
       const opts = {
