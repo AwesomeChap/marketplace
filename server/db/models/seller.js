@@ -26,11 +26,19 @@ const sellerProfileSchema = new Schema({
   closingTime: String,
   address: String,
   cateringService: {
-    available: Boolean,
+    available: {type: Boolean, default: false},
     coverageArea: Number,
     quantityOfFoodPerMember: Number,
     modeOfService: [String] // food is delivered, service personnel, 
-  }
+  },
+  capacity: {type: Number, default: 0},
+  alcohol: {
+    allowed: {type: Boolean, default: false},
+    served: {type: Boolean, default: false}
+  },
+  smokingAllowed: {type: Boolean, default: false},
+  levy: {type: Number, default: 0},
+  hourlyCharge: {type: Number, default: 0},
 }, { strict: false })
 
 const foodItemSchema = new Schema({
@@ -49,15 +57,22 @@ const foodItemSchema = new Schema({
   nutrition: [nutritionSchema],
 }, { strict: false })
 
+const layoutSchema = new Schema({
+  name : String,
+  seatCount: Number,
+  position: {
+    x: Number,
+    y: Number
+  }
+})
+
 const seatArrangementSchema = new Schema({
-  capacity: Number,
-  alcohol: {
-    allowed: Boolean,
-    served: Boolean
-  },
-  layout: {},
-  levy: Number,
-  hourlyCharge: Number
+  layout: [layoutSchema], 
+  dimensions: {
+    width: {type: Number, default: 0},
+    height: {type: Number, default: 0}
+  }
+
 }, { strict: false })
 
 const advtSchema = new Schema({

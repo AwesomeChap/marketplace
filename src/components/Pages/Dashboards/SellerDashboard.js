@@ -7,6 +7,7 @@ import axios from 'axios';
 import { setSellerConfig, setBranchId } from '../../../redux/actions/actions';
 import Loader from '../../Helper/Loader';
 import SellerProfileTab from '../SellerDashboardTabs/SellerProfileTab';
+import SeatArrangement from '../SellerDashboardTabs/SeatArrangement';
 
 const { TabPane } = Tabs;
 
@@ -105,7 +106,7 @@ const SellerDashBoard = (props) => {
     sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch}
       handleSaveConfig={handleSaveConfig} loading={loading} sellerConfig={props.sellerConfig} />,
     foodItems: <FoodItemsTab />,
-    seatArrangement: <div>Seat Arrangement</div>,
+    seatArrangement: <SeatArrangement/>,
     order: <div>Order</div>,
     courier: <div>Courier</div>,
     advertisement: <div>Advertisement</div>
@@ -115,7 +116,7 @@ const SellerDashBoard = (props) => {
 
   return (
     <>
-      <div className="menu-item-page">
+      <div style={{paddingBottom: 0}} className="menu-item-page">
         <Tabs onChange={handleChange} activeKey={currentKey} tabBarExtraContent={operations}>
           {
             Object.keys(TabPanes).map((key) => {

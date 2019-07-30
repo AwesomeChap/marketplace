@@ -24,7 +24,7 @@ const SellerProfile = (props) => {
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
-      sm: { span: 9 },
+      sm: { span: 8 },
     },
     wrapperCol: {
       xs: { span: 24 },
@@ -57,28 +57,43 @@ const SellerProfile = (props) => {
           rules: [{ required: true, message: "Logo is required!" }],
           initialValue: newConfig ? undefined : profile.logo
         }} /> */}
+
         <Form.Item label="Branch Name" >
           {getFieldDecorator('branchName', {
             rules: [{ required: true, message: "Branch name is required!" }],
             initialValue: newConfig ? undefined : profile.branchName
           })(<Input placeholder="Branch Name" />)}
         </Form.Item>
+
         <Form.Item label="Address" >
           {getFieldDecorator('address', {
             rules: [{ required: true, message: "Address is required!" }],
             initialValue: newConfig ? undefined : profile.address
           })(<Input.TextArea placeholder="Address" />)}
         </Form.Item>
+
         <Form.Item label="Opening Time">
           {getFieldDecorator('openingTime', {
+            rules: [{ required: true, message: "Opening time is required" }],
             initialValue: newConfig ? moment('10:00', 'hh:mm A') : moment(profile.openingTime, 'hh:mm A')
           })(<TimePicker format='hh:mm A' />)}
         </Form.Item>
+
         <Form.Item label="Closing Time">
           {getFieldDecorator('closingTime', {
+            rules: [{ required: true, message: "Closing time is required" }],
             initialValue: newConfig ? moment('22:00', 'hh:mm A') : moment(profile.closingTime, 'hh:mm A')
           })(<TimePicker format='hh:mm A' />)}
         </Form.Item>
+
+        <Form.Item label="Offers">
+          {getFieldDecorator('offers', {
+            initialValue: newConfig ? undefined : profile.offers
+          })(
+            <Select mode="tags" placeholder="Please select available service options" dropdownStyle={{ display: "none" }} />
+          )}
+        </Form.Item>
+
         <Form.Item label="Available Services">
           {getFieldDecorator('serviceOptions', {
             rules: [{ required: true, message: "Services are required!" }],
@@ -89,15 +104,62 @@ const SellerProfile = (props) => {
             </Select>
           )}
         </Form.Item>
+
         <UploadImage form={form} label="Photos" name="photos" options={{
           initialValue: newConfig ? undefined : profile.photos
         }} />
+
+        <Form.Item label="Capacity">
+          {getFieldDecorator('capacity', {
+            initialValue: newConfig ? undefined : (profile.capacity || 0),
+            rules: [{ required: true, message: "Catering service coverage required!" }]
+          })(<InputNumber placeholder="Capacity of your restaurant" />)}
+        </Form.Item>
+
+        <Form.Item label="Levy">
+          {getFieldDecorator('levy', {
+            initialValue: newConfig ? undefined : (profile.hourlyCharge || 0),
+          })(<InputNumber formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\£\s?|(,*)/g, '')} placeholder="fine for coming late" />)}
+        </Form.Item>
+
+        <Form.Item label="Hourly Charge">
+          {getFieldDecorator('hourlyCharge', {
+            initialValue: newConfig ? undefined : (profile.levy || 0),
+          })(<InputNumber formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\£\s?|(,*)/g, '')} placeholder="Hour charge of table" />)}
+        </Form.Item>
+
+        <Form.Item label="Smoking Allowed">
+          {getFieldDecorator('smokingAllowed', {
+            initialValue: newConfig ? false : profile.smokingAllowed,
+            valuePropName: 'checked',
+          })(<Switch />)}
+        </Form.Item>
+
+        <Form.Item label="Alcohol Allowed">
+          {getFieldDecorator('alcohol.allowed', {
+            initialValue: newConfig ? false : profile.alcohol.allowed,
+            valuePropName: 'checked',
+          })(<Switch />)}
+        </Form.Item>
+
+        {getFieldValue('alcohol.allowed') && (
+          <Form.Item label="Alcohol Served">
+            {getFieldDecorator('alcohol.served', {
+              initialValue: newConfig ? false : profile.alcohol.served,
+              valuePropName: 'checked',
+            })(<Switch />)}
+          </Form.Item>
+        )}
+
         <Form.Item label="Catering Service Available">
           {getFieldDecorator('cateringService.available', {
             initialValue: newConfig ? false : profile.cateringService.available,
             valuePropName: 'checked',
           })(<Switch />)}
         </Form.Item>
+
         {getFieldValue('cateringService.available') && (
           <>
             <Form.Item label="Catering Service Coverage Area">
@@ -106,6 +168,7 @@ const SellerProfile = (props) => {
                 rules: [{ required: true, message: "Catering service coverage required!" }]
               })(<InputNumber placeholder="Coverage Area" />)}
             </Form.Item>
+
             <Form.Item label="Mode of Service">
               {getFieldDecorator('cateringService.modeOfService', {
                 initialValue: newConfig ? undefined : profile.cateringService.modeOfService,

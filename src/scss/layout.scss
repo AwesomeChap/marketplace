@@ -1,0 +1,230 @@
+.layout-container{
+  width: 100%;
+  // height: 100%;
+  padding: 40px 0;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.entrance{
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  margin: 0 auto !important;
+  padding: 5px 12px;
+  border-radius: 0 0 10px 10px !important; 
+  font-weight: 300;
+  background: rgb(0, 199, 0);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.layout{
+  // background: #fafafa;
+  box-shadow: 0 0 20px #bbb;
+  background-image: url('data:image/svg+xml,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"> <defs> <pattern id="smallGrid" width="25" height="25" patternUnits="userSpaceOnUse"> <path d="M 25 0 L 0 0 0 25" fill="none" stroke="gray" stroke-width="0.5"/> </pattern> <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"> <rect width="100" height="100" fill="url(%23smallGrid)"/> <path d="M 100 0 L 0 0 0 100" fill="none" stroke="gray" stroke-width="0.6"/> </pattern> </defs> <rect width="100%" height="100%" fill="url(%23grid)" /></svg>');
+}
+
+.table{
+  background:linear-gradient(to right, rgb(173, 17, 0), rgb(119, 12, 0));
+  border-radius: 5px;
+  height: 80px;
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+
+  .ant-input, .ant-select{
+    width: 90px !important;
+  }
+
+  .ant-input, .ant-select{
+    margin: 3px;
+  }
+
+  &.vt-table{
+    width: 90px;
+    height: 150px;
+
+    .ant-input, .ant-select{
+    width: 80px !important;
+    margin: 3px;
+    }
+
+    .seat-row{
+      &.vt-lt{
+      left: 0px;
+      margin-left: -84px;
+      width: 150px;
+      transform: rotate(270deg);
+    }
+
+    &.vt-rt{
+      margin-right: -84px;
+      width: 150px;
+      transform: rotate(90deg);
+      right: 0px;
+    }
+    }
+  }
+
+
+  .seat-row{
+    display: flex;
+    justify-content: space-around;
+    position: absolute;
+    transition: all 0.5s;
+
+    &.hz-top{
+      top: 0px;
+      width: 100%;
+      margin-top: -12px;
+      // transform: translate(0, 0%);
+    }
+
+    &.hz-bm{
+      bottom: 0px;
+      width: 100%;
+      margin-bottom: -12px;
+      transform: rotate(180deg);
+    }
+
+    &.vt-lt{
+      left: 0px;
+      margin-left: -22px;
+      transform: rotate(270deg);
+    }
+
+    &.vt-rt{
+      margin-right: -22px;
+      transform: rotate(90deg);
+      right: 0px;
+    }
+  }
+
+  .seat{
+    width: 25px;
+    height: 5px;
+    // border-radius: 20px 20px 0 0;
+    // border: 2px solid orangered;
+    // border-bottom: 0px;
+    background: orange;
+    border-radius: 5px;
+    animation: seatOnEnter 0.3s;
+    transform-origin: bottom;
+  }
+
+  @keyframes seatOnEnter {
+    from{
+      opacity: 0;
+      transform: translateY(100%) scale(0.5);
+    }
+  }
+}
+
+@mixin on-circle($item-count, $circle-size, $item-size) {
+  position: relative;
+  width:  $circle-size;
+  height: $circle-size;
+  padding: 0;
+  border-radius: 50%; 
+  list-style: none;       
+  
+  > * {
+    display: block;
+    position: absolute;
+    top:  50%; 
+    left: 50%;
+    width:  $item-size;
+    height: 5px;
+    margin: -5px -12.5px;
+  
+    $angle: (360 / $item-count);
+    $rot: 0;
+
+    @for $i from 1 through $item-count {
+      &:nth-of-type(#{$i}) {
+        transform: 
+          rotate($rot * 1 + 90deg ) 
+          translate($circle-size/2 + 5px) 
+          rotate(90deg);
+      }
+
+      $rot: $rot + $angle;
+    }
+  }
+}
+
+.round-table{
+  background:linear-gradient(to right, rgb(173, 17, 0), rgb(119, 12, 0));
+  border-radius: 50%;
+  height: 100px;
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+
+  .ant-input, .ant-select{
+    width: 70px !important;
+    margin: 3px;
+  }
+
+  .seat-circular-row{
+    position: absolute !important;
+    
+    &.seats-count-2{
+      @include on-circle($item-count: 2, $circle-size: 100px, $item-size:25px); 
+    }
+
+    &.seats-count-4{
+      @include on-circle($item-count: 4, $circle-size: 100px, $item-size:25px); 
+    }
+
+    &.seats-count-6{
+      @include on-circle($item-count: 6, $circle-size: 100px, $item-size:25px); 
+    }
+
+    &.seats-count-8{
+      @include on-circle($item-count: 8, $circle-size: 100px, $item-size:25px); 
+    }
+
+    &.seats-count-10{
+      @include on-circle($item-count: 10, $circle-size: 100px, $item-size:25px); 
+    }
+  }
+
+  .seat{
+    width: 25px;
+    height: 5px;
+    // border-radius: 20px 20px 0 0;
+    // border: 2px solid orangered;
+    // border-bottom: 0px;
+    // background: rgba(255, 189, 165, 0.651);
+    border-radius: 5px;
+    background: orange;
+    animation: seatOnEnter 0.3s;
+    transform-origin: bottom;
+    // transform: rotate(90deg) !important;
+  }
+
+  @keyframes seatOnEnter {
+    from{
+      opacity: 0;
+      transform: translateY(100%) scale(0.5);
+    }
+  }
+}
+
+.wall{
+  background: #eee;
+  background-image: url("https://www.pngkit.com/png/detail/9-98408_brick-wall-texture-stonewall-brickwork-works-comments-brick.png");
+  background-repeat: repeat;
+  background-size: 100px;
+  opacity: 0.5;
+}
