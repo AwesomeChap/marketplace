@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, InputNumber, Switch, Button, TimePicker } from 'antd';
+import { Form, Input, Select, InputNumber, Switch, Button, TimePicker, Row, Col } from 'antd';
 import UploadImage from '../../Helper/UploadImage';
 import moment from 'moment';
 import Loader from '../../Helper/Loader';
@@ -181,7 +181,13 @@ const SellerProfile = (props) => {
             </Form.Item>
           </>
         )}
-        <Button className="center-me" shape={"round"} size="large" loading={props.loading} htmlType={"submit"} type="primary">Save</Button>
+        <Form.Item wrapperCol={{xs: { span: 24 },sm: { span: 24 }}}>
+          <Row type="flex" justify="center">
+            <Col>
+              <Button shape={"round"} size="large" loading={props.loading} htmlType={"submit"} type="primary">Save</Button>
+            </Col>
+          </Row>
+        </Form.Item>
       </Form>
     </>
   )

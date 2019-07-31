@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { InputNumber, Input, Button, Select } from "antd";
+import { InputNumber, Input, Button, Select, Icon } from "antd";
 import { Rnd } from "react-rnd";
 import '../../scss/table.scss';
 
@@ -8,7 +8,7 @@ const { Option } = Select;
 const Seats = props => {
   return (
     <React.Fragment>
-      <div className={props.mode === "vertical" ? "seat-row vt-lt" : "seat-row hz-top"}> 
+      <div className={props.mode === "vertical" ? "seat-row vt-lt" : "seat-row hz-top"}>
         <div className="seat" />
         {props.seatCount >= 4 && <div className="seat" />}
         {props.seatCount >= 8 && <div className="seat" />}
@@ -35,12 +35,17 @@ const Seats = props => {
 };
 
 const StandardTable = props => {
-  const [seatCount, setSeatCount] = useState(2);
-  const mode = props.mode || "horizontal";
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
+  const [seatCount, setSeatCount] = useState(props.lc.seatCount || 2);
+  const [x, setX] = useState(props.lc.x || 0);
+  const [y, setY] = useState(props.lc.y || 0);
 
   const seatCountOptions = [2, 4, 6, 8, 10];
+
+  React.useEffect(() => {
+    const values = { x, y, seatCount }
+    const key = props.lc.key;
+    props.handleChange(key, values)
+  }, [x, y, seatCount]);
 
   return (
     <Rnd
@@ -63,9 +68,10 @@ const StandardTable = props => {
         setY(d.y);
       }}
     >
-      <div className={mode === "vertical" ? "vt-table table": "table"}>
-        <Seats mode={mode} seatCount={seatCount} />
-        <Input size="small" value={`Table ${1}`} />
+      <div className={props.mode === "vertical" ? (seatCount <= 6 ? "vt-table table small-table" : "vt-table table") : (seatCount <= 6 ? "table small-table" : "table")}>
+        {props.children}
+        <Seats mode={props.mode} seatCount={seatCount} />
+        <Input disabled={true} size="small" className="name" value={props.lc.name} />
         <Select
           size="small"
           labelInValue

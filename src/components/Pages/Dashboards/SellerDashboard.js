@@ -21,7 +21,7 @@ const SellerDashBoard = (props) => {
     axios.get(`/seller?userId=${props.user._id}`).then(({ data }) => {
       setLoading(false);
       props.setSellerConfig(data.config);
-      props.setBranchId(data.config.branches[0]._id);
+      props.setBranchId(data.config.branches[1]._id);
       if (data.type == "info") {
         return message.info(data.message);
       }
@@ -82,7 +82,7 @@ const SellerDashBoard = (props) => {
     }).catch(e => { setLoading(false); message.error(e.message) });
   }
 
-  if (props.sellerConfig == null) {
+  if (props.sellerConfig == null || props.branchId == null) {
     return <Loader />
   }
 
@@ -103,10 +103,9 @@ const SellerDashBoard = (props) => {
   const newConfig = JSON.stringify(props.sellerConfig) === '{}';
 
   const TabPanes = {
-    sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch}
-      handleSaveConfig={handleSaveConfig} loading={loading} sellerConfig={props.sellerConfig} />,
+    sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} />,
     foodItems: <FoodItemsTab />,
-    seatArrangement: <SeatArrangement/>,
+    seatArrangement: <SeatArrangement done={()=>setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId}/>,
     order: <div>Order</div>,
     courier: <div>Courier</div>,
     advertisement: <div>Advertisement</div>

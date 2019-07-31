@@ -270,8 +270,13 @@ const FoodItemModalForm = (props) => {
         }}>
           <GenericPropsTable handleDataChange={handleDataChange} addForm={false} name="nutrition" colData={nutColData} dataSource={nutrientsList} />
         </Form.Item>
-
+        <Form.Item wrapperCol={{xs: { span: 24 },sm: { span: 24 }}}>
+          <Row type="flex" justify="center">
+            <Col>
         <Button className="center-me" shape={"round"} size="large" loading={props.loading} htmlType={"submit"} type="primary">Save</Button>
+        </Col>
+        </Row>
+        </Form.Item>
       </Form>
     </Loader >
   )

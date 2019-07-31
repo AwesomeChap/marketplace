@@ -38,7 +38,7 @@ $linear-gradient: linear-gradient(to right, #1488cc, #2b32b2);
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    justify-content: space-evenly;
+    justify-content: space-around;
   }
 
   .body {
@@ -119,7 +119,7 @@ $linear-gradient: linear-gradient(to right, #1488cc, #2b32b2);
   display: flex;
   padding: 3vh 0;
   width: 100%;
-  justify-content: space-evenly;
+  justify-content: space-around;
   flex-wrap: wrap;
 }
 
