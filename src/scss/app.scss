@@ -112,8 +112,9 @@ html {
 }
 
 .ant-modal-body{
-  overflow: overlay !important; 
-  max-height: 90vh !important
+  overflow: auto !important; 
+  max-height: 90vh !important;
+  // height: 90vh !important;
 }
 
 .ant-modal-content {

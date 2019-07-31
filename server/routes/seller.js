@@ -32,7 +32,7 @@ router.post('/', (req, res) => {
       if (!config) {
         const newSellerConfig = new SellerConfig({
           _userId: userId,
-          restaurantName: req.body.restaurantName,
+          commonSettings: config.commonSettings,
           branches: [{ [prop]: values }]
         });
         newSellerConfig.save().then((config) => {
@@ -43,6 +43,7 @@ router.post('/', (req, res) => {
       }
       else {
         const { branchId } = req.body;
+        console.log(req.body);
         if (!branchId) {
           res.status(400).json({ message: "Branch Id is required!" });
         }

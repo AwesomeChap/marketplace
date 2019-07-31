@@ -26,19 +26,19 @@ const sellerProfileSchema = new Schema({
   closingTime: String,
   address: String,
   cateringService: {
-    available: {type: Boolean, default: false},
+    available: { type: Boolean, default: false },
     coverageArea: Number,
     quantityOfFoodPerMember: Number,
     modeOfService: [String] // food is delivered, service personnel, 
   },
-  capacity: {type: Number, default: 0},
+  capacity: { type: Number, default: 0 },
   alcohol: {
-    allowed: {type: Boolean, default: false},
-    served: {type: Boolean, default: false}
+    allowed: { type: Boolean, default: false },
+    served: { type: Boolean, default: false }
   },
-  smokingAllowed: {type: Boolean, default: false},
-  levy: {type: Number, default: 0},
-  hourlyCharge: {type: Number, default: 0},
+  smokingAllowed: { type: Boolean, default: false },
+  levy: { type: Number, default: 0 },
+  hourlyCharge: { type: Number, default: 0 },
 }, { strict: false })
 
 const foodItemSchema = new Schema({
@@ -58,21 +58,22 @@ const foodItemSchema = new Schema({
 }, { strict: false })
 
 const layoutSchema = new Schema({
-  name : String,
-  seatCount: Number,
-  position: {
-    x: Number,
-    y: Number
-  }
+  name: String,
+  type: String,
+  key: String,
+  seatCount: { type: Number, default: 2 },
+  x: { type: Number, default: 0 },
+  y: { type: Number, default: 0 },
+  height: Number,
+  width: Number,
 })
 
 const seatArrangementSchema = new Schema({
-  layout: [layoutSchema], 
+  layout: [layoutSchema],
   dimensions: {
-    width: {type: Number, default: 0},
-    height: {type: Number, default: 0}
+    width: { type: Number, default: 0 },
+    height: { type: Number, default: 0 }
   }
-
 }, { strict: false })
 
 const advtSchema = new Schema({

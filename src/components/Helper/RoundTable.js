@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, Select } from "antd";
+import { Input, Select, Icon } from "antd";
 import { Rnd } from "react-rnd";
 import '../../scss/layout.scss';
 
@@ -25,36 +25,36 @@ const Seats = props => {
 };
 
 const RoundTable = props => {
-  const [seatCount, setSeatCount] = useState(10);
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
+  const [seatCount, setSeatCount] = useState(props.lc.seatCount || 2);
+  const [x, setX] = useState(props.lc.x || 0);
+  const [y, setY] = useState(props.lc.y || 0);
 
   const seatCountOptions = [2, 4, 6, 8, 10];
 
   React.useEffect(() => {
-    console.log(x, y)
-  }, [x, y]);
+    const values = { x, y, seatCount }
+    const key = props.lc.key;
+    props.handleChange(key, values)
+  }, [x, y, seatCount]);
 
   return (
     <Rnd
-      //   dragGrid={[25,25]}
-      enableResizing={{ top: false, right: false, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false}}
-      resizeGrid={[25, 25]}
-      bounds={["body"]}
+      enableResizing={{ top: false, right: false, bottom: false, left: false, topRight: false, bottomRight: false, bottomLeft: false, topLeft: false }}
+      bounds={[".layout"]}
       position={{ x: x, y: y }}
       onDragStop={(e, d) => {
         setX(d.x);
         setY(d.y);
       }}
     >
-      <div className="round-table">
+      <div className={seatCount <= 6 ? "round-table small-table" : "round-table"}>
+        {props.children}
         <Seats seatCount={seatCount} />
-        <Input size="small" value={`Table ${1}`} />
+        <Input disabled={true} size="small" className="name" value={props.lc.name} />
         <Select
           labelInValue
           size="small"
           defaultValue={{ key: seatCount }}
-          // style={{ width: 120 }}
           onChange={e => setSeatCount(e.key)}
         >
           {seatCountOptions.map((sc, i) => (
