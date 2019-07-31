@@ -21,7 +21,7 @@ const SellerDashBoard = (props) => {
     axios.get(`/seller?userId=${props.user._id}`).then(({ data }) => {
       setLoading(false);
       props.setSellerConfig(data.config);
-      props.setBranchId(data.config.branches[1]._id);
+      props.setBranchId(data.config.branches[0]._id);
       if (data.type == "info") {
         return message.info(data.message);
       }
@@ -107,7 +107,6 @@ const SellerDashBoard = (props) => {
     foodItems: <FoodItemsTab />,
     seatArrangement: <SeatArrangement done={()=>setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId}/>,
     order: <div>Order</div>,
-    courier: <div>Courier</div>,
     advertisement: <div>Advertisement</div>
   }
 
