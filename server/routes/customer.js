@@ -16,17 +16,17 @@ router.get('/', (req, res) => {
           return res.status(404).json({ message: "User not found!" })
         }
         else {
-          Customer.findOne({ userId: req.query._userId }).then((customerConfig) => {
+          Customer.findOne({ _userId: req.query.userId }).then((customerConfig) => {
             if (!customerConfig) {
               return res.status(200).json({ type: "info", message: "Config not initialized", config: {} });
             }
             else {
               if (req.query.prop) {
-                if (customerConfig.hasOwnProperty(req.query.prop)) {
-                  return res.status(200).json({ message: `${prop} config found!`, config: customerConfig[prop] });
+                if (!!customerConfig[req.query.prop]) {
+                  return res.status(200).json({ message: `${req.query.prop} config found!`, config: customerConfig[req.query.prop] });
                 }
                 else {
-                  return res.status(200).json({ message: `${prop} config needs initialization` });
+                  return res.status(200).json({ message: `${req.query.prop} config needs initialization` });
                 }
               }
               else {
