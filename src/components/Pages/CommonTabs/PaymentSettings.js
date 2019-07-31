@@ -70,7 +70,7 @@ const PaypalConfig = (props) => {
         <Form layout={"vertical"} {...formItemLayout} onSubmit={handleSubmit}>
 
           <ConfigForm title="Paypal Config">
-            <Form.Item label="Id">
+            <Form.Item label="Client Id">
               {getFieldDecorator('clientId', {
                 initialValue: paypalConfig.clientId,
                 rules: [{ required: true, message: 'Paypal client Id is required' }],

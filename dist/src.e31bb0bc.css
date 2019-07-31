@@ -541,6 +541,9 @@ h3 {
       color: #1890ff;
       opacity: 1; }
 
+.hide-menu {
+  background: rgba(0, 0, 0, 0.548) !important; }
+
 .hide-menu-btn {
   color: #1890ff !important; }
   .hide-menu-btn:hover {
