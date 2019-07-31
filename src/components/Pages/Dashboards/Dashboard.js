@@ -6,9 +6,10 @@ import '../../../scss/dashboard.scss'
 import SellerDashBoard from './SellerDashboard';
 import ScrollToTop from '../../Helper/ScrollToTop';
 import WrappedPaypalConfig from '../CommonTabs/PaymentSettings';
+import MakeSuggestions from '../CommonTabs/MakeSuggestions';
 
 const Dashboard = (props) => {
-  const [current, setCurrent] = useState("seller_dashboard");
+  const [current, setCurrent] = useState("make_suggestions");
   const [collapsed, setCollapsed] = useState(true);
   let wrapperRef = useRef(null);
 
@@ -22,12 +23,13 @@ const Dashboard = (props) => {
     user_profile: <div key="user_profile" >User Profile</div>,
     seller_dashboard: <SellerDashBoard key="seller_dashboard" user={props.user} />,
     courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>,
-    paypal_config: <WrappedPaypalConfig key="paypal_config" user={props.user} />
+    paypal_config: <WrappedPaypalConfig key="paypal_config" user={props.user} />,
+    make_suggestions: <MakeSuggestions key="make_suggestions" user={props.user} />,
   }
 
   return (
     <div className="wrapper">
-      <Menu style={{ maxWidth: 240 }} onClick={handleClick} selectedKeys={[current]} mode="inline" inlineCollapsed={collapsed}>
+      <Menu style={{ maxWidth: 240 }} theme={"dark"} onClick={handleClick} selectedKeys={[current]} mode="inline" inlineCollapsed={collapsed}>
         <Menu.Item style={{ cursor: "default" }} disabled key="toggle_menu">
           <Icon className="hide-menu-btn" type={collapsed ? "menu-unfold" : "menu-fold"} onClick={() => setCollapsed(!collapsed)} />
           <span onClick={() => setCollapsed(!collapsed)}>Toggle Menu</span>
@@ -47,6 +49,10 @@ const Dashboard = (props) => {
         <Menu.Item key="paypal_config">
           <Icon type="credit-card" />
           <span>Paypal config</span>
+        </Menu.Item>
+        <Menu.Item key="make_suggestions">
+          <Icon type="plus-square" />
+          <span>Make Suggestions</span>
         </Menu.Item>
       </Menu>
       <div ref={(node) => wrapperRef = node} className="scrollable wrapper">
