@@ -5,6 +5,7 @@ import QueueAnim from 'rc-queue-anim';
 import '../../../scss/dashboard.scss'
 import SellerDashBoard from './SellerDashboard';
 import ScrollToTop from '../../Helper/ScrollToTop';
+import WrappedPaypalConfig from '../CommonTabs/PaymentSettings';
 
 const Dashboard = (props) => {
   const [current, setCurrent] = useState("seller_dashboard");
@@ -14,13 +15,14 @@ const Dashboard = (props) => {
   const handleClick = ({ key }) => setCurrent(key);
 
   if (!props.loggedIn) {
-    return <Redirect to="/" />
+    return <Redirect to="/" /> 
   }
-
+ 
   const CurrentView = {
     user_profile: <div key="user_profile" >User Profile</div>,
-    seller_dashboard: <SellerDashBoard key="seller_dashboard" user={props.user}/>,
-    courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>
+    seller_dashboard: <SellerDashBoard key="seller_dashboard" user={props.user} />,
+    courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>,
+    paypal_config: <WrappedPaypalConfig key="paypal_config" user={props.user} />
   }
 
   return (
@@ -41,6 +43,10 @@ const Dashboard = (props) => {
         <Menu.Item key="courier_dashboard">
           <Icon type="thunderbolt" />
           <span>Courier Dashboard</span>
+        </Menu.Item>
+        <Menu.Item key="paypal_config">
+          <Icon type="credit-card" />
+          <span>Paypal config</span>
         </Menu.Item>
       </Menu>
       <div ref={(node) => wrapperRef = node} className="scrollable wrapper">

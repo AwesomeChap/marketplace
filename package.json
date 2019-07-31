@@ -46,6 +46,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-highlight-words": "^0.16.0",
+    "react-minimap": "^0.7.4",
     "react-r": "^2.0.0-rc02",
     "react-redux": "^7.1.0",
     "react-rnd": "^10.0.0",
