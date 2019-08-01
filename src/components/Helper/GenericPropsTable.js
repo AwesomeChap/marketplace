@@ -220,38 +220,8 @@ const EditableTable = (props) => {
   const [searchText, setSearchText] = useState("");
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
-
-  // useEffect(() => {
-  //   if(props.handleDataChange)props.name, {
-  //     props.handleDataChange(props.name, data, props.name);
-  //   }
-  // }, [data]);
-
+  
   useEffect(() => {
-
-    // let sameContent;
-
-    // console.log('dataSource', props.dataSource)
-
-    // if (props.dataSource.length == data.length) {
-    //   sameContent = true;
-    //   props.dataSource.forEach((ds, i) => {
-    //     if (JSON.stringify(ds) != JSON.stringify(data[i])) {
-    //       console.log('difference > ',ds, data[i]);
-    //       sameContent = false;
-    //     }
-    //   })
-    // }
-    // else {
-    //   sameContent = false;
-    // }
-
-    // // debugger;
-
-    // if (!sameContent) {
-    //   setData(props.dataSource)
-    // }
-
     if (name != props.name) {
       setName(props.name);
       setEditingKey("");

@@ -9,7 +9,7 @@ import WrappedPaypalConfig from '../CommonTabs/PaymentSettings';
 import MakeSuggestions from '../CommonTabs/MakeSuggestions';
 
 const Dashboard = (props) => {
-  const [current, setCurrent] = useState("seller_dashboard");
+  const [current, setCurrent] = useState("make_suggestions");
   const [collapsed, setCollapsed] = useState(true);
   let wrapperRef = useRef(null);
 
@@ -24,7 +24,7 @@ const Dashboard = (props) => {
     seller_dashboard: <SellerDashBoard key="seller_dashboard" user={props.user} />,
     courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>,
     paypal_config: <WrappedPaypalConfig key="paypal_config" user={props.user} />,
-    make_suggestions: <MakeSuggestions key="make_suggestions" user={props.user} />,
+    make_suggestions: <MakeSuggestions key="make_suggestions" />,
   }
 
   return (

@@ -26,10 +26,10 @@ const UploadImage = props => {
   },[]);
 
   const normFile = e => {
-    console.log("Upload event:", e);
+    // console.log("Upload event:", e);
     if (!!props.limit) {
       if (e.fileList.length >= props.limit) setUploadButtonVisible(false);
-      else {console.log('I am here'); setUploadButtonVisible(true);}
+      else {setUploadButtonVisible(true);}
     }
     if (Array.isArray(e)) {
       return e;

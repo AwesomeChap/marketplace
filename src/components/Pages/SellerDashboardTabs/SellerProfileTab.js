@@ -94,7 +94,7 @@ const SellerProfileTab = (props) => {
           <>
             <Button onClick={() => setVisible(true)} type="primary" size="large" shape={"round"}
               className="center-me" >Create New Branch</Button>
-            <Modal width={700} visible={visible} centered={true} footer={null}
+            <Modal width={700} visible={visible} centered={true} footer={null} title={!!branchId ? "Edit Branch": "Create New Branch"}
               onCancel={handleCancel} maskClosable={false} destroyOnClose={true}>
               <SellerProfileModal done={() => setVisible(false)} loading={props.loading}
                 handleSaveConfig={props.handleSaveConfig} sellerConfig={props.sellerConfig}
