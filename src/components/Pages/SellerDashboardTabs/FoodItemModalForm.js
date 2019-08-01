@@ -18,11 +18,11 @@ const FoodItemModalForm = (props) => {
   const nutColData = ColData.nutrition;
 
   useEffect(() => {
-    if(!!props.foodItem){
+    if (!!props.foodItem) {
       setIngredientsList(props.foodItem.ingredients);
       setNutrientsList(props.foodItem.nutrition);
     }
-  },[])
+  }, [])
 
   useEffect(() => {
     if (Object.keys(props.options).length) {
@@ -50,7 +50,7 @@ const FoodItemModalForm = (props) => {
         delete values.addIngredientWeight;
         delete values.addNutrition;
         delete values.addNutritionWeight;
-        if(props.foodItem) values["_id"] = props.foodItem._id;
+        if (props.foodItem) values["_id"] = props.foodItem._id;
         props.handleSaveFoodItem(values, props.done);
       }
     })
@@ -270,12 +270,12 @@ const FoodItemModalForm = (props) => {
         }}>
           <GenericPropsTable handleDataChange={handleDataChange} addForm={false} name="nutrition" colData={nutColData} dataSource={nutrientsList} />
         </Form.Item>
-        <Form.Item wrapperCol={{xs: { span: 24 },sm: { span: 24 }}}>
+        <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
           <Row type="flex" justify="center">
             <Col>
-        <Button className="center-me" shape={"round"} size="large" loading={props.loading} htmlType={"submit"} type="primary">Save</Button>
-        </Col>
-        </Row>
+              <Button className="center-me" shape={"round"} size="large" loading={props.loading} htmlType={"submit"} type="primary">Save</Button>
+            </Col>
+          </Row>
         </Form.Item>
       </Form>
     </Loader >

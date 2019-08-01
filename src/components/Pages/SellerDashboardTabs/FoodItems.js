@@ -158,7 +158,7 @@ const FoodItemsTab = (props) => {
       <Loader loading={loading}>
         <Button className="top-right-absolute" onClick={() => { setCurrentFoodItemData(null); setVisible(true) }} type="primary">Add Food Item</Button>
         <Modal width={700} visible={visible} centered={true} footer={null} onCancel={handleCancel} maskClosable={false}
-          destroyOnClose={true}>
+          destroyOnClose={true} title={!!currentFoodItemData ? "Edit Food Item": "Create Food Item"} >
           <FoodItemModalForm {...foodItemModalFormProps} />
         </Modal>
         <GenericModalTable name="foodItems" openEditModal={openEditModal} handleDeleteItem={handleDeleteItem} colData={ColData["foodItems"]} dataSource={transformConfigToDatasource(props.sellerConfig.branches[props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId)].foodItems)} />

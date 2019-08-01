@@ -1,0 +1,335 @@
+import React, { useState, useEffect } from "react";
+import "../../scss/table.scss";
+import { Table, Input, InputNumber, Form, Button, message, Select, Switch, DatePicker, Tag, Icon } from "antd";
+import CreateCategoryForm from "./CategoryConfigForm";
+import Highlighter from 'react-highlight-words';
+import moment from 'moment';
+
+const EditableContext = React.createContext();
+
+const EditableCell = (props) => {
+  const [editing, setEditing] = useState(false);
+
+  const getInput = (type) => {
+    if (props.inputType === "number") {
+      return <InputNumber />;
+    }
+
+    else if (props.inputType === "multiSelect") {
+      return <Select mode="multiple" style={{ width: "100%" }}>{props.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>)}</Select>
+    }
+
+    else if (props.inputType === "date") {
+      return <DatePicker placeholder="date" />
+    }
+
+    else if (props.inputType === "price") {
+      return <InputNumber formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
+    }
+
+    else if (props.inputType === "switch") {
+      return <Switch />
+    }
+
+    else if (props.inputType === "tagSelect") {
+      return <Select disabled={type != "select" && type != "multiSelect"} style={{ width: "100%" }} dropdownStyle={{ display: "none" }} mode="tags" />
+    }
+
+    else if (props.inputType === "select") {
+      return <Select style={{ width: "100%" }}>{props.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>)}</Select>
+    }
+    return <Input />;
+  };
+
+  const toggleEdit = () => {
+    setEditing(!editing);
+  };
+
+  const renderCell = ({ getFieldDecorator }) => {
+    const {
+      dataIndex,
+      title,
+      inputType,
+      record,
+      index,
+      children,
+      ...restProps
+    } = props;
+
+    let options = {
+      rules: [
+        {
+          required: true,
+          message: `Please Input ${title}!`
+        }
+      ],
+    };
+
+    if (inputType === "switch") options = { valuePropName: 'checked' };
+    if (inputType === "tagSelect") options = {};
+
+    return (
+      <td {...restProps}>
+        {editing ? (
+          <Form.Item style={{ margin: 0 }}>
+            {getFieldDecorator(dataIndex, {
+              ...options, initialValue: inputType === "switch" ? record[dataIndex] = JSON.parse(record[dataIndex]) : record[dataIndex],
+            })(getInput(record["type"]))}
+          </Form.Item>
+        ) : (
+            <div
+              className="editable-cell-value-wrap"
+              style={{ paddingRight: 24 }}
+              onClick={toggleEdit}
+            >
+              {children}
+            </div>
+          )}
+      </td>
+    );
+  };
+
+  return (
+    <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
+  );
+}
+
+const EditableTable = (props) => {
+  const [name, setName] = useState(props.name);
+  const [searchText, setSearchText] = useState("");
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [sortedInfo, setSortedInfo] = useState({});
+
+  useEffect(() => {
+    if (name != props.name) {
+      setName(props.name);
+      setSelectedRowKeys([]);
+      setSearchText("");
+    }
+  }, [props.name, props.dataSource])
+
+  const { loading } = props;
+  const columns = [
+    ...props.colData,
+    {
+      title: "Operation",
+      dataIndex: "operation",
+      width: "8%",
+      render: (text, record) => {
+        return (
+          <div className="table-operation-buttons">
+            {!!props.handleSaveItem ? (
+              <>
+                <Button icon="eye" onClick={() => props.openViewModal(record.key)} />
+                <Button icon="rollback" type="danger" onClick={() => props.handleDeleteItem(record.key)} />
+              </>
+            ) : (
+                <>
+                  <Button icon="eye" onClick={() => props.openViewModal(record.key)} />
+                  <Button icon="save" type="primary" onClick={() => props.handleSave(record.key)} />
+                </>
+              )}
+          </div>
+
+        )
+      }
+    }
+  ];
+
+  const components = {
+    body: {
+      cell: EditableCell
+    }
+  };
+
+  let searchInput = React.useRef(null);
+  let filterDropDown = React.useRef(null);
+
+  const FilterDropDown = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, dataIndex }) => (
+    <div style={{ padding: 8 }}>
+      <Input
+        ref={node => { searchInput = node; }}
+        placeholder={`Search ${dataIndex}`}
+        size="small"
+        value={selectedKeys[0]}
+        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        onPressEnter={() => handleSearch(selectedKeys, confirm)}
+        style={{ width: 188, marginBottom: 8, display: 'block' }}
+      />
+      <Button
+        type="primary"
+        onClick={() => handleSearch(selectedKeys, confirm)}
+        icon="search"
+        size="small"
+        style={{ width: 90, marginRight: 8 }}
+      >
+        Search
+      </Button>
+      <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+        Reset
+      </Button>
+    </div>
+  )
+
+  const getColumnSearchProps = dataIndex => ({
+    filterDropdown: (props) => <FilterDropDown ref={node => filterDropDown = node} {...props} dataIndex={dataIndex} />,
+    filterIcon: filtered => (
+      <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
+    ),
+    onFilter: (value, record) => {
+      return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+    },
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => searchInput.select());
+      }
+    },
+    render: (text) => {
+      console.log(dataIndex, text);
+
+      
+      if (dataIndex == "price") {
+        text = `£ ${text}`;
+      }
+      if (Array.isArray(text)) {
+        text = text.join(', ');
+      }
+      return (
+        <Highlighter
+          highlightStyle={{ backgroundColor: '#00eeff', padding: 0 }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text.toString()}
+        />
+      )
+    },
+  });
+
+  const handleSearch = (selectedKeys, confirm) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+  };
+
+  const handleReset = clearFilters => {
+    clearFilters();
+    setSearchText('');
+  };
+
+  const cols = columns.map(col => {
+    if (!props.disableFilters) {
+      if (!(col.dataIndex == "operation" || col.type == "select")) {
+        col = { ...col, ...getColumnSearchProps(col.dataIndex) }
+
+        if (col.type == "number" || col.type == "price") {
+          col["sorter"] = (a, b) => a[col.dataIndex] - b[col.dataIndex];
+        }
+      }
+
+      // if(col.dataIndex === "date") {
+      //   col["sorter"] = (a,b) => { console.log(moment(a).diff(moment(b))); return moment(a).diff(moment(b));}
+      // }
+
+      if (col.type == "select") {
+        col["filters"] = col.options.map(opt => ({ text: opt, value: opt }));
+        col["filteredValue"] = filteredInfo[col.dataIndex] || null;
+        col["onFilter"] = (value, record) => record[col.dataIndex] === value;
+        col["render"] = (opt) => {
+          let color = 'geekblue';
+          if (opt == "Approved") color = 'green';
+          else if (opt == "Rejected") color = 'red';
+          else if (opt == "Pending") color = null;
+
+          return (
+            <Tag color={color} key={opt}>
+              {opt && opt.toUpperCase()}
+            </Tag>
+          );
+        }
+      }
+    }
+
+    col.key = col.dataIndex;
+
+    if (col.type == "multiSelect") {
+      col["render"] = options => {
+        return <span>
+          {options && options.map((opt, i) => {
+            let color = i % 3 == 1 ? 'geekblue' : 'green';
+            if (i % 3 == 0) {
+              color = 'volcano';
+            }
+            return (
+              <Tag color={color} key={opt}>
+                {opt.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </span>
+      }
+    }
+    if (!col.editable) {
+      return col;
+    }
+    return {
+      ...col,
+      onCell: record => ({
+        record,
+        inputType: col.type,
+        options: (col.type === "select" || col.type === "multiSelect") ? col.options : [],
+        // editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+      })
+    };
+  });
+
+  if (!props.colData.length) {
+    return <CreateCategoryForm name={props.name} />
+  }
+
+  const handleChange = (pagination, filters, sorter) => {
+    setFilteredInfo(filters); setSortedInfo(sorter);
+  }
+
+  const [tableIndex, setTableIndex] = useState("table");
+  const [count, setCount] = useState(0);
+
+  const clearAll = () => {
+    setFilteredInfo({}); setSortedInfo({}); setSearchText("");
+    setTableIndex(`table-${count}`);
+    setCount(count + 1);
+  };
+
+  let tableProps = {
+    key: props.name + "-" + tableIndex,
+    size: "middle",
+    components: components,
+    bordered: true,
+    dataSource: props.dataSource,
+    columns: cols,
+    onChange: handleChange,
+    // size: "small",
+    pagination: {
+      showSizeChanger: true,
+      showQuickJumper: true,
+      total: props.dataSource.length,
+    }
+  }
+
+  return (
+    <EditableContext.Provider value={props.form}>
+      <div style={{ paddingTop: 0 && !props.colData.length, width: 100 + '%' }} className="table-container">
+        <div className="table-buttons">
+          {!props.disableFilters && <Button onClick={clearAll}>Clear All</Button>}
+        </div>
+        <Table
+          {...tableProps}
+        />
+      </div>
+    </EditableContext.Provider>
+  );
+}
+
+const GenericApprovalTable = Form.create({ name: "generic-props-editable" })(EditableTable);
+
+export default GenericApprovalTable

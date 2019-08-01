@@ -198,7 +198,7 @@ html {
 
 .ant-modal-body {
   overflow: auto !important;
-  max-height: 90vh !important; }
+  max-height: 80vh !important; }
 
 .ant-modal-content {
   overflow: hidden;
@@ -263,6 +263,16 @@ h3 {
   right: 25px;
   bottom: 20px;
   width: 40px; }
+
+.center-aligned-flex {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; }
+
+.mini-form > * {
+  margin: 20px; }
 
 .simple-choice-card {
   display: flex;
