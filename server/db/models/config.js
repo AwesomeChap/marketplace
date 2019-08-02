@@ -29,10 +29,7 @@ const configSchema = new Schema({
       }
     }
   },
-  categories: {
-    values: [],
-    approval: []
-  },
+  categories: {},
   ingredients: {
     values: [],
     approval: [],

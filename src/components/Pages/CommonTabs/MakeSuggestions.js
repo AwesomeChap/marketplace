@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { setConfig } from '../../../redux/actions/actions';
 import axios from 'axios';
 import UploadImage from '../../Helper/UploadImage';
-import ColData from './ColData';
+import ColData from '../../Helper/ColData2';
 import GenericApprovalTable from '../../Helper/GenericApprovalTable';
 import moment from 'moment';
 import uuidv4 from 'uuid/v4';
@@ -178,7 +178,7 @@ const MakeSuggestions = (props) => {
         console.log('up', updatedApprovals);
         setApprovals(updatedApprovals)
         return message.success(data.message);
-      }).catch(e => {setLoading(false); return message.error(e.message) });
+      }).catch(e => { setLoading(false); return message.error(e.message) });
   }
 
   const handleCancel = () => {
@@ -218,7 +218,7 @@ const MakeSuggestions = (props) => {
             >
               {options}
             </Select>
-            <Button disabled={selectedOption === null } onClick={() => setVisible(true)} size="large" type="primary">Suggest</Button>
+            <Button disabled={selectedOption === null} onClick={() => setVisible(true)} size="large" type="primary">Suggest</Button>
           </div>
           <Modal title={currentData == null ? `Make a suggestion for ${_.startCase(selectedOption)}` : `Your suggestion for ${_.startCase(selectedOption)}`} width={600} visible={visible} footer={null}
             onCancel={handleCancel} centered={true} maskClosable={false} destroyOnClose={true}>
@@ -241,7 +241,7 @@ const MakeSuggestions = (props) => {
               }
             </Form>
           </Modal>
-          <GenericApprovalTable handleDeleteItem={handleDeleteItem} openViewModal={openViewModal} colData={ColData} dataSource={approvals} name={"make-suggestions"} />
+          <GenericApprovalTable handleDeleteItem={handleDeleteItem} openViewModal={openViewModal} colData={ColData["user"]} dataSource={approvals} name={"make-suggestions"} />
         </div>
       </div>
     </Loader>

@@ -46,7 +46,7 @@ const EditableCell = (props) => {
     setEditing(!editing);
   };
 
-  const renderCell = ({ getFieldDecorator }) => {
+  const renderCell = ({ getFieldDecorator, getFieldValue }) => {
     const {
       dataIndex,
       title,
@@ -55,6 +55,8 @@ const EditableCell = (props) => {
       index,
       children,
       editable,
+      clickable,
+      openViewUserModal,
       ...restProps
     } = props;
 
@@ -72,7 +74,7 @@ const EditableCell = (props) => {
 
     return (
       <td {...restProps}>
-        {editing && editable ? (
+        {clickable ? (<Button onClick={openViewUserModal}>{children}</Button>) : editing && editable && _.toLower(record.status) == "pending" ? (
           <Form.Item style={{ margin: 0 }}>
             {getFieldDecorator(dataIndex, {
               ...options, initialValue: inputType === "switch" ? record[dataIndex] = JSON.parse(record[dataIndex]) : record[dataIndex],
@@ -108,6 +110,7 @@ const EditableTable = (props) => {
       setSelectedRowKeys([]);
       setSearchText("");
     }
+    console.log(props.dataSource);
   }, [props.name, props.dataSource])
 
   const { loading } = props;
@@ -123,16 +126,15 @@ const EditableTable = (props) => {
             {!props.handleSaveItem ? (
               <>
                 <Tooltip title="View Suggestion"><Button icon="eye" onClick={() => props.openViewModal(record.key)} /></Tooltip>
-                <Tooltip title="Withdraw Suggestion"><Button disabled={_.toLower(record.status) !== "pending"} icon="rollback" type="danger" onClick={() => props.handleDeleteItem(record.key)} /></Tooltip>
+                <Tooltip title="Withdraw or Remove Suggestion"><Button disabled={_.toLower(record.status) !== "pending"} icon="rollback" type="danger" onClick={() => props.handleDeleteItem(record.key)} /></Tooltip>
               </>
             ) : (
                 <>
-                  <Button icon="eye" onClick={() => props.openViewModal(record.key)} />
-                  <Button icon="save" type="primary" onClick={() => props.handleSave(record.key)} />
+                  <Tooltip title="View Suggestion"><Button icon="eye" onClick={() => props.openViewModal(record.key)} /></Tooltip>
+                  <Tooltip title="Save"><Button disabled={props.form.getFieldValue("status") == undefined || record.status == "Approved" || record.status == "Rejected"} icon="save" type="primary" onClick={() => props.handleSaveItem(props.form.getFieldValue("status"), record.key)} /></Tooltip>
                 </>
               )}
           </div>
-
         )
       }
     }
@@ -267,20 +269,30 @@ const EditableTable = (props) => {
         </span>
       }
     }
-    if (!col.editable) {
-      return col;
+    if (col.clickable) {
+      return {
+        ...col,
+        onCell: record => ({
+          record, clickable: col.clickable, openViewUserModal: props.openViewUserModal
+        })
+      }
     }
-    return {
-      ...col,
-      onCell: record => ({
-        record,
-        inputType: col.type,
-        options: (col.type === "select" || col.type === "multiSelect") ? col.options : [],
-        editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-      })
-    };
+    else {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => ({
+          record,
+          inputType: col.type,
+          options: (col.type === "select" || col.type === "multiSelect") ? col.options : [],
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+        })
+      };
+    }
   });
 
   if (!props.colData.length) {

@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import { updateCategoriesConfig } from '../../../redux/actions/actions';
 import CategoryApprovalTable from '../../Helper/CategoryApprovals';
+import ApprovalView from '../../Helper/ApprovalView';
 import { CustomTitle } from '../../Helper/ChoiceCards';
 
 const { confirm } = Modal;
@@ -254,7 +255,8 @@ const CreateRootCategory = (props) => {
           </div>
         </TabPane>
         <TabPane tab="Approval" key="2">
-          <CategoryApprovalTable loading={loading} name={'categories'} handleSave={handleSaveApproval} dataSource={categories["approval"]} />
+          <ApprovalView loading={loading} name="categories"/>
+          {/* <CategoryApprovalTable loading={loading} name={'categories'} handleSave={handleSaveApproval} dataSource={categories["approval"]} /> */}
         </TabPane>
       </Tabs>
     </div>
