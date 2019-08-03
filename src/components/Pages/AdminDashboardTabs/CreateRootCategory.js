@@ -232,7 +232,7 @@ const CreateRootCategory = (props) => {
 
   return (
     <div className="menu-item-page">
-      <Tabs type="card" animated={true}>
+      <Tabs destroyInactiveTabPane={true} type="card" animated={true}>
         <TabPane tab="Manage" key="1">
           <div className="bread-crumb">
             {nameHistory.map((nh) => (

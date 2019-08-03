@@ -53,7 +53,7 @@ const PassResetForm = (props) => {
   const { getFieldDecorator } = props.form;
 
   return (
-    <Form style={{ height: 330 }} onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <QueueAnim
         delay={100}
         interval={50}

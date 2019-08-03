@@ -80,7 +80,7 @@ const VerifyEmailForm = (props) => {
   const { getFieldDecorator } = props.form;
 
   return (
-    <Form style={{ height: 330 }}>
+    <Form >
       <QueueAnim
         delay={100}
         interval={50}

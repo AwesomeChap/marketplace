@@ -107,6 +107,17 @@ html {
   background: $blue;
 }
 
+.login-signup{
+  .ant-modal{
+    .ant-modal-content{
+      .ant-modal-body{
+        overflow: hidden !important;
+        height: 475px !important;
+      }
+    }
+  }
+}
+
 .ant-modal{
   padding-bottom: 0 !important;
 }

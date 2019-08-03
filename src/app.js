@@ -47,7 +47,7 @@ const App = (props) => {
     <>
       <Router>
         <Navbar dashboardPath={dashboardPath} />
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" render={(props) => <Home {...props} user={user} loggedIn={loggedIn} loaded={loaded} dashboardPath={dashboardPath} />} />
         <Route exact path={dashboardPath} render={(props) => <Dashboards {...props} user={user} loggedIn={loggedIn} loaded={loaded} />} />
       </Router>
     </>

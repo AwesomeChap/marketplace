@@ -31,7 +31,7 @@ const SubNav = (props) => {
 
   const showSignup = () => setFormIndex(2);
 
-  const showVerifyEmail = (val) => {setValues(val); setFormIndex(3)};
+  const showVerifyEmail = (val) => { setValues(val); setFormIndex(3) };
 
   const showPassReset = () => setFormIndex(4);
 
@@ -51,13 +51,13 @@ const SubNav = (props) => {
 
   const DropdownMenu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1"><Icon className="prefix-icon" type="layout" theme="filled" />Dashboard</Menu.Item>
+      {/* <Menu.Item key="1"><Icon className="prefix-icon" type="layout" theme="filled" />Dashboard</Menu.Item> */}
       <Menu.Item key="2"><Icon className="prefix-icon" type="logout" />Logout</Menu.Item>
     </Menu>
   );
 
   return (
-    <div className="sub-nav"> 
+    <div className="sub-nav">
       <NavLink exact to="/" className="sub-nav-item" activeClassName="selected">
         <span><Icon type="home" /> Home </span>
       </NavLink>
@@ -74,7 +74,7 @@ const SubNav = (props) => {
               <span>
                 <Dropdown trigger={['click']} overlay={DropdownMenu} >
                   <Button type="primary">
-                    <Icon type="user" /> Me {props.user.type != "user" && <span style={{opacity: 0.7, padding: 0, border: 0}}>({props.user.type})</span>}<Icon type="down" />
+                    <Icon type="user" /> Me {props.user.type != "user" && <span style={{ opacity: 0.7, padding: 0, border: 0 }}>({props.user.type})</span>}<Icon type="down" />
                   </Button>
                 </Dropdown>
               </span>
@@ -91,7 +91,7 @@ const SubNav = (props) => {
                 </span>
               </div >
               <Modal
-                title={title[formIndex-1]}
+                title={title[formIndex - 1]}
                 visible={visible}
                 onCancel={handleCancel}
                 okText={null}
@@ -99,16 +99,17 @@ const SubNav = (props) => {
                 width={350}
                 footer={null}
                 centered={true}
+                wrapClassName={"login-signup"}
                 destroyOnClose={true}
                 maskClosable={false}
               >
-                {formIndex == 1 && <LoginForm showSignup={showSignup} showVerifyEmail={showVerifyEmail} showPassReset={showPassReset} handleCancel={handleCancel}/>}
-                {formIndex == 2 && <SignupForm showLogin={showLogin} showVerifyEmail={showVerifyEmail}/>}
+                {formIndex == 1 && <LoginForm showSignup={showSignup} showVerifyEmail={showVerifyEmail} showPassReset={showPassReset} handleCancel={handleCancel} />}
+                {formIndex == 2 && <SignupForm showLogin={showLogin} showVerifyEmail={showVerifyEmail} />}
                 {formIndex == 3 && <VerifyEmailForm email={values.email} showLogin={showLogin} />}
-                {formIndex == 4 && <PassReset showLogin={showLogin}/>}
+                {formIndex == 4 && <PassReset showLogin={showLogin} />}
               </Modal>
             </>
-        )
+          )
       }
 
     </div >

@@ -4,14 +4,20 @@ import QueueAnim from "rc-queue-anim";
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { saveUser } from '../../redux/actions/actions';
+// import { loadReCaptcha, ReCaptcha } from 'react-recaptcha-v3'
+import ReCAPTCHA from "react-google-recaptcha";
+
+const recaptchaKey = "6LdLIbEUAAAAAHVPgMDI2EbsWH7KiG9uKf2ccUOt";
 
 const NormalLoginForm = (props) => {
 
   const [show, setShow] = useState();
   const [loading, setLoading] = useState(false);
+  const [captchaText, setCaptchaText] = useState("");
 
   useEffect(() => {
-    setShow(true)
+    setShow(true);
+    // loadReCaptcha('6LctH7EUAAAAAEqtvDmbnMk6C-7rtpNSWRKa7hmf');
     return () => {
       setShow(false);
     }
@@ -37,13 +43,13 @@ const NormalLoginForm = (props) => {
 
             setLoading(false);
             const error = JSON.parse(JSON.stringify(e));
-            
+
             if (error.type == "info") {
               setShow(false);
               setTimeout(() => props.showVerifyEmail(), 600);
               return message.info(error.message);
             }
-            
+
             return message.error(error.message);
           })
         }).catch((e) => {
@@ -51,7 +57,7 @@ const NormalLoginForm = (props) => {
           // if user is not verified
           setLoading(false);
           const error = JSON.parse(JSON.stringify(e.response.data));
-          
+
           if (error.type == "warning") {
             setShow(false);
             setTimeout(() => props.showVerifyEmail(values), 600);
@@ -75,10 +81,19 @@ const NormalLoginForm = (props) => {
     setTimeout(() => props.showSignup(), 600);
   }
 
+  // const verifyCallback = (recaptchaToken) => {
+  //   // Here you will get the final recaptchaToken!!!  
+  //   console.log(recaptchaToken, "<= your recaptcha token")
+  // }
+
+  const onReCaptchaChange = (value) => {
+    setCaptchaText(value);
+  }
+
   const { getFieldDecorator } = props.form;
 
   return (
-    <Form style={{ height: 330 }} onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <QueueAnim
         delay={100}
         interval={50}
@@ -116,6 +131,17 @@ const NormalLoginForm = (props) => {
                 />
               )}
             </Form.Item>,
+            <Form.Item key="recaptcha">
+              {/* <ReCaptcha
+                sitekey="6LctH7EUAAAAAEqtvDmbnMk6C-7rtpNSWRKa7hmf"
+                action='action_name'
+                verifyCallback={verifyCallback}
+              /> */}
+              <ReCAPTCHA
+                sitekey={recaptchaKey}
+                onChange={onReCaptchaChange}
+              />
+            </Form.Item>,
             <Form.Item key="c">
               <div className="space-between">
                 {getFieldDecorator('remember', {
@@ -128,7 +154,7 @@ const NormalLoginForm = (props) => {
             <Form.Item key="d">
               <div className="space-between">
                 <Button type="primary" disabled={loading} onClick={handleNewUserClick} ghost={true}>New User?</Button>
-                <Button type="primary" loading={loading} htmlType="submit" >Log in</Button>
+                <Button type="primary" disabled={captchaText.length === 0} loading={loading} htmlType="submit" >Log in</Button>
               </div>
             </Form.Item>,
             <Divider key="e">OR</Divider>,
@@ -136,9 +162,9 @@ const NormalLoginForm = (props) => {
               <div className="space-between">
                 <Button disabled={loading} type="link" href="/auth/google" size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-google" /></Button>
-                <Button disabled={loading} type="link" href="/auth/facebook"size="large" shape="circle" type="primary"
+                <Button disabled={loading} type="link" href="/auth/facebook" size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-facebook-f" /></Button>
-                <Button disabled={loading} type="link" href="/auth/linkedin"size="large" shape="circle" type="primary"
+                <Button disabled={loading} type="link" href="/auth/linkedin" size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-linkedin-in" /></Button>
               </div>
             </Form.Item>

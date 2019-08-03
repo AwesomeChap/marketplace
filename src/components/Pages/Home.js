@@ -1,10 +1,13 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
 const Home = (props) => {
-  
-  useEffect(()=>{
-    // props.history.push('/me/dashboard');
-  },[]);
+
+  useEffect(() => {
+    if (props.loggedIn) {
+      // console.log(props.user);
+      props.history.push(props.dashboardPath);
+    }
+  }, [props]);
 
   return (
     <div className="wrapper">
