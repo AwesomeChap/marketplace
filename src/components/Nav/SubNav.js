@@ -58,9 +58,9 @@ const SubNav = (props) => {
 
   return (
     <div className="sub-nav">
-      <NavLink exact to="/" className="sub-nav-item" activeClassName="selected">
+      {/* <NavLink exact to="/" className="sub-nav-item" activeClassName="selected">
         <span><Icon type="home" /> Home </span>
-      </NavLink>
+      </NavLink> */}
       {/* <NavLink exact to="/rider" className="sub-nav-item" activeClassName="selected">
         <span><BikeIcon style={{ transform: "scale(1.35)" }} /> Rider Area</span>
       </NavLink>
