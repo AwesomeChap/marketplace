@@ -137,7 +137,7 @@ const ApproveSuggestions = (props) => {
         <Modal title={!!currentItemData ? `Suggestion for ${_.startCase(props.name)}` : "User Info"} width={600} visible={visible} footer={null}
           onCancel={handleCancel} centered={true} maskClosable={false} destroyOnClose={true}>
           <Form {...formItemLayout}>
-           {!!currentItemData && currentItemData.status === "Pending" && <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}><Alert message="To unlock delete button, Please either approve it or reject it" type="info" closable /></Form.Item>}
+           <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}><Alert message={!!currentItemData && currentItemData.status === "Pending" ? "To unlock delete button, Please either approve it or reject it" : "Clicking on delete button would only remove item from suggestions list"} type="info" closable /></Form.Item>
             {!!currentItemData ? viewComponent[props.name] : currentUserData}
             <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
               <Row type="flex" justify="center">

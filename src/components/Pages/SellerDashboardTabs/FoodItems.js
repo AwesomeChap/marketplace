@@ -76,6 +76,10 @@ const FoodItemsTab = (props) => {
     }
   }, [props.config])
 
+  if(!props.branchId){
+    return <div>No Branches Found!</div>
+  }
+
   const handleSaveFoodItem = (foodItem, done) => {
     setLoading(true);
     console.log(foodItem._id);

@@ -113,7 +113,8 @@ const configSchema = new Schema({
   payment: {
     id: { type: String },
     secret: { type: String }
-  }
+  },
+  faq: []
 }, { strict: false });
 
 const Config = mongoose.model('Config', configSchema)

@@ -11,10 +11,12 @@ import OtherFieldsTable from '../AdminDashboardTabs/OtherFieldsTable';
 import NestedFieldsTable from '../AdminDashboardTabs/NestedFieldsTable';
 import QueueAnim from 'rc-queue-anim';
 import ScrollToTop from '../../Helper/ScrollToTop';
+import { Redirect } from 'react-router-dom'
+import FAQ from '../AdminDashboardTabs/FAQ';
 
 const AdminDashboard = (props) => {
 
-  const [tabIndex, setTabIndex] = useState("sub1");
+  const [tabIndex, setTabIndex] = useState("faq");
   let wrapperRef = useRef(null);
 
   const handleClick = e => {
@@ -25,23 +27,32 @@ const AdminDashboard = (props) => {
   };
 
   useEffect(() => {
-    axios.get(`/config?userId=${props.user._id}`).then(({ data }) => {
-      props.setConfig(data.config);
-      if (data.type == "info") {
-        return message.info(data.message);
-      }
-      // return message.success(data.message)
-    }).catch((e) => {
-      const error = JSON.parse(JSON.stringify(e.response));
-      if(error.status == "403") props.history.push('/'); 
-      return message.error(error.data.message);
-    })
+    if (!props.loggedIn) {
+      props.history.push('/');
+    }
+    else {
+      axios.get(`/config?userId=${props.user._id}`).then(({ data }) => {
+        props.setConfig(data.config);
+        if (data.type == "info") {
+          return message.info(data.message);
+        }
+        // return message.success(data.message)
+      }).catch((e) => {
+        const error = JSON.parse(JSON.stringify(e.response));
+        if (error.status == "403") props.history.push('/');
+        return message.error(error.data.message);
+      })
+    }
   }, [])
 
   useEffect(() => {
     if (tabIndex == "sub2" && window.location.hash.split("#")[1] > props.config.categories.values.length)
       window.location.hash = "#1";
   }, [tabIndex])
+
+  if (!props.loggedIn) {
+    return <Redirect to="/" />
+  }
 
   if (!props.config) {
     return <Loader />
@@ -53,7 +64,7 @@ const AdminDashboard = (props) => {
   };
 
   const keys = ["sub1", "ingredients", "flavours", "nutrition", "spices", "allergy", "priceRange", "time", "foodProvider",
-    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment"]
+    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment", "faq"]
 
   const tabs = {
     "sub1": <CreateRootCategory key="sub1" setTabIndexMenu={setTabIndexMenu} user={props.user} />,
@@ -73,6 +84,7 @@ const AdminDashboard = (props) => {
     "courier": <NestedFieldsTable key="courier" rootName="courier" user={props.user} />,
     "mailConfig": <VerifyEmailConfig key="mailConfig" user={props.user} />,
     "payment": <PaymentConfig key="payment" user={props.user} />,
+    "faq":<FAQ key="faq" user={props.user} />,
   }
 
 
@@ -105,15 +117,16 @@ const AdminDashboard = (props) => {
             <Menu.Item onClick={handleClick} key="customer"><Icon type="team" />Customer</Menu.Item>
             <Menu.Item onClick={handleClick} key="courier"><Icon type="red-envelope" />Courier</Menu.Item>
             <Menu.Item onClick={handleClick} key="mailConfig"><Icon type="mail" />SMTP Config</Menu.Item>
+            <Menu.Item onClick={handleClick} key="faq"><Icon type="align-left" />FAQ</Menu.Item>
           </Menu>
         </div>
         <div ref={(node) => wrapperRef = node} className="scrollable wrapper">
-          {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef}/>}
+          {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef} />}
           <div className="container">
             {
               keys.map((key) => {
                 return <QueueAnim
-                  key={`${key}-tab`} 
+                  key={`${key}-tab`}
                   delay={tabIndex == key ? 300 : 0}
                   duration={400}
                   ease={"easeOutCirc"}

@@ -3,32 +3,24 @@ import AdminDashboard from './Dashboards/AdminDashboard';
 import Dashboard from './Dashboards/Dashboard';
 import '../../scss/dashboard.scss';
 import Loader from '../Helper/Loader';
+import { Redirect } from 'react-router-dom';
 import SellerDashboard from './Dashboards/SellerDashboard';
 
 const Dashboards = (props) => {
 
-  useEffect(()=>{
-    if(!props.loggedIn && props.loaded){
-      props.history.push('/');
-    }
-  },[props.loggedIn]);
-
   const _Dashboards_ = {
     admin: <AdminDashboard {...props} />,
     user: <Dashboard {...props} />,
-    seller: <SellerDashboard {...props} />
+    // seller: <SellerDashboard {...props} />
   }
 
-  if (props.loaded && props.loggedIn) {
-    return _Dashboards_[props.user.type];
+  console.log(props.loggedIn, props.user);
+
+  if (!(props.loggedIn && !!props.user)) {
+    return <Redirect to='/' />
   }
-  else {
-    return (
-      <div className="menu-item-page">
-        
-      </div>
-    )
-  }
+
+  return _Dashboards_[props.user.type];
 }
 
 export default Dashboards

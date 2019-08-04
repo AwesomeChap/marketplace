@@ -48,7 +48,7 @@ const CommonSettings = (props) => {
           </Form.Item>
 
         </div>
-        <Button className="custom" style={{ marginTop: -30, marginBottom: 10 }} shape={"round"} size={"large"} htmlType="submit" >{oldConfig ? "Save" : "Continue"}</Button>
+        <Button loading={props.loading} className="custom" style={{ marginTop: -30, marginBottom: 10 }} shape={"round"} size={"large"} htmlType="submit" >{oldConfig ? "Save" : "Continue"}</Button>
       </Form>
     </div>
   )
@@ -75,21 +75,24 @@ const BranchCard = (props) => {
 const SellerProfileTab = (props) => {
   const [visible, setVisible] = useState(false);
   const [branchId, setBranchId] = useState(undefined);
+  const [loading, setLoading] = useState(false);
 
   const handleCancel = () => { setVisible(false), setBranchId(undefined) };
 
   const handleCommonSettingsSave = (values) => {
+    setLoading(true);
     axios.post('/seller/commonSettings', { values, userId: props.user._id }).then(({ data }) => {
       props.setSellerConfig(data.config);
+      setLoading(false);
       return message.success(data.message);
-    }).catch(e => message.error(e.message));
+    }).catch(e => {setLoading(false); return message.error(e.message)});
   }
 
   return (
     <Loader loading={props.loading}>
       <>
         <WrappedCommonSettings handleCommonSettingsSave={handleCommonSettingsSave}
-          sellerConfig={props.sellerConfig} />
+          sellerConfig={props.sellerConfig} loading={loading}/>
         {!!props.sellerConfig.branches && (
           <>
             <Button onClick={() => setVisible(true)} type="primary" size="large" shape={"round"}

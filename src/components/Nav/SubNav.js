@@ -36,12 +36,15 @@ const SubNav = (props) => {
   const showPassReset = () => setFormIndex(4);
 
   function handleMenuClick(e) {
-    if (e.key == "2") {
+    if (e.key === "logout") {
       axios.post('/auth/logout')
         .then(({ data }) => {
-          message.success(data.message);
-          props.history.push('/');
           props.removeUser();
+
+          return message.success(data.message);
+          // props.history.push('/'); 
+          // console.log(props.history);
+          // window.location.pathname = "/";
         })
     }
     else {
@@ -52,7 +55,7 @@ const SubNav = (props) => {
   const DropdownMenu = (
     <Menu onClick={handleMenuClick}>
       {/* <Menu.Item key="1"><Icon className="prefix-icon" type="layout" theme="filled" />Dashboard</Menu.Item> */}
-      <Menu.Item key="2"><Icon className="prefix-icon" type="logout" />Logout</Menu.Item>
+      <Menu.Item key="logout"><Icon className="prefix-icon" type="logout" />Logout</Menu.Item>
     </Menu>
   );
 

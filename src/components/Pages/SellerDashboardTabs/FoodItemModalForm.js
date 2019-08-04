@@ -100,6 +100,10 @@ const FoodItemModalForm = (props) => {
     <Loader loading={props.loading} >
       <Form onSubmit={handleSubmit} {...formItemLayout}>
 
+        {!newConfig && <Form.Item label="Food Item Id">
+          <span><strong>{props.foodItem._id}</strong></span>
+        </Form.Item>}
+
         <Form.Item label="Name">
           {getFieldDecorator('name', {
             rules: [{ required: true, message: "Name is required!" }],
@@ -179,7 +183,7 @@ const FoodItemModalForm = (props) => {
             // rules: [{ required: true, message: "Spice level is required!" }],
             initialValue: newConfig ? undefined : props.foodItem.spiceLevel
           })(
-            <Select placeholder="Flavours (eg. Spicy)">
+            <Select mode={"multiple"} placeholder="Flavours (eg. Spicy)">
               {props.options.spiceLevel.map((opt, i) => <Option value={opt} key={i + 1}>{opt}</Option>)}
             </Select>
           )}

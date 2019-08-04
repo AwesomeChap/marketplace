@@ -23,9 +23,9 @@ const SeatArrangement = (props) => {
     }
   },[props.branchId])
 
-  useEffect(() => {
-    console.log(layoutComponents);
-  }, [layoutComponents])
+  if(!props.branchId){
+    return <div>No Branches Found!</div>
+  }
 
   const handleAddComponent = (type) => setLayoutComponents([...layoutComponents, { type, key: `${type[0]}_${new Date().valueOf()}`, name: `${_.upperCase(type[0])}-${Math.random().toString(9).substr(2, 5)}` }]);
 

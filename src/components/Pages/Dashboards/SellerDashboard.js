@@ -8,12 +8,13 @@ import { setSellerConfig, setBranchId } from '../../../redux/actions/actions';
 import Loader from '../../Helper/Loader';
 import SellerProfileTab from '../SellerDashboardTabs/SellerProfileTab';
 import SeatArrangement from '../SellerDashboardTabs/SeatArrangement';
+import Advertisements from '../SellerDashboardTabs/Advertisements';
 
 const { TabPane } = Tabs;
 
 const SellerDashBoard = (props) => {
 
-  const [currentKey, setCurrentKey] = useState("sellerProfile");
+  const [currentKey, setCurrentKey] = useState("advertisements");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -57,6 +58,9 @@ const SellerDashBoard = (props) => {
             const index = sellerConfigClone.branches.indexOf(branch);
             sellerConfigClone.branches[index] = { ...branch, [name]: data.config };
             props.setSellerConfig(sellerConfigClone);
+            if (!!props.sellerConfig && JSON.stringify(props.sellerConfig) !== '{}' && props.sellerConfig.branches.length) {
+              props.setBranchId(props.sellerConfig.branches[0]._id);
+            }
             return message.success(data.message);
           }).catch(e => { setLoading(false); return message.error(e.message) });
       })
@@ -86,13 +90,13 @@ const SellerDashBoard = (props) => {
     }).catch(e => { setLoading(false); message.error(e.message) });
   }
 
-  if (props.sellerConfig == null || ( !newConfig &&  props.branchId == null) ) {
+  if (props.sellerConfig == null) {
     return <Loader />
   }
 
   const menu = (
     <Menu selectedKeys={[props.branchId]} onClick={handleMenuClick}>
-      {newConfig ? <Menu.Item disabled={true}> <Empty imageStyle={{height: 50}} description={<span style={{fontSize: 12 }}>No Branches</span>}/> </Menu.Item>  : props.sellerConfig.branches.map((branch, i) => <Menu.Item key={branch._id}><Icon type="environment" />{branch.profile.branchName}</Menu.Item>)}
+      {newConfig ? <Menu.Item disabled={true}> <Empty imageStyle={{ height: 50 }} description={<span style={{ fontSize: 12 }}>No Branches</span>} /> </Menu.Item> : props.sellerConfig.branches.map((branch, i) => <Menu.Item key={branch._id}><Icon type="environment" />{branch.profile.branchName}</Menu.Item>)}
     </Menu>
   );
 
@@ -109,7 +113,7 @@ const SellerDashBoard = (props) => {
     foodItems: <FoodItemsTab />,
     seatArrangement: <SeatArrangement done={() => setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId} />,
     order: <div>Order</div>,
-    advertisement: <div>Advertisement</div>
+    advertisements: <Advertisements/>
   }
 
   const handleChange = key => setCurrentKey(key);
@@ -117,11 +121,11 @@ const SellerDashBoard = (props) => {
   return (
     <>
       <div style={{ paddingBottom: 0 }} className="menu-item-page">
-        <Tabs onChange={handleChange} activeKey={currentKey} tabBarExtraContent={operations}>
+        <Tabs destroyInactiveTabPane={true} onChange={handleChange} activeKey={currentKey} tabBarExtraContent={operations}>
           {
             Object.keys(TabPanes).map((key) => {
               return (
-                <TabPane tab={_.startCase(key)} key={key}>
+                <TabPane disabled={["foodItems", "seatArrangement", "order", "advertisements"].includes(key) && (newConfig || !props.sellerConfig.branches || !props.sellerConfig.branches.length)} tab={_.startCase(key)} key={key}>
                   {TabPanes[key]}
                 </TabPane>
               )

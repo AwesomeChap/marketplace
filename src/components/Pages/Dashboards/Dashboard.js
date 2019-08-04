@@ -9,7 +9,7 @@ import WrappedPaypalConfig from '../CommonTabs/PaymentSettings';
 import MakeSuggestions from '../CommonTabs/MakeSuggestions';
 
 const Dashboard = (props) => {
-  const [current, setCurrent] = useState("make_suggestions");
+  const [current, setCurrent] = useState("seller_dashboard"); 
   const [collapsed, setCollapsed] = useState(true);
   let wrapperRef = useRef(null);
 
@@ -18,7 +18,7 @@ const Dashboard = (props) => {
   if (!props.loggedIn) {
     return <Redirect to="/" /> 
   }
- 
+
   const CurrentView = {
     user_profile: <div key="user_profile" >User Profile</div>,
     seller_dashboard: <SellerDashBoard key="seller_dashboard" user={props.user} />,

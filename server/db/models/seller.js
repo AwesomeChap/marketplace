@@ -52,7 +52,7 @@ const foodItemSchema = new Schema({
   flavours: [String],
   recipe: [String],
   ingredients: [ingredientsSchema],
-  spiceLevel: String,
+  spiceLevel: [String],
   allergies: [String],
   nutrition: [nutritionSchema],
 }, { strict: false })
@@ -87,7 +87,6 @@ const restaurantBranchConfig = new Schema({
   seatArrangement: seatArrangementSchema,
   profile: sellerProfileSchema,
   order: [],
-  courier: [],
   advertisement: [advtSchema]
 }, { strict: false })
 
