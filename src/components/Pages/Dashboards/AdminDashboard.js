@@ -13,6 +13,8 @@ import QueueAnim from 'rc-queue-anim';
 import ScrollToTop from '../../Helper/ScrollToTop';
 import { Redirect } from 'react-router-dom'
 import FAQ from '../AdminDashboardTabs/FAQ';
+import Videos from '../AdminDashboardTabs/Videos';
+import Links from '../AdminDashboardTabs/Links';
 
 const AdminDashboard = (props) => {
 
@@ -60,11 +62,11 @@ const AdminDashboard = (props) => {
 
   const setTabIndexMenu = (key, i, name) => {
     setTabIndex(key)
-    window.location.hash = `#${i}`;
+    window.location.hash = `#${i}`; 
   };
 
   const keys = ["sub1", "ingredients", "flavours", "nutrition", "spices", "allergy", "priceRange", "time", "foodProvider",
-    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment", "faq"]
+    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment", "links", "videos", "faq"]
 
   const tabs = {
     "sub1": <CreateRootCategory key="sub1" setTabIndexMenu={setTabIndexMenu} user={props.user} />,
@@ -84,7 +86,9 @@ const AdminDashboard = (props) => {
     "courier": <NestedFieldsTable key="courier" rootName="courier" user={props.user} />,
     "mailConfig": <VerifyEmailConfig key="mailConfig" user={props.user} />,
     "payment": <PaymentConfig key="payment" user={props.user} />,
-    "faq":<FAQ key="faq" user={props.user} />,
+    "links": <Links key="links" user={props.user} />,
+    "videos": <Videos key="videos" user={props.user} />,
+    "faq": <FAQ key="faq" user={props.user} />,
   }
 
 
@@ -117,6 +121,8 @@ const AdminDashboard = (props) => {
             <Menu.Item onClick={handleClick} key="customer"><Icon type="team" />Customer</Menu.Item>
             <Menu.Item onClick={handleClick} key="courier"><Icon type="red-envelope" />Courier</Menu.Item>
             <Menu.Item onClick={handleClick} key="mailConfig"><Icon type="mail" />SMTP Config</Menu.Item>
+            <Menu.Item onClick={handleClick} key="videos"><Icon type="youtube" />Videos</Menu.Item>
+            <Menu.Item onClick={handleClick} key="links"><Icon type="link" />Links</Menu.Item>
             <Menu.Item onClick={handleClick} key="faq"><Icon type="align-left" />FAQ</Menu.Item>
           </Menu>
         </div>

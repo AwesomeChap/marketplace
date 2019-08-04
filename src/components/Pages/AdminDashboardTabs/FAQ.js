@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LiteTitle } from '../../Helper/ChoiceCards';
 import { connect } from 'react-redux';
-import { Button, Modal, Form, Input, Collapse, Icon } from 'antd';
+import { Button, Modal, Form, Input, Collapse, Icon, message } from 'antd';
 import { setConfig } from '../../../redux/actions/actions';
 import uuidv4 from 'uuid/v4';
 import axios from 'axios';
@@ -23,6 +23,9 @@ const FAQForm = (props) => {
       if (!err) {
         if (!props.faq) {
           values = { ...values, key: uuidv4() };
+        }
+        else{
+          values = {...values, key : props.faq.key}
         }
         props.handleSaveFAQ(values);
       }
@@ -73,9 +76,7 @@ const FAQ = (props) => {
 
       return message.success(data.message);
     }).catch((e) => {
-      const error = JSON.parse(JSON.stringify(e.response.data));
-      setLoading(false);
-      return message.error(error.message);
+      return message.error(e.message);
     })
   }
 
@@ -117,7 +118,7 @@ const FAQ = (props) => {
 
             const operations = (
               <>
-                <Icon onClick={() => handleEditFAQ(d.key)} style={{ paddingRight: 16, paddingLeft: 16 }} type="edit" />
+                <Icon onClick={() => (d.key)} style={{ paddingRight: 16, paddingLeft: 16 }} onClick={() => handleEditFAQ(d.key)} type="edit" />
                 <Icon onClick={() => handleDeleteFAQ(d.key)} theme="twoTone" twoToneColor="#ff4d4f" type="delete" />
               </>
             )

@@ -114,7 +114,9 @@ const configSchema = new Schema({
     id: { type: String },
     secret: { type: String }
   },
-  faq: []
+  faq: [],
+  links: [],
+  videos: [],
 }, { strict: false });
 
 const Config = mongoose.model('Config', configSchema)
