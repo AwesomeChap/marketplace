@@ -126,7 +126,7 @@ const EditableTable = (props) => {
             {!props.handleSaveItem ? (
               <>
                 <Tooltip title="View Suggestion"><Button icon="eye" onClick={() => props.openViewModal(record.key)} /></Tooltip>
-                <Tooltip title="Withdraw or Remove Suggestion"><Button disabled={_.toLower(record.status) !== "pending"} icon="rollback" type="danger" onClick={() => props.handleDeleteItem(record.key)} /></Tooltip>
+                <Tooltip title="Withdraw or Remove Suggestion"><Button disabled={_.toLower(record.status) === "approved"} icon="rollback" type="danger" onClick={() => props.handleDeleteItem(record.key)} /></Tooltip>
               </>
             ) : (
                 <>

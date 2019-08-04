@@ -42,7 +42,7 @@ const UploadImage = props => {
       file.preview = await getBase64(file.originFileObj);
     }
 
-    setPreviewImage(file.response.url || file.preview);
+    setPreviewImage(file.preview || file.response.url);
     setPreviewVisible(true);
   };
 

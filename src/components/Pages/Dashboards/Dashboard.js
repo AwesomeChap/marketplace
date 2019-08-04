@@ -7,16 +7,17 @@ import SellerDashBoard from './SellerDashboard';
 import ScrollToTop from '../../Helper/ScrollToTop';
 import WrappedPaypalConfig from '../CommonTabs/PaymentSettings';
 import MakeSuggestions from '../CommonTabs/MakeSuggestions';
+import Advertisement from '../CommonTabs/Advertisement';
 
 const Dashboard = (props) => {
-  const [current, setCurrent] = useState("seller_dashboard"); 
+  const [current, setCurrent] = useState("seller_dashboard");
   const [collapsed, setCollapsed] = useState(true);
   let wrapperRef = useRef(null);
 
   const handleClick = ({ key }) => setCurrent(key);
 
   if (!props.loggedIn) {
-    return <Redirect to="/" /> 
+    return <Redirect to="/" />
   }
 
   const CurrentView = {
@@ -25,6 +26,7 @@ const Dashboard = (props) => {
     courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>,
     paypal_config: <WrappedPaypalConfig key="paypal_config" user={props.user} />,
     make_suggestions: <MakeSuggestions key="make_suggestions" />,
+    apply_advertisement: <Advertisement key="apply_advertisment" />,
   }
 
   return (
@@ -53,6 +55,10 @@ const Dashboard = (props) => {
         <Menu.Item key="make_suggestions">
           <Icon type="plus-square" />
           <span>Make Suggestions</span>
+        </Menu.Item>
+        <Menu.Item key="apply_advertisement">
+          <Icon type="pic-center" />
+          <span>Apply For Advertisement</span>
         </Menu.Item>
       </Menu>
       <div ref={(node) => wrapperRef = node} className="scrollable wrapper">

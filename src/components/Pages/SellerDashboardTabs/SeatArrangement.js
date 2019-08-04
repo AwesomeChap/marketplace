@@ -51,7 +51,7 @@ const SeatArrangement = (props) => {
   }
 
   const CloseButton = ({ compkey }) => (
-    <div onClick={() => handleDelete(compkey)} class="top-right-close" ><Icon type="close" /></div>
+    <div onClick={() => handleDelete(compkey)} className="top-right-close" ><Icon type="close" /></div>
   )
 
   const handleSave = () => {

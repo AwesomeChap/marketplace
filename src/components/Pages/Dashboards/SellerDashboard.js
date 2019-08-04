@@ -8,13 +8,12 @@ import { setSellerConfig, setBranchId } from '../../../redux/actions/actions';
 import Loader from '../../Helper/Loader';
 import SellerProfileTab from '../SellerDashboardTabs/SellerProfileTab';
 import SeatArrangement from '../SellerDashboardTabs/SeatArrangement';
-import Advertisements from '../SellerDashboardTabs/Advertisements';
 
 const { TabPane } = Tabs;
 
 const SellerDashBoard = (props) => {
 
-  const [currentKey, setCurrentKey] = useState("advertisements");
+  const [currentKey, setCurrentKey] = useState("sellerProfile");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -113,7 +112,6 @@ const SellerDashBoard = (props) => {
     foodItems: <FoodItemsTab />,
     seatArrangement: <SeatArrangement done={() => setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId} />,
     order: <div>Order</div>,
-    advertisements: <Advertisements/>
   }
 
   const handleChange = key => setCurrentKey(key);
@@ -125,7 +123,7 @@ const SellerDashBoard = (props) => {
           {
             Object.keys(TabPanes).map((key) => {
               return (
-                <TabPane disabled={["foodItems", "seatArrangement", "order", "advertisements"].includes(key) && (newConfig || !props.sellerConfig.branches || !props.sellerConfig.branches.length)} tab={_.startCase(key)} key={key}>
+                <TabPane disabled={["foodItems", "seatArrangement", "order"].includes(key) && (newConfig || !props.sellerConfig.branches || !props.sellerConfig.branches.length)} tab={_.startCase(key)} key={key}>
                   {TabPanes[key]}
                 </TabPane>
               )

@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const ApprovalSchema = new Schema({
+const AdvtSchema = new Schema({
   userId: String,
-  option: String,
-  data: {},
-  date: String,
-  status: {type: String, default: "Pending"}
+  startDate: String,
+  endDate: String,
+  visibility: String,
+  price: Number,
+  images: [],
+  status: {type: String, default: "Active"}
 }, { strict: false });
 
-const approval = mongoose.model('Approval', ApprovalSchema)
-module.exports = approval;
+const advertisement = mongoose.model('Advertisement', AdvtSchema)
+module.exports = advertisement;
