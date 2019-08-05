@@ -25,6 +25,7 @@
     "express-fileupload": "^1.1.5",
     "express-session": "^1.16.2",
     "lodash": "^4.17.14",
+    "mo": "^1.7.3",
     "moment": "^2.24.0",
     "mongoose": "^5.6.2",
     "morgan": "^1.9.1",

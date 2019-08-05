@@ -131,7 +131,6 @@ const MakeSuggestions = (props) => {
   const viewComponent = {
     categories: !!currentData && selectedOption === "categories" && (
       <>
-        <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}><Alert message="In case of a 0 Level sub-category suggestion, Please leave root empty" type="info" closable /></Form.Item>
         <Form.Item label={"Root"}>{getFieldDecorator("categories.values")(<span>{currentData.values.join(' / ')}</span>)}</Form.Item>
         <Form.Item label={"Sub-category"}>{getFieldDecorator("categories.subCategory")(<span>{currentData.subCategory}</span>)}</Form.Item>
       </>

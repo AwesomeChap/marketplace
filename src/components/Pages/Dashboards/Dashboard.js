@@ -7,10 +7,10 @@ import SellerDashBoard from './SellerDashboard';
 import ScrollToTop from '../../Helper/ScrollToTop';
 import WrappedPaypalConfig from '../CommonTabs/PaymentSettings';
 import MakeSuggestions from '../CommonTabs/MakeSuggestions';
-import Advertisement from '../CommonTabs/Advertisement';
+import Advertise from '../CommonTabs/Advertise';
 
 const Dashboard = (props) => {
-  const [current, setCurrent] = useState("seller_dashboard");
+  const [current, setCurrent] = useState("advertise");
   const [collapsed, setCollapsed] = useState(true);
   let wrapperRef = useRef(null);
 
@@ -26,7 +26,7 @@ const Dashboard = (props) => {
     courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>,
     paypal_config: <WrappedPaypalConfig key="paypal_config" user={props.user} />,
     make_suggestions: <MakeSuggestions key="make_suggestions" />,
-    apply_advertisement: <Advertisement key="apply_advertisment" />,
+    advertise: <Advertise key="advertise" />,
   }
 
   return (
@@ -56,9 +56,9 @@ const Dashboard = (props) => {
           <Icon type="plus-square" />
           <span>Make Suggestions</span>
         </Menu.Item>
-        <Menu.Item key="apply_advertisement">
+        <Menu.Item key="advertise">
           <Icon type="pic-center" />
-          <span>Apply For Advertisement</span>
+          <span>Advertise</span>
         </Menu.Item>
       </Menu>
       <div ref={(node) => wrapperRef = node} className="scrollable wrapper">
