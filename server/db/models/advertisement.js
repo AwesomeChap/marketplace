@@ -1,9 +1,24 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const StatusToken = new Schema({
-  
+const AdvtStatusTokenSchema = new Schema({
+  _advtId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Advertisement'
+  },
+  token: {
+    type: String,
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now,
+    expires: 2419200
+  }
 })
+const AdvtStatusToken = mongoose.model('AdvtStatusToken', AdvtStatusTokenSchema);
 
 const AdvtSchema = new Schema({
   userId: String,
@@ -12,10 +27,10 @@ const AdvtSchema = new Schema({
   visibility: String,
   price: Number,
   photos: [],
-  status: {type: String, default: "Active"}
+  status: { type: String, default: "Active" }
 }, { strict: false });
 
-const advertisement = mongoose.model('Advertisement', AdvtSchema)
-module.exports = advertisement;
+const Advertisement = mongoose.model('Advertisement', AdvtSchema)
+module.exports = {AdvtStatusToken, Advertisement};
 
 //create a status token to indicate life of a plan.
