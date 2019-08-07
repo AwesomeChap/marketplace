@@ -50,6 +50,7 @@ app.use('/config', require('./routes/config'))
 app.use('/seller', require('./routes/seller'))
 app.use('/customer', require('./routes/customer'))
 app.use('/approval', require('./routes/approval'))
+app.use('/advertisement', require('./routes/advertisement'))
 
 app.get('/upload', (req, res) => {
 	res.sendFile(path.join(uploadDataPath, req.query.location));

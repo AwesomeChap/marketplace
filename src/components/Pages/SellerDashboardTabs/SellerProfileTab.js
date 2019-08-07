@@ -48,7 +48,6 @@ const CommonSettings = (props) => {
               <Input size="large" placeholder="Restaurant name" />
             )}
           </Form.Item>
-
         </div>
         <Button loading={props.loading} className="custom" style={{ marginTop: -30, marginBottom: 10 }} shape={"round"} size={"large"} htmlType="submit" >{oldConfig ? "Save" : "Continue"}</Button>
       </Form>
