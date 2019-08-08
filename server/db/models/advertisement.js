@@ -104,6 +104,7 @@ const AdvtSchema = new Schema({
   price: Number,
   duration: {},
   photos: [],
+  newPhotos: [],
   status: { type: String, default: "Active" }
 }, { strict: false });
 

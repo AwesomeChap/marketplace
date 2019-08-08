@@ -228,6 +228,10 @@ h3 {
 }
 
 .advtPhotos{
+  width: 100%;
+  // background: red;
+  display: flex;
+  justify-content: space-around;
   img{
     margin: 20px;
     // display: none;

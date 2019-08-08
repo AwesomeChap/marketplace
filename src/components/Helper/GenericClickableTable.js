@@ -216,6 +216,7 @@ const ClickableTable = (props) => {
           if (opt == "Active") color = 'green';
           else if (opt == "Terminated") color = 'red';
           else if (opt == "End") color = 'geekblue';
+          else if (opt == "Pending") color =  null;
 
           return (
             <Tag color={color} key={opt}>

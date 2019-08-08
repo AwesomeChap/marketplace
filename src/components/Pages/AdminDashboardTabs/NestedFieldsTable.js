@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { message, Tabs, Alert, Button, Tag, Modal, Form } from 'antd';
+import { message, Tabs, Alert, Button, Tag, Modal, Form, Row, Col } from 'antd';
 import _ from 'lodash';
 import GenericEditabelTable from '../../Helper/GenericTable';
 import GenericClickableTable from '../../Helper/GenericClickableTable';
@@ -54,7 +54,9 @@ const SubscribedPeople = (props) => {
 
   const showAdvtData = (data) => {
     return <div className="advtPhotos">
-      {data.photos.map((photo, i) => (
+      {data.newPhotos.length ? data.newPhotos.map((photo, i) => (
+        <img src={photo.thumbUrl} key={`photo-${i + 1}`} />
+      )) : data.photos.map((photo, i) => (
         <img src={photo.thumbUrl} key={`photo-${i + 1}`} />
       ))}
     </div>
@@ -99,6 +101,17 @@ const SubscribedPeople = (props) => {
     }).catch(e => { setLoading(false); return message.error(e.message) });
   }
 
+  const handleApproveItem = () => {
+    setLoading(true);
+    axios.put('/advertisement', { advtId: currentAdvtData._id, values: {...currentAdvtData, status: "active" } }).then(({ data }) => {
+      setLoading(false);
+      advts.find(el => el.key === currentAdvtData.key).status = "Active";
+      setCurrentAdvtData(null);
+      setVisible(false);
+      return message.success(data.message);
+    }).catch(e => { setLoading(false); return message.error(e.message) });
+  }
+
   function showPropsConfirm(key) {
     confirm({
       title: 'Are you sure ?',
@@ -111,19 +124,26 @@ const SubscribedPeople = (props) => {
         handleDeleteItem(key);
       }
     });
-}
+  }
 
-return (
-  <Loader loading={loading}>
-    <div className="menu-item-page">
-      <Modal title={!!currentAdvtData ? "Advertisement Data" : "User Data"} width={600} visible={visible} footer={null}
-        onCancel={handleCancel} centered={true} destroyOnClose={true}>
-        {!!currentAdvtData ? showAdvtData(currentAdvtData) : showUserData(currentUserData)}
-      </Modal>
-      <GenericClickableTable openViewUserModal={openViewUserModal} handleDeleteItem={showPropsConfirm} openViewModal={openViewModal} colData={ColData["subscribedPeople"]} dataSource={advts} name={"advts-view"} />
-    </div>
-  </Loader>
-)
+  return (
+    <Loader loading={loading}>
+      <div className="menu-item-page">
+        <Modal title={!!currentAdvtData ? "Advertisement Data" : "User Data"} width={600} visible={visible} footer={null}
+          onCancel={handleCancel} centered={true} destroyOnClose={true}>
+          {!!currentAdvtData ? showAdvtData(currentAdvtData) : showUserData(currentUserData)}
+          <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+            <Row type="flex" justify="center">
+              <Col>
+                {!!currentAdvtData && currentAdvtData.status === "Pending" && <Button onClick={handleApproveItem} className="center-me" shape={"round"} size="large" loading={loading} htmlType={"submit"} type="primary" icon="check">Approve</Button>}
+              </Col>
+            </Row>
+          </Form.Item>
+        </Modal>
+        <GenericClickableTable openViewUserModal={openViewUserModal} handleDeleteItem={showPropsConfirm} openViewModal={openViewModal} colData={ColData["subscribedPeople"]} dataSource={advts} name={"advts-view"} />
+      </div>
+    </Loader>
+  )
 }
 
 const OtherFieldsTable = (props) => {

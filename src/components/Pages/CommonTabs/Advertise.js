@@ -23,7 +23,6 @@ const Advertise = (props) => {
     axios.get(`/config?userId=${props.user._id}&prop=advertisement`).then(({ data }) => {
       setAdPricing(data.config.addPricing.values);
       return axios.get(`/advertisement?userId=${props.user._id}`)
-
     }).then(({ data }) => {
       setLoading(false);
       setSelectedAd(data.advt);
@@ -101,7 +100,7 @@ const Advertise = (props) => {
           <Modal width={600} visible={visible} footer={null} title={!!selectedAd ? "Edit Images & View Info" : "Advertise Something"}
             onCancel={() => setVisible(false)} centered={true} maskClosable={false} destroyOnClose={true}>
             <Form onSubmit={handleAdd} {...formItemLayout}>
-              <UploadImage limit={2} form={form} label={"Photo(s)"} name="photos" layout={formItemLayout} options={{
+              <UploadImage limit={2} form={form} label={"Photo(s)"} name={!selectedAd ? "photos" : "newPhotos"} layout={formItemLayout} options={{
                 initialValue: !!selectedAd ? selectedAd.photos : undefined, ...options
               }} />
 
@@ -116,6 +115,7 @@ const Advertise = (props) => {
 
               {!!selectedAd && (
                 <>
+                  <Form.Item label="Status">{selectedAd.status}</Form.Item>
                   <Form.Item label="Start Date">{selectedAd.startDate}</Form.Item>
                   <Form.Item label="End Date">{selectedAd.endDate}</Form.Item>
                 </>
@@ -153,14 +153,14 @@ const Advertise = (props) => {
                 const spanValue = 24 / adPricing.length;
                 return (
                   <div key={`${ap.visibility}-card`} style={{ margin: 20 }}>
-                    <Badge count={selectedAd && selectedAd.visibility === ap.visibility ? <Icon type="check-circle" theme="filled" style={{ color: '#52c41a', fontSize: '24px' }} /> : 0}>
+                    <Badge count={selectedAd && selectedAd.visibility === ap.visibility ? <Icon type={selectedAd.status === "pending" ? "clock-circle" : "check-circle"} theme="filled" style={{ color: selectedAd.status === "pending" ? "#aaa" : '#52c41a', fontSize: '24px' }} /> : 0}>
                       <Card style={{ width: 180, boxShadow: "0px 0px 10px #bbb" }}>
                         <Statistic
                           title={ap.visibility}
                           value={ap.price}
                           precision={2}
                           prefix={"£"}
-                          valueStyle={selectedAd && selectedAd.visibility === ap.visibility ? { color: '#52c41a' } : null}
+                          valueStyle={selectedAd && selectedAd.visibility === ap.visibility ? { color: selectedAd.status === "pending" ? "#aaa" : '#52c41a' } : null}
                           suffix="/ month"
                         />
                       </Card>

@@ -416,11 +416,15 @@ h3 {
 .mini-form > * {
   margin: 20px; }
 
-.advtPhotos img {
-  margin: 20px;
-  box-shadow: 0 0 10px #aaa;
-  border-radius: 10px;
-  box-sizing: border-box; }
+.advtPhotos {
+  width: 100%;
+  display: flex;
+  justify-content: space-around; }
+  .advtPhotos img {
+    margin: 20px;
+    box-shadow: 0 0 10px #aaa;
+    border-radius: 10px;
+    box-sizing: border-box; }
 
 .editable-cell {
   position: relative; }

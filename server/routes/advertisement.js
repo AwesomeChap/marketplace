@@ -85,7 +85,7 @@ router.post('/', (req, res) => {
             }
             else {
                 if (values._id) {
-                    Advertisement.findByIdAndUpdate(values._id, { photos: values.photos }, { new: true }).then(advt => {
+                    Advertisement.findByIdAndUpdate(values._id, { ...values, status: "pending" }, { new: true }).then(advt => {
                         if (!advt) {
                             return res.status(500).json({ message: "unable to update advt" });
                         }
@@ -95,39 +95,69 @@ router.post('/', (req, res) => {
                     }).catch(e => res.status(500).json({ message: "some error occured while updating photos advt" }));
                 }
                 else {
-                    new Advertisement({ _userId: userId, ...values, status: "active" }).save().then(advt => {
+                    new Advertisement({ _userId: userId, ...values, status: "pending" }).save().then(advt => {
                         if (!!advt) {
-                            switch (values.duration.key) {
-                                case 1: new AdvtStatusToken1({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
-                                    if (err) return res.status(404).json({ errors: err });
-                                    return res.status(200).json({ message: "Advertisement Saved", advt })
-                                }); break;
-                                case 2: new AdvtStatusToken2({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
-                                    if (err) return res.status(404).json({ errors: err });
-                                    return res.status(200).json({ message: "Advertisement Saved", advt })
-                                }); break;
-                                case 3: new AdvtStatusToken3({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
-                                    if (err) return res.status(404).json({ errors: err });
-                                    return res.status(200).json({ message: "Advertisement Saved", advt })
-                                }); break;
-                                case 6: new AdvtStatusToken6({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
-                                    if (err) return res.status(404).json({ errors: err });
-                                    return res.status(200).json({ message: "Advertisement Saved", advt })
-                                }); break;
-                                case 12: new AdvtStatusToken12({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
-                                    if (err) return res.status(404).json({ errors: err });
-                                    return res.status(200).json({ message: "Advertisement Saved", advt })
-                                }); break;
-                                default: case 1: new AdvtStatusToken1({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
-                                    if (err) return res.status(404).json({ errors: err });
-                                    return res.status(200).json({ message: "Advertisement Saved", advt })
-                                }); break;
-                            }
+                            return res.status(200).json({ message: "Request saved", advt })
                         }
                     })
                 }
             }
         })
+    }
+})
+
+router.put('/', (req, res) => {
+    if (!req.body.advtId || !req.body.values) {
+        return res.status(400).json({ message: "Insufficient parameters" });
+    }
+    else {
+        const { advtId, values } = req.body;
+        console.log(values);
+        if (values.newPhotos.length) {
+            Advertisement.findByIdAndUpdate(advtId, { photos: values.newPhotos, status: "active", newPhotos: [] }, { new: true }).then(advt => {
+                if (!advt) {
+                    return res.status(500).json({ message: "unable to update advt" });
+                }
+                else{
+                    return res.status(200).json({message: "Advertisement updated", advt});
+                }
+            })
+        }
+        else {
+            Advertisement.findByIdAndUpdate(advtId, { ...values }, { new: true }).then(advt => {
+                if (!advt) {
+                    return res.status(500).json({ message: "unable to update advt" });
+                }
+                else {
+                    switch (advt.duration.key) {
+                        case 1: new AdvtStatusToken1({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
+                            if (err) return res.status(404).json({ errors: err });
+                            return res.status(200).json({ message: "Advertisement Updated", advt })
+                        }); break;
+                        case 2: new AdvtStatusToken2({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
+                            if (err) return res.status(404).json({ errors: err });
+                            return res.status(200).json({ message: "Advertisement Updated", advt })
+                        }); break;
+                        case 3: new AdvtStatusToken3({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
+                            if (err) return res.status(404).json({ errors: err });
+                            return res.status(200).json({ message: "Advertisement Updated", advt })
+                        }); break;
+                        case 6: new AdvtStatusToken6({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
+                            if (err) return res.status(404).json({ errors: err });
+                            return res.status(200).json({ message: "Advertisement Updated", advt })
+                        }); break;
+                        case 12: new AdvtStatusToken12({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
+                            if (err) return res.status(404).json({ errors: err });
+                            return res.status(200).json({ message: "Advertisement Updated", advt })
+                        }); break;
+                        default: case 1: new AdvtStatusToken1({ _advtId: advt._id, token: crypto.randomBytes(16).toString('hex') }).save(err => {
+                            if (err) return res.status(404).json({ errors: err });
+                            return res.status(200).json({ message: "Advertisement Updated", advt })
+                        }); break;
+                    }
+                }
+            }).catch(e => res.status(500).json({ message: "some error occured while updating photos advt" }));
+        }
     }
 })
 
@@ -143,39 +173,34 @@ router.delete('/', (req, res) => {
             }
             switch (advt.duration.key) {
                 case 1: AdvtStatusToken1.findOneAndDelete({ _advtId: advt._id }).then(advtToken => {
-                    if (advtToken) {
-                        return res.status(200).json({ message: "Advertisement plan terminated" });
-                    }
+                    return res.status(200).json({ message: "Advertisement plan terminated" });
+
                 }).catch(e => res.status(500).json({ errors: e })); break;
                 case 2: AdvtStatusToken2.findOneAndDelete({ _advtId: advt._id }).then(advtToken => {
-                    if (advtToken) {
-                        return res.status(200).json({ message: "Advertisement plan terminated" });
-                    }
+                    return res.status(200).json({ message: "Advertisement plan terminated" });
+
                 }).catch(e => res.status(500).json({ errors: e })); break;
                 case 3: AdvtStatusToken3.findOneAndDelete({ _advtId: advt._id }).then(advtToken => {
-                    if (advtToken) {
-                        return res.status(200).json({ message: "Advertisement plan terminated" });
-                    }
+                    return res.status(200).json({ message: "Advertisement plan terminated" });
+
                 }).catch(e => res.status(500).json({ errors: e })); break;
                 case 6: AdvtStatusToken6.findOneAndDelete({ _advtId: advt._id }).then(advtToken => {
-                    if (advtToken) {
-                        return res.status(200).json({ message: "Advertisement plan terminated" });
-                    }
+                    return res.status(200).json({ message: "Advertisement plan terminated" });
+
                 }).catch(e => res.status(500).json({ errors: e })); break;
                 case 12: AdvtStatusToken12.findOneAndDelete({ _advtId: advt._id }).then(advtToken => {
-                    if (advtToken) {
-                        return res.status(200).json({ message: "Advertisement plan terminated" });
-                    }
+                    return res.status(200).json({ message: "Advertisement plan terminated" });
+
                 }).catch(e => res.status(500).json({ errors: e })); break;
                 default: case 1: AdvtStatusTokenAndDelete1.findOne({ _advtId: advt._id }).then(advtToken => {
-                    if (advtToken) {
-                        return res.status(200).json({ message: "Advertisement plan terminated" });
-                    }
+                    return res.status(200).json({ message: "Advertisement plan terminated" });
+
                 }).catch(e => res.status(500).json({ errors: e })); break;
             }
         }).catch(e => res.status(500).json({ message: "Error occured while finding advertisement", errors: e }))
     }
 })
+
 
 module.exports = router;
 
