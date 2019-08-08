@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LiteTitle } from '../../Helper/ChoiceCards';
 import { connect } from 'react-redux';
-import { Button, Modal, Form, Input, Collapse, Icon, message } from 'antd';
+import { Button, Modal, Form, Input, Collapse, Icon, message, Row, Col } from 'antd';
 import { setConfig } from '../../../redux/actions/actions';
 import uuidv4 from 'uuid/v4';
 import axios from 'axios';
@@ -31,9 +31,19 @@ const LinksForm = (props) => {
       }
     })
   }
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 6 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 15 },
+    },
+  };
 
   return (
-    <Form onSubmit={handleSaveLinks}>
+    <Form {...formItemLayout} onSubmit={handleSaveLinks}>
       <Form.Item label="Name">
         {getFieldDecorator("name", {
           ...LinksFormOptions,
@@ -50,8 +60,10 @@ const LinksForm = (props) => {
           <Input.TextArea />
         )}
       </Form.Item>
-      <Form.Item>
-        <Button type="primary" loading={props.loading} htmlType="submit">Save</Button>
+      <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+        <Row type="flex" justify="center">
+          <Col><Button type="primary" loading={props.loading} htmlType="submit">Save</Button></Col>
+        </Row>
       </Form.Item>
     </Form>
   )

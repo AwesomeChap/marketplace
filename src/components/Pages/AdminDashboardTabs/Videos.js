@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { LiteTitle } from '../../Helper/ChoiceCards';
 import { connect } from 'react-redux';
-import { Button, Modal, Form, Input, Collapse, Icon, message  } from 'antd';
+import { Button, Modal, Form, Input, Collapse, Icon, message, Row, Col } from 'antd';
 import { setConfig } from '../../../redux/actions/actions';
 import uuidv4 from 'uuid/v4';
-import axios from 'axios'; 
+import axios from 'axios';
 import Loader from '../../Helper/Loader';
 import UploadImage from '../../Helper/UploadImage';
 import "../../../../node_modules/video-react/dist/video-react.css"
-import { Player } from 'video-react'; 
+import { Player } from 'video-react';
 
 const { Panel } = Collapse;
 
@@ -27,16 +27,26 @@ const VideoForm = (props) => {
         if (!props.video) {
           values = { ...values, key: uuidv4() };
         }
-        else{
-          values = {...values, key : props.video.key}
+        else {
+          values = { ...values, key: props.video.key }
         }
         props.handleSaveVideo(values);
       }
     })
   }
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 6 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 15 },
+    },
+  };
 
   return (
-    <Form onSubmit={handleSaveVideo}>
+    <Form {...formItemLayout} onSubmit={handleSaveVideo}>
       <Form.Item label="Title">
         {getFieldDecorator("title", {
           ...videoFormOptions,
@@ -45,10 +55,12 @@ const VideoForm = (props) => {
           <Input />
         )}
       </Form.Item>
-      <UploadImage limit={1} form={form} label={"Thumb Nail"} name={"thumbnail"} options={{ ...videoFormOptions, initialValue: !!props.video ? props.video.thumbnail : undefined }} />
+      <UploadImage limit={1} form={form} label={"Thumbnail"} name={"thumbnail"} options={{ ...videoFormOptions, initialValue: !!props.video ? props.video.thumbnail : undefined }} />
       <UploadImage limit={1} form={form} label={"Video Clip"} name={"clip"} options={{ ...videoFormOptions, initialValue: !!props.video ? props.video.clip : undefined }} />
-      <Form.Item>
-        <Button type="primary" loading={props.loading} htmlType="submit">Save</Button>
+      <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+        <Row type="flex" justify="center">
+          <Col><Button type="primary" loading={props.loading} htmlType="submit">Save</Button></Col>
+        </Row>
       </Form.Item>
     </Form>
   )

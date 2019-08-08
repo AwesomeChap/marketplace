@@ -17,7 +17,7 @@ const AdvtStatusTokenSchema1 = new Schema({
     default: Date.now,
     expires: 2419200    // 1 month
   }
-})
+}) 
 const AdvtStatusToken1 = mongoose.model('AdvtStatusToken1', AdvtStatusTokenSchema1);
 
 const AdvtStatusTokenSchema2 = new Schema({

@@ -18,7 +18,7 @@ import Links from '../AdminDashboardTabs/Links';
 
 const AdminDashboard = (props) => {
 
-  const [tabIndex, setTabIndex] = useState("faq");
+  const [tabIndex, setTabIndex] = useState("advertisement");
   let wrapperRef = useRef(null);
 
   const handleClick = e => {
@@ -83,7 +83,7 @@ const AdminDashboard = (props) => {
     "complain": <OtherFieldsTable key="complain" name="complain" user={props.user} />,
     "advertisement": <NestedFieldsTable key="advertisment" rootName="advertisement" user={props.user} />,
     "customer": <OtherFieldsTable key="customer" name="customer" user={props.user} />,
-    "courier": <NestedFieldsTable key="courier" rootName="courier" user={props.user} />,
+    "courier": <NestedFieldsTable key="courier" rootName="courier"/>,
     "mailConfig": <VerifyEmailConfig key="mailConfig" user={props.user} />,
     "payment": <PaymentConfig key="payment" user={props.user} />,
     "links": <Links key="links" user={props.user} />,

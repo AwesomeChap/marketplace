@@ -6,6 +6,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import UploadImage from '../../Helper/UploadImage';
 import moment from 'moment';
+import uuidv4 from 'uuid/v4';
 
 const { confirm } = Modal;
 
@@ -43,6 +44,7 @@ const Advertise = (props) => {
 
           values["startDate"] = startDate;
           values["endDate"] = endDate;
+          values["key"] = uuidv4();
         }
 
         setLoading(true);
@@ -65,7 +67,7 @@ const Advertise = (props) => {
       centered: true,
       onOk() {
         setLoading(true);
-        axios.delete('/advertisement', { data: { userId: props.user._id } }).then(({ data }) => {
+        axios.delete('/advertisement', { data: { advtId: selectedAd._id } }).then(({ data }) => {
           setLoading(false);
           setSelectedAd(null);
           return message.success(data.message);
@@ -142,7 +144,7 @@ const Advertise = (props) => {
                   </Col>
                 </Row>
               </Form.Item>
-              
+
             </Form>
           </Modal>
           <div className="space-evenly">
@@ -169,7 +171,7 @@ const Advertise = (props) => {
             }
           </div>
           {!!selectedAd && <Button className="top-right-absolute" onClick={showPropsConfirm} type="danger" ghost={true}>Terminate plan</Button>}
-          <Button icon={!selectedAd ? "right" : "picture"} onClick={() => setVisible(true)} type="primary" size="large" shape="round">{!!selectedAd ? "Edit Images & View info" : "Get Started"}</Button>
+          <Button icon={!selectedAd ? "" : "picture"} onClick={() => setVisible(true)} type="primary" size="large" shape="round">{!!selectedAd ? "Edit Images & View info" : <span>Get Started <Icon type="right" /></span>}</Button>
         </div>
       </div>
     </Loader>
