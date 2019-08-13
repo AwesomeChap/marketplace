@@ -189,7 +189,7 @@ const EditableTable = (props) => {
   return (
     <div style={{ paddingTop: 0 && !props.colData.length }} className="table-container">
       <div className="table-buttons">
-        {!props.disableFilters && <Button onClick={clearAll}>Clear All</Button>}
+        {!props.disableFilters && <Button onClick={clearAll}>Clear Filters</Button>}
       </div>
       <Table
         {...tableProps}

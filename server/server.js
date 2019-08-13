@@ -43,7 +43,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(fileUpload());
+app.use(fileUpload()); 
 
 app.use('/auth', require('./routes/auth'))
 app.use('/config', require('./routes/config'))
@@ -65,13 +65,10 @@ app.post('/upload', (req, res, next) => {
 	if (Object.keys(req.files).length == 0) {
     return res.status(400).json({message: 'No files were uploaded.'});
 	}
-	
 
 	let uploadFile = req.files[Object.keys(req.files)[0]];
-	
-	const uniqueNumber = new Date().getTime();
-
-  uploadFile.mv(`${uploadDataPath}/file-${uploadFile.name}`, function(err) {
+	const fileName = `${req.body.userId}-${uploadFile.name}`;
+  uploadFile.mv(`${uploadDataPath}/${fileName}`, function(err) {
     if (err)
       return res.status(500).send(err);
 
@@ -79,9 +76,13 @@ app.post('/upload', (req, res, next) => {
 			message :'File uploaded!', 
 			name: req.files[Object.keys(req.files)[0]].name, 
 			status: "done", 
-			url: `/upload?location=file-${req.files[Object.keys(req.files)[0]].name}`
+			url: `/upload?location=${fileName}`
 		});
   });
 });
 
 app.listen(PORT, () => console.log(`listening on port - ${PORT}`)) 
+
+// image upload mechanism needs to be rectified. Currently I store them in public folder,
+// But I need to remove this mechanism and use CDN's produces by Amazon S3. which would be
+// possible when we use AWS. So keep in mind that we need to fix it. Thanks

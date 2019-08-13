@@ -164,3 +164,29 @@ $ease-out : cubic-bezier(0.075, 0.82, 0.165, 1);
   }
 }
 
+.left-sub-nav{
+  display: flex;
+  align-items: center;
+
+  .ant-input{
+    width: 250px;
+    margin: 0 10px !important;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    letter-spacing: 0.1em;
+      font-weight: 300;
+
+    &::placeholder{
+      color: #fff !important;
+      opacity: 0.6;
+      letter-spacing: 0.1em;
+      font-weight: 300;
+    } 
+
+    &:focus{
+      box-shadow: none;
+    }
+  }
+}
+

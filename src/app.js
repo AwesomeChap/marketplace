@@ -40,8 +40,8 @@ const App = (props) => {
 
   let dashboardPath = "/me/dashboard"
 
-  if (user && props.user.hasOwnProperty("type") && props.user.type != 'user') {
-    dashboardPath = `/${props.user.type}/dashboard`;
+  if (user && props.user.type == "admin") {
+    dashboardPath = `/admin/dashboard`;
   }
 
   return (

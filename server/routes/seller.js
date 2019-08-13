@@ -117,46 +117,87 @@ router.post('/foodItem', (req, res) => {
     return res.status(400).json({ message: "Insufficient params" });
   }
   const { userId, branchId, foodItem } = req.body;
-  if (!!foodItem._id) {
-    //update
-    SellerConfig.findOne({ "_userId": userId }).then((sellerConfig) => {
-      if (sellerConfig.branches.length) {
- 
-        const branchIndex = sellerConfig.branches.map(obj => obj._id).indexOf(branchId);
-        const foodItemIndex = sellerConfig.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItem._id);
-        
+
+  SellerConfig.findOne({ _userId: userId }).then(sellerConfig => {
+    const branchIndex = sellerConfig.branches.map(obj => obj._id).indexOf(branchId);
+
+    if (foodItem._id) {
+      let foodItemIndex = sellerConfig.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItem._id);
+
+      if (foodItemIndex !== -1) {
         sellerConfig.branches.id(branchId).foodItems[foodItemIndex] = foodItem;
-
-        sellerConfig.save().then((updatedConfig) => {
-          if (updatedConfig) {
-            return res.status(200).json({ message: "Food item updated successfully", foodItem: updatedConfig.branches.id(branchId).foodItems[foodItemIndex] });
-          }
-        }).catch(e => res.status(500).json({ message: "Some error occured while updating food Item", errors: e }))
       }
-      else {
-        return res.status(404).json({ message: "Seller config not found" });
-      }
-    }).catch(e => res.status(500).json({ message: "Some error occured while finding config for updating", errors: e }))
-
-  }
-  else {
-    //new item
-    SellerConfig.findOne({ "_userId": userId }).then((sellerConfig) => {
-      if (sellerConfig.branches.length) {
+      else{
+        delete foodItem._id;
         sellerConfig.branches.id(branchId).foodItems.push(foodItem);
+      }
+      sellerConfig.save().then((updatedConfig) => {
+        if (updatedConfig) {
+          foodItemIndex = updatedConfig.branches[branchIndex].foodItems.map(obj => obj.name).indexOf(foodItem.name);
+          console.log(foodItemIndex);
+          return res.status(200).json({ message: "Food item updated successfully", foodItem: updatedConfig.branches.id(branchId).foodItems[foodItemIndex] });
+        }
+      }).catch(e => res.status(500).json({ message: "Some error occured while updating food Item", errors: e }))
+    }
 
-        sellerConfig.save().then((savedConfig) => {
-          console.log(savedConfig.branches.id(branchId).foodItems);
-          if (!!savedConfig) {
-            return res.status(200).json({ message: "Food item added successfully", foodItem: savedConfig.branches.id(branchId).foodItems[savedConfig.branches.id(branchId).foodItems.length - 1] });
-          }
-        }).catch(e => res.status(500).json({ message: "Some error occured while saving food item", errors: e }))
-      }
-      else {
-        return res.status(404).json({ message: "Seller config not found" });
-      }
-    }).catch(e => res.status(500).json({ message: "Some error occured while finding config for saving", errors: e }))
-  }
+    else {
+      SellerConfig.findOne({ "_userId": userId }).then((sellerConfig) => {
+        if (sellerConfig.branches.length) {
+          sellerConfig.branches.id(branchId).foodItems.push(foodItem);
+
+          sellerConfig.save().then((savedConfig) => {
+            if (!!savedConfig) {
+              return res.status(200).json({ message: "Food item added successfully", foodItem: savedConfig.branches.id(branchId).foodItems[savedConfig.branches.id(branchId).foodItems.length - 1] });
+            }
+          }).catch(e => res.status(500).json({ message: "Some error occured while saving food item", errors: e }))
+        }
+        else {
+          return res.status(404).json({ message: "Seller config not found" });
+        }
+      }).catch(e => res.status(500).json({ message: "Some error occured while finding config for saving", errors: e }))
+    }
+  })
+
+  // if (!!foodItem._id) {
+  //   //update
+  //   SellerConfig.findOne({ "_userId": userId }).then((sellerConfig) => {
+  //     if (sellerConfig.branches.length) {
+
+  //       const branchIndex = sellerConfig.branches.map(obj => obj._id).indexOf(branchId);
+  //       const foodItemIndex = sellerConfig.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItem._id);
+
+  //       sellerConfig.branches.id(branchId).foodItems[foodItemIndex] = foodItem;
+
+  //       sellerConfig.save().then((updatedConfig) => {
+  //         if (updatedConfig) {
+  //           return res.status(200).json({ message: "Food item updated successfully", foodItem: updatedConfig.branches.id(branchId).foodItems[foodItemIndex] });
+  //         }
+  //       }).catch(e => res.status(500).json({ message: "Some error occured while updating food Item", errors: e }))
+  //     }
+  //     else {
+  //       return res.status(404).json({ message: "Seller config not found" });
+  //     }
+  //   }).catch(e => res.status(500).json({ message: "Some error occured while finding config for updating", errors: e }))
+
+  // }
+  // else {
+  //   //new item
+  //   SellerConfig.findOne({ "_userId": userId }).then((sellerConfig) => {
+  //     if (sellerConfig.branches.length) {
+  //       sellerConfig.branches.id(branchId).foodItems.push(foodItem);
+
+  //       sellerConfig.save().then((savedConfig) => {
+  //         console.log(savedConfig.branches.id(branchId).foodItems);
+  //         if (!!savedConfig) {
+  //           return res.status(200).json({ message: "Food item added successfully", foodItem: savedConfig.branches.id(branchId).foodItems[savedConfig.branches.id(branchId).foodItems.length - 1] });
+  //         }
+  //       }).catch(e => res.status(500).json({ message: "Some error occured while saving food item", errors: e }))
+  //     }
+  //     else {
+  //       return res.status(404).json({ message: "Seller config not found" });
+  //     }
+  //   }).catch(e => res.status(500).json({ message: "Some error occured while finding config for saving", errors: e }))
+  // }
 })
 
 router.delete('/foodItem', (req, res) => {

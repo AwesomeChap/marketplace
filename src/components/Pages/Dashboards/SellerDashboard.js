@@ -79,7 +79,6 @@ const SellerDashBoard = (props) => {
     }
   }
 
-
   const handleDeleteBranch = (branchId) => {
     setLoading(true);
     axios.delete('/seller', { data: { userId: props.user._id, branchId } }).then(({ data }) => {
@@ -95,7 +94,7 @@ const SellerDashBoard = (props) => {
 
   const menu = (
     <Menu selectedKeys={[props.branchId]} onClick={handleMenuClick}>
-      {newConfig ? <Menu.Item disabled={true}> <Empty imageStyle={{ height: 50 }} description={<span style={{ fontSize: 12 }}>No Branches</span>} /> </Menu.Item> : props.sellerConfig.branches.map((branch, i) => <Menu.Item key={branch._id}><Icon type="environment" />{branch.profile.branchName}</Menu.Item>)}
+      {newConfig || !newConfig && !props.sellerConfig.branches.length ? <Menu.Item disabled={true}> <Empty imageStyle={{ height: 50 }} description={<span style={{ fontSize: 12 }}>No Branches</span>} /> </Menu.Item> : props.sellerConfig.branches.map((branch, i) => <Menu.Item key={branch._id}><Icon type="environment" />{branch.profile.branchName}</Menu.Item>)}
     </Menu>
   );
 
@@ -109,12 +108,18 @@ const SellerDashBoard = (props) => {
 
   const TabPanes = {
     sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} />,
-    foodItems: <FoodItemsTab />,
+    foodItems: <FoodItemsTab branches={props.sellerConfig.branches.map(branch => ({name: branch.profile.branchName, id: branch._id}))} />,
     seatArrangement: <SeatArrangement done={() => setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId} />,
     order: <div>Order</div>,
   }
 
   const handleChange = key => setCurrentKey(key);
+  const tabHeaders = ["foodItems", "seatArrangement", "order"];
+
+  const dinningPossible = () => {
+    const branchIndex = props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId);
+    return !!props.branchId && !!props.sellerConfig.branches && props.sellerConfig.branches[branchIndex].profile.serviceOptions.includes("Dinning In");
+  }
 
   return (
     <>
@@ -123,7 +128,7 @@ const SellerDashBoard = (props) => {
           {
             Object.keys(TabPanes).map((key) => {
               return (
-                <TabPane disabled={["foodItems", "seatArrangement", "order"].includes(key) && (newConfig || !props.sellerConfig.branches || !props.sellerConfig.branches.length)} tab={_.startCase(key)} key={key}>
+                <TabPane disabled={(tabHeaders.includes(key) && (newConfig || !props.sellerConfig.branches || !props.sellerConfig.branches.length)) || (key === "seatArrangement" && !dinningPossible())} tab={_.startCase(key)} key={key}>
                   {TabPanes[key]}
                 </TabPane>
               )

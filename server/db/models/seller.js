@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const User = require('./user');
+const Float = require('mongoose-float').loadType(mongoose);
 
 const ingredientsSchema = new Schema({
   name: String,
@@ -24,28 +25,35 @@ const sellerProfileSchema = new Schema({
   offers: [String],
   openingTime: String,
   closingTime: String,
+  closingDays: [String],
+  costForOne: Float,
+  minOrder: Float,
+  delivery:{
+    coverageArea: Float,
+    price: Float
+  },
   address: String,
   cateringService: {
     available: { type: Boolean, default: false },
-    coverageArea: Number,
-    quantityOfFoodPerMember: Number,
+    coverageArea: Float,
+    quantityOfFoodPerMember: Float,
     modeOfService: [String] // food is delivered, service personnel, 
   },
-  capacity: { type: Number, default: 0 },
+  capacity: { type: Float, default: 0 },
   alcohol: {
     allowed: { type: Boolean, default: false },
     served: { type: Boolean, default: false }
   },
   smokingAllowed: { type: Boolean, default: false },
-  levy: { type: Number, default: 0 },
-  hourlyCharge: { type: Number, default: 0 },
+  levy: { type: Float, default: 0 },
+  hourlyCharge: { type: Float, default: 0 },
 }, { strict: false })
 
 const foodItemSchema = new Schema({
   name: String,
   image: [],
   type: String, // veg or non-veg
-  price: Number,
+  price: Float,
   leadTime: String,
   serveTime: [String],
   category: [String],
@@ -61,18 +69,18 @@ const layoutSchema = new Schema({
   name: String,
   type: String,
   key: String,
-  seatCount: { type: Number, default: 2 },
-  x: { type: Number, default: 0 },
-  y: { type: Number, default: 0 },
-  height: Number,
-  width: Number,
+  seatCount: { type: Float, default: 2 },
+  x: { type: Float, default: 0 },
+  y: { type: Float, default: 0 },
+  height: Float,
+  width: Float,
 })
 
 const seatArrangementSchema = new Schema({
   layout: [layoutSchema],
   dimensions: {
-    width: { type: Number, default: 0 },
-    height: { type: Number, default: 0 }
+    width: { type: Float, default: 0 },
+    height: { type: Float, default: 0 }
   }
 }, { strict: false })
 

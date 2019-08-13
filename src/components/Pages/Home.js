@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 
 const Home = (props) => {
 
-  useEffect(() => {
-    if (props.loggedIn) {
-      // console.log(props.user);
-      props.history.push(props.dashboardPath);
-    }
-  }, [props]);
+  // useEffect(() => {
+  //   if (props.loggedIn) {
+  //     props.history.push(props.dashboardPath);
+  //   }
+  // }, [props]);
 
   return (
     <div className="wrapper">

@@ -131,7 +131,7 @@ export default {
       title: "Status",
       dataIndex: "status",
       type: "select",
-      options: ["Active", "End", "Terminated"]
+      options: ["Pending", "Active", "End", "Terminated"]
     }
   ]
 }

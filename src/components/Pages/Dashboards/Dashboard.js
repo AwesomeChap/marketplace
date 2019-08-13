@@ -4,13 +4,14 @@ import { Menu, Icon, Button } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 import '../../../scss/dashboard.scss'
 import SellerDashBoard from './SellerDashboard';
+import UserDashboard from './UserDashboard';
 import ScrollToTop from '../../Helper/ScrollToTop';
 import WrappedPaypalConfig from '../CommonTabs/PaymentSettings';
 import MakeSuggestions from '../CommonTabs/MakeSuggestions';
 import Advertise from '../CommonTabs/Advertise';
 
 const Dashboard = (props) => {
-  const [current, setCurrent] = useState("advertise");
+  const [current, setCurrent] = useState("user_dashboard");
   const [collapsed, setCollapsed] = useState(true);
   let wrapperRef = useRef(null);
 
@@ -21,7 +22,7 @@ const Dashboard = (props) => {
   }
 
   const CurrentView = {
-    user_profile: <div key="user_profile" >User Profile</div>,
+    user_dashboard: <UserDashboard key="user_dashboard"/>,
     seller_dashboard: <SellerDashBoard key="seller_dashboard" user={props.user} />,
     courier_dashboard: <div key="courier_dashboard">Courier Dashboard</div>,
     paypal_config: <WrappedPaypalConfig key="paypal_config" user={props.user} />,
@@ -36,9 +37,9 @@ const Dashboard = (props) => {
           <Icon className="hide-menu-btn" type={collapsed ? "menu-unfold" : "menu-fold"} onClick={() => setCollapsed(!collapsed)} />
           <span onClick={() => setCollapsed(!collapsed)}>Toggle Menu</span>
         </Menu.Item>
-        <Menu.Item key="user_profile">
+        <Menu.Item key="user_dashboard">
           <Icon type="user" />
-          <span>User Profile</span>
+          <span>User Dashboard</span>
         </Menu.Item>
         <Menu.Item key="seller_dashboard">
           <Icon type="shop" />

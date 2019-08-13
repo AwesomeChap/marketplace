@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Upload, Modal, Icon } from "antd";
+import axios from 'axios';
+import { connect } from 'react-redux';
 
 function getBase64(file) {
   return new Promise((resolve, reject) => {
@@ -17,19 +19,19 @@ const UploadImage = props => {
 
   const { getFieldDecorator } = props.form;
 
-  useEffect(()=>{
-    if(!!props.options.initialValue){
-      if(props.options.initialValue.length >= props.limit){
+  useEffect(() => {
+    if (!!props.options.initialValue) {
+      if (props.options.initialValue.length >= props.limit) {
         setUploadButtonVisible(false);
       }
     }
-  },[]);
+  }, []);
 
   const normFile = e => {
     // console.log("Upload event:", e);
     if (!!props.limit) {
       if (e.fileList.length >= props.limit) setUploadButtonVisible(false);
-      else {setUploadButtonVisible(true);}
+      else { setUploadButtonVisible(true); }
     }
     if (Array.isArray(e)) {
       return e;
@@ -67,11 +69,12 @@ const UploadImage = props => {
             name="logo"
             listType="picture-card"
             action="/upload"
+            data={{userId: props.user._id}}
             onRemove={file => {
               setUploadButtonVisible(true);
             }}
           >
-            {uploadButtonVisible ? <UploadButton placeholder={props.placeholder}/> : null}
+            {uploadButtonVisible ? <UploadButton placeholder={props.placeholder} /> : null}
           </Upload>
         )}
       </Form.Item>
@@ -82,4 +85,6 @@ const UploadImage = props => {
   );
 };
 
-export default UploadImage;
+const mapStateToProps = state => state;
+
+export default connect(mapStateToProps)(UploadImage);

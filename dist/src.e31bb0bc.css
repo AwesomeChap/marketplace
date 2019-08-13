@@ -113,6 +113,45 @@
     min-width: 60px;
     text-align: left; }
 
+.left-sub-nav {
+  display: flex;
+  align-items: center; }
+  .left-sub-nav .ant-input {
+    width: 250px;
+    margin: 0 10px !important;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    letter-spacing: 0.1em;
+    font-weight: 300; }
+    .left-sub-nav .ant-input::-webkit-input-placeholder {
+      color: #fff !important;
+      opacity: 0.6;
+      letter-spacing: 0.1em;
+      font-weight: 300; }
+    .left-sub-nav .ant-input::-moz-placeholder {
+      color: #fff !important;
+      opacity: 0.6;
+      letter-spacing: 0.1em;
+      font-weight: 300; }
+    .left-sub-nav .ant-input:-ms-input-placeholder {
+      color: #fff !important;
+      opacity: 0.6;
+      letter-spacing: 0.1em;
+      font-weight: 300; }
+    .left-sub-nav .ant-input::-ms-input-placeholder {
+      color: #fff !important;
+      opacity: 0.6;
+      letter-spacing: 0.1em;
+      font-weight: 300; }
+    .left-sub-nav .ant-input::placeholder {
+      color: #fff !important;
+      opacity: 0.6;
+      letter-spacing: 0.1em;
+      font-weight: 300; }
+    .left-sub-nav .ant-input:focus {
+      box-shadow: none; }
+
 .category-values {
   display: flex;
   width: 100%;
@@ -314,12 +353,11 @@ html {
         opacity: 1; }
       .wrapper.primary a.big {
         font-size: 28px;
-        margin: auto 0;
-        padding-left: 22px; }
+        margin: auto 0; }
 
 .container {
   width: 90%;
-  max-width: 1200px;
+  max-width: 1250px;
   position: relative; }
 
 .space-between {
@@ -425,6 +463,9 @@ h3 {
     box-shadow: 0 0 10px #aaa;
     border-radius: 10px;
     box-sizing: border-box; }
+
+.ant-input-number {
+  width: unset !important; }
 
 .editable-cell {
   position: relative; }
@@ -642,7 +683,9 @@ h3 {
     z-index: 1;
     transition: all 0.3s;
     -webkit-animation: scale-up 0.3s;
-            animation: scale-up 0.3s; }
+            animation: scale-up 0.3s;
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden; }
     .table .top-right-close:after {
       content: "";
       position: absolute;

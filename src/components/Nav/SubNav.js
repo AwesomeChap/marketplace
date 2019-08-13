@@ -54,7 +54,7 @@ const SubNav = (props) => {
 
   const DropdownMenu = (
     <Menu onClick={handleMenuClick}>
-      {/* <Menu.Item key="1"><Icon className="prefix-icon" type="layout" theme="filled" />Dashboard</Menu.Item> */}
+      <Menu.Item key="1"><Icon className="prefix-icon" type="layout" theme="filled" />Dashboard</Menu.Item>
       <Menu.Item key="logout"><Icon className="prefix-icon" type="logout" />Logout</Menu.Item>
     </Menu>
   );

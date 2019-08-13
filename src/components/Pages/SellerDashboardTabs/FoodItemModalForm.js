@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, InputNumber, TreeSelect, Button, TimePicker, Row, Col } from 'antd';
+import { Form, Input, Select, InputNumber, TreeSelect, Button, TimePicker, Row, Col, Alert, message, Modal } from 'antd';
 import UploadImage from '../../Helper/UploadImage';
 import moment from 'moment';
 import Loader from '../../Helper/Loader';
@@ -13,6 +13,7 @@ const FoodItemModalForm = (props) => {
   const [nutrientsList, setNutrientsList] = useState([]);
   const [ingsOption, setIngsOption] = useState([]);
   const [nutsOption, setNutsOption] = useState([]);
+  const [visible, setVisible] = useState(false);
 
   const ingColData = ColData.ingredients;
   const nutColData = ColData.nutrition;
@@ -44,6 +45,11 @@ const FoodItemModalForm = (props) => {
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
+        let totalQty = 0;
+        nutrientsList.forEach(nu => { totalQty += parseFloat(nu.quantity) });
+        if (totalQty > 100) {
+          return message.warning("Your sum total nutrients weight exceeed 100%");
+        }
         values["leadTime"] = values["leadTime"].format('HH:mm');
         values = { ...values, ingredients: ingredientsList, nutrition: nutrientsList };
         delete values.addIngredient;
@@ -79,9 +85,6 @@ const FoodItemModalForm = (props) => {
 
   const newConfig = !props.foodItem;
 
-  console.log(props.foodItem);
-
-
   if (!Object.keys(props.options).length)
     return <Loader />
 
@@ -96,9 +99,41 @@ const FoodItemModalForm = (props) => {
     },
   };
 
+  const handleTransfer = (e) => {
+    setVisible(false);
+    props.transferFoodItem(props.foodItem._id, getFieldValue("targetBranches"));
+  }
+
   return (
     <Loader loading={props.loading} >
       <Form onSubmit={handleSubmit} {...formItemLayout}>
+        <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+          <Alert message="Please enter price with respect to one person" type="info" closable />
+        </Form.Item>
+
+        {!newConfig && (
+          <>
+            <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+              <Row type="flex" justify="center">
+                <Col>
+                  <Button onClick={() => setVisible(true)} icon="swap">Transfer</Button>
+                </Col>
+              </Row>
+            </Form.Item>
+            <Modal width={500} visible={visible} centered={true} onCancel={() => setVisible(false)} okText={"Share"}
+              maskClosable={false} destroyOnClose={true} title={"Share Food Item"} onOk={handleTransfer}>
+              {visible && <Form.Item label="Branches">
+                {getFieldDecorator('targetBranches', {
+                  rules: [{ required: true, message: "Choose Branches" }],
+                })(
+                  <Select style={{width: "100%"}} mode={"multiple"} placeholder="Choose target branches">
+                    {props.branches.map((opt, i) => {if(opt.id !== props.branchId) return(<Option value={opt} key={opt.id}>{opt.name}</Option>)})}
+                  </Select>
+                )}
+              </Form.Item>}
+            </Modal>
+          </>
+        )}
 
         {!newConfig && <Form.Item label="Food Item Id">
           <span><strong>{props.foodItem._id}</strong></span>
@@ -141,7 +176,7 @@ const FoodItemModalForm = (props) => {
             initialValue: newConfig ? moment("00:30", 'HH:mm') : moment(props.foodItem.leadTime, 'HH:mm')
           })(<TimePicker format='HH:mm' />)}
         </Form.Item>
-
+ 
         <Form.Item label="Serve Time" >
           {getFieldDecorator('serveTime', {
             rules: [{ required: true, message: "Type is required!" }],
@@ -191,7 +226,7 @@ const FoodItemModalForm = (props) => {
 
         <Form.Item label="Allergies" >
           {getFieldDecorator('allergies', {
-            initialValue: newConfig ? undefined : props.foodItem.flavours
+            initialValue: newConfig ? undefined : props.foodItem.allergies
           })(
             <Select mode={"multiple"} placeholder="Allergies (eg. Nut allergy)">
               {props.options.allergies.map((opt, i) => <Option value={opt} key={i + 1}>{opt}</Option>)}
