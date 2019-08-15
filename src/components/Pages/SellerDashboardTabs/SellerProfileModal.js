@@ -47,7 +47,7 @@ const SellerProfile = (props) => {
 
   const onSelect = (value, option) => {
     console.log(option.props.fullAddr);
-  };
+  }; 
 
   const addressOptions = data.length ? data.map(d => (
     <AutoComplete.Option key={d.id} label={d.text} value={d.place_name} style={{ whiteSpace: "normal" }} fullAddr={{
@@ -94,7 +94,15 @@ const SellerProfile = (props) => {
           {getFieldDecorator('branchName', {
             rules: [{ required: true, message: "Branch name is required!" }],
             initialValue: newConfig ? undefined : profile.branchName
-          })(<Input placeholder="Branch Name" />)}
+          })(<Input suffix={
+            <Button
+              className="search-btn"
+              style={{ marginRight: -12 }}
+              size="large"
+              type="primary"
+            >
+              <Icon type="search" />
+            </Button>} placeholder="Branch Name" />)}
         </Form.Item>
 
         <Form.Item label="Address">

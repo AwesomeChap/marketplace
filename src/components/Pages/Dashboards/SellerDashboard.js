@@ -108,7 +108,7 @@ const SellerDashBoard = (props) => {
 
   const TabPanes = {
     sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} />,
-    foodItems: <FoodItemsTab branches={props.sellerConfig.branches.map(branch => ({name: branch.profile.branchName, id: branch._id}))} />,
+    foodItems: <FoodItemsTab branches={!!props.sellerConfig.branches && props.sellerConfig.branches.map(branch => ({name: branch.profile.branchName, id: branch._id}))} />,
     seatArrangement: <SeatArrangement done={() => setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId} />,
     order: <div>Order</div>,
   }
