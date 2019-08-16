@@ -7,9 +7,10 @@ import { connect } from 'react-redux';
 import { setConfig } from '../../../redux/actions/actions';
 import axios from 'axios';
 import UploadImage from '../../Helper/UploadImage';
-import ColData from './ColData';
+import ColData from '../../Helper/ColData2';
 import GenericApprovalTable from '../../Helper/GenericApprovalTable';
 import moment from 'moment';
+import uuidv4 from 'uuid/v4';
 
 const { Option } = Select;
 
@@ -30,11 +31,12 @@ const categoriesToCascaderData = (cascaderData, obj) => {
 
 const MakeSuggestions = (props) => {
 
-  const [selectedOption, setSelectedOption] = useState();
+  const [selectedOption, setSelectedOption] = useState(null);
   const [visible, setVisible] = useState(false);
   const [approvals, setApprovals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [currentData, setCurrentData] = useState(null);
 
   const { form } = props;
   const { getFieldDecorator, validateFields, getFieldValue, resetFields } = form;
@@ -44,7 +46,7 @@ const MakeSuggestions = (props) => {
     axios.get(`/config?userId=${props.user._id}`).then(({ data }) => {
       props.setConfig(data.config);
       return axios.get(`/approval?userId=${props.user._id}`)
-    }).then(({data}) => {
+    }).then(({ data }) => {
       setApprovals(data.approvals);
       setLoading(false);
     }).catch(e => setLoading(false));
@@ -65,28 +67,25 @@ const MakeSuggestions = (props) => {
           option: _.startCase(Object.keys(values)[0]),
           data: { ...values[Object.keys(values)[0]] },
           date: moment(new Date().valueOf()).format(`DD/MM/YYYY hh:mm A`),
+          key: uuidv4()
         }
-        if(value.option === "Categories"){
+        if (value.option === "Categories" && value.data.values === undefined) {
           value.data.values = [];
         }
         setLoading(true);
         axios.post('/approval', { value }).then(({ data }) => {
           setLoading(false);
-          setApprovals([...approvals, {...data.approval, key: data.approval._id}]);
+          setApprovals([...approvals, { ...data.approval, key: data.approval._id }]);
           setVisible(false);
           setSelectedOption(undefined);
           return message.success(data.message);
-        }).catch(e => {setLoading(false); message.error(e.message)});
+        }).catch(e => { setLoading(false); message.error(e.message) });
       }
     })
   }
 
   const onChange = (value) => {
     setSelectedOption(value);
-  }
-
-  const handleCancel = () => {
-    setVisible(false)
   }
 
   const options = ["Categories", "Ingredients", "Flavours", "Spice Levels", "Allergy", "Serve Time"].map((opt) => (
@@ -129,6 +128,64 @@ const MakeSuggestions = (props) => {
     serveTime: selectedOption === "serveTime" && <Form.Item label="Name">{getFieldDecorator("serveTime.name", formItemOptions)(<Input placeholder="eg. Dinner" />)}</Form.Item>
   }
 
+  const viewComponent = {
+    categories: !!currentData && selectedOption === "categories" && (
+      <>
+        <Form.Item label={"Root"}>{getFieldDecorator("categories.values")(<span>{currentData.values.join(' / ')}</span>)}</Form.Item>
+        <Form.Item label={"Sub-category"}>{getFieldDecorator("categories.subCategory")(<span>{currentData.subCategory}</span>)}</Form.Item>
+      </>
+    ),
+    ingredients: !!currentData && selectedOption === "ingredients" && (
+      <>
+        <Form.Item label="Name">{getFieldDecorator("ingredients.name")(<span>{currentData.name}</span>)}</Form.Item>
+        <UploadImage label="Image" form={form} limit={1} name="ingredients.image" options={{ initialValue: currentData.image }} />
+        <Form.Item label="Type">{getFieldDecorator("ingredients.type")(<span>{currentData.type}</span>)}</Form.Item>
+        <Form.Item label="Description">{getFieldDecorator("ingredients.description")(<span>{currentData.description}</span>)}</Form.Item>
+      </>
+    ),
+    flavours: !!currentData && selectedOption === "flavours" && (
+      <>
+        <Form.Item label="Name">{getFieldDecorator("flavours.name")(<span>{currentData.name}</span>)}</Form.Item>
+        <Form.Item label="Description">{getFieldDecorator("flavours.description")(<span>{currentData.description}</span>)}</Form.Item>
+      </>
+    ),
+    spiceLevels: !!currentData && selectedOption === "spiceLevels" && (
+      <>
+        <Form.Item label="Name">{getFieldDecorator("spiceLevels.name")(<span>{currentData.name}</span>)}</Form.Item>
+        <UploadImage label="Image" form={form} limit={1} name="spiceLevels.image" options={{ initialValue: currentData.image }} />
+      </>
+    ),
+    allergy: !!currentData && selectedOption === "allergy" && <Form.Item label="Name">{getFieldDecorator("allergy.name")(<span>{currentData.name}</span>)}</Form.Item>,
+    serveTime: !!currentData && selectedOption === "serveTime" && <Form.Item label="Name">{getFieldDecorator("serveTime.name")(<span>{currentData.name}</span>)}</Form.Item>
+  }
+
+  const openViewModal = (key) => {
+    console.log(key);
+    const currentItem = approvals.find(el => el.key === key);
+    setCurrentData(currentItem.data);
+    console.log(currentItem);
+    setSelectedOption(_.camelCase(currentItem.option));
+    setVisible(true);
+  }
+
+  const handleDeleteItem = (key) => {
+    setLoading(true);
+    axios.delete('/approval', { data: { userId: props.user._id, approvalId: approvals.find(el => el.key === key)._id } })
+      .then(({ data }) => {
+        setLoading(false);
+        const updatedApprovals = approvals.filter((approval) => approval._id != data.approval._id);
+        console.log('up', updatedApprovals);
+        setApprovals(updatedApprovals)
+        return message.success(data.message);
+      }).catch(e => { setLoading(false); return message.error(e.message) });
+  }
+
+  const handleCancel = () => {
+    setSelectedOption(null);
+    setCurrentData(null);
+    setVisible(false);
+  }
+
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
@@ -160,22 +217,30 @@ const MakeSuggestions = (props) => {
             >
               {options}
             </Select>
-            <Button disabled={approvals === undefined} onClick={() => setVisible(true)} size="large" type="primary">Suggest</Button>
+            <Button disabled={selectedOption === null} onClick={() => setVisible(true)} size="large" type="primary">Suggest</Button>
           </div>
-          <Modal title={`Make a suggestion for ${_.startCase(selectedOption)}`} width={600} visible={visible} footer={null}
+          <Modal title={currentData == null ? `Make a suggestion for ${_.startCase(selectedOption)}` : `Your suggestion for ${_.startCase(selectedOption)}`} width={600} visible={visible} footer={null}
             onCancel={handleCancel} centered={true} maskClosable={false} destroyOnClose={true}>
             <Form onSubmit={handleSuggestion} {...formItemLayout}>
-              {component[selectedOption]}
-              <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
-                <Row type="flex" justify="center">
-                  <Col>
-                    <Button className="center-me" shape={"round"} size="large" loading={loading} htmlType={"submit"} type="primary">Save</Button>
-                  </Col>
-                </Row>
-              </Form.Item>
+              {
+                !currentData ? (
+                  <>
+                    {component[selectedOption]}
+                    <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+                      <Row type="flex" justify="center">
+                        <Col>
+                          <Button className="center-me" shape={"round"} size="large" loading={loading} htmlType={"submit"} type="primary">Save</Button>
+                        </Col>
+                      </Row>
+                    </Form.Item>
+                  </>
+                ) : (
+                    <>{viewComponent[selectedOption]}</>
+                  )
+              }
             </Form>
           </Modal>
-          <GenericApprovalTable colData={ColData} dataSource={approvals} name={"make-suggestions"} />
+          <GenericApprovalTable handleDeleteItem={handleDeleteItem} openViewModal={openViewModal} colData={ColData["user"]} dataSource={approvals} name={"make-suggestions"} />
         </div>
       </div>
     </Loader>

@@ -103,5 +103,35 @@ export default {
       options: ["Active", "Inactive"],
       editable: true
     }
+  ],
+  subscribedPeople: [
+    {
+      title: "User Id",
+      dataIndex: "userId",
+      type: "text",
+      clickable: true
+    },
+    {
+      title: "Visibility",
+      dataIndex: "visibility",
+      type: "select",
+      options: ["Local", "Town", "State", "County", "International"]
+    },
+    {
+      title: "Start Date",
+      dataIndex: "startDate",
+      type: "text"
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      type: "text"
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      type: "select",
+      options: ["Pending", "Active", "End", "Terminated"]
+    }
   ]
 }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { InputNumber, Input, Button, Select, Icon } from "antd";
 import { Rnd } from "react-rnd";
 import '../../scss/table.scss';
+import uuidv4 from 'uuid/v4';
 
 const { Option } = Select;
 
@@ -79,7 +80,7 @@ const StandardTable = props => {
           onChange={e => setSeatCount(e.key)}
         >
           {seatCountOptions.map((sc, i) => (
-            <Option value={sc}>{`${sc} seats`}</Option>
+            <Option key={sc+i} value={sc}>{`${sc} seats`}</Option>
           ))}
         </Select>
       </div>

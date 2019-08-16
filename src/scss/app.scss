@@ -83,7 +83,6 @@ html {
       &.big {
         font-size: 28px;
         margin: auto 0;
-        padding-left: 22px;
       }
     }
   }
@@ -91,7 +90,7 @@ html {
 
 .container {
   width: 90%;
-  max-width: 1200px;
+  max-width: 1250px;
   position: relative;
   // overflow: auto !important;
 }
@@ -107,18 +106,31 @@ html {
   background: $blue;
 }
 
+.login-signup{
+  .ant-modal{
+    .ant-modal-content{
+      .ant-modal-body{
+        // overflow: hidden !important;
+        height: 470px !important;
+        // width: 600px;
+      }
+    }
+  }
+}
+
 .ant-modal{
   padding-bottom: 0 !important;
 }
 
 .ant-modal-body{
   overflow: auto !important; 
-  max-height: 80vh !important;
-  // height: 90vh !important;
+  overflow-x: hidden !important;
+  max-height: 90vh !important;
 }
 
 .ant-modal-content {
   overflow: hidden;
+  max-height: 96vh !important;
   transition: all 0.5s !important;
 }
 
@@ -216,4 +228,34 @@ h3 {
   }
 }
 
+.advtPhotos{
+  width: 100%;
+  // background: red;
+  display: flex;
+  justify-content: space-around;
+  img{
+    margin: 20px;
+    // display: none;
+    // box-shadow: 0 0 10px #aaa;
+    // border-radius: 10px;
+    box-sizing: border-box;
+  }
+}
+
+.ant-input-number{
+  width: unset !important;
+}
+
+/* For demo */
+.ant-carousel .slick-slide {
+  text-align: center;
+  height: 200px;
+  line-height: 200px;
+  background: #364d79;
+  overflow: hidden;
+}
+
+.ant-carousel .slick-slide h3 {
+  color: #fff;
+}
 

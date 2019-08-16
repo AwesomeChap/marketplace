@@ -510,7 +510,7 @@ const EditableTable = (props) => {
         <div className="table-buttons">
           <Button disabled={props.loading} type="danger" onClick={handleMultiDelete} disabled={!selectedRowKeys.length}>Remove</Button>
           {props.handleSave && <Button loading={props.loading} type="primary" onClick={() => props.handleSave(data, props.name)} disabled={selectedRowKeys.length}>Save</Button>}
-          {!props.disableFilters && <Button onClick={clearAll}>Clear All</Button>}
+          {!props.disableFilters && <Button onClick={clearAll}>Clear Filters</Button>}
         </div>
         <Table
           {...tableProps}

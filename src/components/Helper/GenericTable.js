@@ -356,7 +356,7 @@ const EditableTable = (props) => {
   )
 
   const getColumnSearchProps = dataIndex => ({
-    filterDropdown: (props) => <FilterDropDown ref={node => filterDropDown = node} {...props} dataIndex={dataIndex} />,
+    filterDropdown: (props) => <FilterDropDown {...props} dataIndex={dataIndex} />,
     filterIcon: filtered => (
       <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
     ),

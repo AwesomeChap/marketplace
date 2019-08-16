@@ -8,7 +8,7 @@ const { Option } = Select;
 const Seats = props => {
   return (
     <React.Fragment>
-      <div class={`seat-circular-row seats-count-${props.seatCount}`}>
+      <div className={`seat-circular-row seats-count-${props.seatCount}`}>
         <div className="seat" />
         <div className="seat" />
         {props.seatCount >= 4 && <div className="seat" />}
@@ -58,7 +58,7 @@ const RoundTable = props => {
           onChange={e => setSeatCount(e.key)}
         >
           {seatCountOptions.map((sc, i) => (
-            <Option value={sc}>{`${sc} seats`}</Option>
+            <Option key={sc} value={sc}>{`${sc} seats`}</Option>
           ))}
         </Select>
       </div>

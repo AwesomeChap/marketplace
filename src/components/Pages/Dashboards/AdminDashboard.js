@@ -11,10 +11,14 @@ import OtherFieldsTable from '../AdminDashboardTabs/OtherFieldsTable';
 import NestedFieldsTable from '../AdminDashboardTabs/NestedFieldsTable';
 import QueueAnim from 'rc-queue-anim';
 import ScrollToTop from '../../Helper/ScrollToTop';
+import { Redirect } from 'react-router-dom'
+import FAQ from '../AdminDashboardTabs/FAQ';
+import Videos from '../AdminDashboardTabs/Videos';
+import Links from '../AdminDashboardTabs/Links';
 
 const AdminDashboard = (props) => {
 
-  const [tabIndex, setTabIndex] = useState("sub1");
+  const [tabIndex, setTabIndex] = useState("advertisement");
   let wrapperRef = useRef(null);
 
   const handleClick = e => {
@@ -25,17 +29,22 @@ const AdminDashboard = (props) => {
   };
 
   useEffect(() => {
-    axios.get(`/config?userId=${props.user._id}`).then(({ data }) => {
-      props.setConfig(data.config);
-      if (data.type == "info") {
-        return message.info(data.message);
-      }
-      // return message.success(data.message)
-    }).catch((e) => {
-      const error = JSON.parse(JSON.stringify(e.response));
-      if(error.status == "403") props.history.push('/'); 
-      return message.error(error.data.message);
-    })
+    if (!props.loggedIn) {
+      props.history.push('/');
+    }
+    else {
+      axios.get(`/config?userId=${props.user._id}`).then(({ data }) => {
+        props.setConfig(data.config);
+        if (data.type == "info") {
+          return message.info(data.message);
+        }
+        // return message.success(data.message)
+      }).catch((e) => {
+        const error = JSON.parse(JSON.stringify(e.response));
+        if (error.status == "403") props.history.push('/');
+        return message.error(error.data.message);
+      })
+    }
   }, [])
 
   useEffect(() => {
@@ -43,17 +52,21 @@ const AdminDashboard = (props) => {
       window.location.hash = "#1";
   }, [tabIndex])
 
+  if (!props.loggedIn) {
+    return <Redirect to="/" />
+  }
+
   if (!props.config) {
     return <Loader />
   }
 
   const setTabIndexMenu = (key, i, name) => {
     setTabIndex(key)
-    window.location.hash = `#${i}`;
+    window.location.hash = `#${i}`; 
   };
 
   const keys = ["sub1", "ingredients", "flavours", "nutrition", "spices", "allergy", "priceRange", "time", "foodProvider",
-    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment"]
+    "commission", "order", "complain", "advertisement", "customer", "courier", "mailConfig", "payment", "links", "videos", "faq"]
 
   const tabs = {
     "sub1": <CreateRootCategory key="sub1" setTabIndexMenu={setTabIndexMenu} user={props.user} />,
@@ -70,9 +83,12 @@ const AdminDashboard = (props) => {
     "complain": <OtherFieldsTable key="complain" name="complain" user={props.user} />,
     "advertisement": <NestedFieldsTable key="advertisment" rootName="advertisement" user={props.user} />,
     "customer": <OtherFieldsTable key="customer" name="customer" user={props.user} />,
-    "courier": <NestedFieldsTable key="courier" rootName="courier" user={props.user} />,
+    "courier": <NestedFieldsTable key="courier" rootName="courier"/>,
     "mailConfig": <VerifyEmailConfig key="mailConfig" user={props.user} />,
     "payment": <PaymentConfig key="payment" user={props.user} />,
+    "links": <Links key="links" user={props.user} />,
+    "videos": <Videos key="videos" user={props.user} />,
+    "faq": <FAQ key="faq" user={props.user} />,
   }
 
 
@@ -105,15 +121,18 @@ const AdminDashboard = (props) => {
             <Menu.Item onClick={handleClick} key="customer"><Icon type="team" />Customer</Menu.Item>
             <Menu.Item onClick={handleClick} key="courier"><Icon type="red-envelope" />Courier</Menu.Item>
             <Menu.Item onClick={handleClick} key="mailConfig"><Icon type="mail" />SMTP Config</Menu.Item>
+            <Menu.Item onClick={handleClick} key="videos"><Icon type="youtube" />Videos</Menu.Item>
+            <Menu.Item onClick={handleClick} key="links"><Icon type="link" />Links</Menu.Item>
+            <Menu.Item onClick={handleClick} key="faq"><Icon type="align-left" />FAQ</Menu.Item>
           </Menu>
         </div>
         <div ref={(node) => wrapperRef = node} className="scrollable wrapper">
-          {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef}/>}
+          {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef} />}
           <div className="container">
             {
               keys.map((key) => {
                 return <QueueAnim
-                  key={`${key}-tab`} 
+                  key={`${key}-tab`}
                   delay={tabIndex == key ? 300 : 0}
                   duration={400}
                   ease={"easeOutCirc"}

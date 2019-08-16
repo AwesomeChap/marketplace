@@ -6,7 +6,7 @@ const ApprovalSchema = new Schema({
   option: String,
   data: {},
   date: String,
-  status: {type: String, default: "pending"}
+  status: {type: String, default: "Pending"}
 }, { strict: false });
 
 const approval = mongoose.model('Approval', ApprovalSchema)

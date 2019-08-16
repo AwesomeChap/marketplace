@@ -8,6 +8,7 @@ import { setConfig, setSellerConfig } from '../../../redux/actions/actions';
 import GenericModalTable from '../../Helper/GenericModalTable';
 import ColData from './ColData';
 import Loader from '../../Helper/Loader';
+import "regenerator-runtime/runtime";
 
 const typeToTreeData = (array) => {
   let treeObj = {};
@@ -76,9 +77,12 @@ const FoodItemsTab = (props) => {
     }
   }, [props.config])
 
+  if (!props.branchId) {
+    return <div>No Branches Found!</div>
+  }
+
   const handleSaveFoodItem = (foodItem, done) => {
     setLoading(true);
-    console.log(foodItem._id);
 
     axios.post('/seller/foodItem', { userId: props.user._id, branchId: props.branchId, foodItem }).then(({ data }) => {
       const resfoodItem = data.foodItem;
@@ -91,7 +95,6 @@ const FoodItemsTab = (props) => {
       }
       else {
         //update
-        console.log(foodItem._id);
         const foodItemIndex = sellerConfigClone.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItem._id);
         sellerConfigClone.branches[branchIndex].foodItems[foodItemIndex] = resfoodItem;
       }
@@ -101,13 +104,46 @@ const FoodItemsTab = (props) => {
     }).catch(e => { setLoading(false); return message.error(e.message) })
   }
 
-  const handleCancel = () => setVisible(false);
+  const transferFoodItem = async (foodItemId, branches) => {
+    setLoading(true);
 
-  let foodItemModalFormProps = {
-    done: () => setVisible(false), loading: loading,
-    options: options, handleSaveFoodItem: handleSaveFoodItem,
-    foodItemData: {}
+    let promises = [];
+
+    branches.forEach(branch => {
+      promises.push(axios.post('/seller/foodItem', { userId: props.user._id, branchId: branch.id, foodItem: currentFoodItemData }))
+    })
+
+    try {
+      const resArray = await axios.all(promises);
+
+      resArray.map((res, i) => {
+        try {
+          const { foodItem } = res.data;
+          const sellerConfigClone = { ...props.sellerConfig };
+          const branchIndex = sellerConfigClone.branches.map(obj => obj._id).indexOf(branches[i].id);
+          if (!sellerConfigClone.branches[branchIndex].foodItems.includes(foodItem)) {
+            sellerConfigClone.branches[branchIndex].foodItems = [...sellerConfigClone.branches[branchIndex].foodItems, foodItem]
+          }
+          else {
+            const foodItemIndex = sellerConfigClone.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItemId);
+            sellerConfigClone.branches[branchIndex].foodItems[foodItemIndex] = foodItem
+          }
+          props.setSellerConfig(sellerConfigClone);
+        }
+        catch (e) {
+          console.log(e);
+        }
+      })
+    }
+    catch (e) {
+      return message.error("Unable to transfer");
+    }
+
+    setLoading(false);
+    return message.success("Transfer done!");
   }
+
+  const handleCancel = () => setVisible(false);
 
   const handleDeleteItem = (id) => {
     setLoading(true);
@@ -140,6 +176,11 @@ const FoodItemsTab = (props) => {
     return data;
   }
 
+  let foodItemModalFormProps = {
+    done: () => setVisible(false), loading, options, branches: props.branches,
+    handleSaveFoodItem, foodItemData: {}, transferFoodItem, branchId: props.branchId
+  }
+
   if (props.config) {
     foodItemModalFormProps = {
       ...foodItemModalFormProps,
@@ -158,7 +199,7 @@ const FoodItemsTab = (props) => {
       <Loader loading={loading}>
         <Button className="top-right-absolute" onClick={() => { setCurrentFoodItemData(null); setVisible(true) }} type="primary">Add Food Item</Button>
         <Modal width={700} visible={visible} centered={true} footer={null} onCancel={handleCancel} maskClosable={false}
-          destroyOnClose={true} title={!!currentFoodItemData ? "Edit Food Item": "Create Food Item"} >
+          destroyOnClose={true} title={!!currentFoodItemData ? "Edit Food Item" : "Create Food Item"} >
           <FoodItemModalForm {...foodItemModalFormProps} />
         </Modal>
         <GenericModalTable name="foodItems" openEditModal={openEditModal} handleDeleteItem={handleDeleteItem} colData={ColData["foodItems"]} dataSource={transformConfigToDatasource(props.sellerConfig.branches[props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId)].foodItems)} />

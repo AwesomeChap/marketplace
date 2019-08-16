@@ -66,6 +66,7 @@
     z-index: 1;
     transition: all 0.3s;
     animation: scale-up 0.3s;
+    backface-visibility: hidden;
 
     &:after {
       content: "";

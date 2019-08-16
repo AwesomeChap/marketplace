@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../../scss/table.scss";
-import { Table, Input, InputNumber, Form, Button, message, Select, Switch, DatePicker, Tag, Icon } from "antd";
+import { Table, Input, InputNumber, Form, Button, message, Select, Switch, DatePicker, Tag, Icon, Tooltip } from "antd";
 import CreateCategoryForm from "./CategoryConfigForm";
 import Highlighter from 'react-highlight-words';
+import _ from 'lodash';
 import moment from 'moment';
 
 const EditableContext = React.createContext();
@@ -45,7 +46,7 @@ const EditableCell = (props) => {
     setEditing(!editing);
   };
 
-  const renderCell = ({ getFieldDecorator }) => {
+  const renderCell = ({ getFieldDecorator, getFieldValue }) => {
     const {
       dataIndex,
       title,
@@ -53,6 +54,9 @@ const EditableCell = (props) => {
       record,
       index,
       children,
+      editable,
+      clickable,
+      openViewUserModal,
       ...restProps
     } = props;
 
@@ -70,7 +74,7 @@ const EditableCell = (props) => {
 
     return (
       <td {...restProps}>
-        {editing ? (
+        {clickable ? (<Button onClick={openViewUserModal}>{children}</Button>) : editing && editable && _.toLower(record.status) == "pending" ? (
           <Form.Item style={{ margin: 0 }}>
             {getFieldDecorator(dataIndex, {
               ...options, initialValue: inputType === "switch" ? record[dataIndex] = JSON.parse(record[dataIndex]) : record[dataIndex],
@@ -106,6 +110,7 @@ const EditableTable = (props) => {
       setSelectedRowKeys([]);
       setSearchText("");
     }
+    console.log(props.dataSource);
   }, [props.name, props.dataSource])
 
   const { loading } = props;
@@ -118,19 +123,18 @@ const EditableTable = (props) => {
       render: (text, record) => {
         return (
           <div className="table-operation-buttons">
-            {!!props.handleSaveItem ? (
+            {!props.handleSaveItem ? (
               <>
-                <Button icon="eye" onClick={() => props.openViewModal(record.key)} />
-                <Button icon="rollback" type="danger" onClick={() => props.handleDeleteItem(record.key)} />
+                <Tooltip title="View Suggestion"><Button icon="eye" onClick={() => props.openViewModal(record.key)} /></Tooltip>
+                <Tooltip title="Withdraw or Remove Suggestion"><Button disabled={_.toLower(record.status) === "approved"} icon="rollback" type="danger" onClick={() => props.handleDeleteItem(record.key)} /></Tooltip>
               </>
             ) : (
                 <>
-                  <Button icon="eye" onClick={() => props.openViewModal(record.key)} />
-                  <Button icon="save" type="primary" onClick={() => props.handleSave(record.key)} />
+                  <Tooltip title="View Suggestion"><Button icon="eye" onClick={() => props.openViewModal(record.key)} /></Tooltip>
+                  <Tooltip title="Save"><Button disabled={props.form.getFieldValue("status") == undefined || record.status == "Approved" || record.status == "Rejected"} icon="save" type="primary" onClick={() => props.handleSaveItem(props.form.getFieldValue("status"), record.key)} /></Tooltip>
                 </>
               )}
           </div>
-
         )
       }
     }
@@ -172,7 +176,7 @@ const EditableTable = (props) => {
   )
 
   const getColumnSearchProps = dataIndex => ({
-    filterDropdown: (props) => <FilterDropDown ref={node => filterDropDown = node} {...props} dataIndex={dataIndex} />,
+    filterDropdown: (props) => <FilterDropDown {...props} dataIndex={dataIndex} />,
     filterIcon: filtered => (
       <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
@@ -185,9 +189,7 @@ const EditableTable = (props) => {
       }
     },
     render: (text) => {
-      console.log(dataIndex, text);
 
-      
       if (dataIndex == "price") {
         text = `£ ${text}`;
       }
@@ -267,20 +269,30 @@ const EditableTable = (props) => {
         </span>
       }
     }
-    if (!col.editable) {
-      return col;
+    if (col.clickable) {
+      return {
+        ...col,
+        onCell: record => ({
+          record, clickable: col.clickable, openViewUserModal: props.openViewUserModal
+        })
+      }
     }
-    return {
-      ...col,
-      onCell: record => ({
-        record,
-        inputType: col.type,
-        options: (col.type === "select" || col.type === "multiSelect") ? col.options : [],
-        // editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-      })
-    };
+    else {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => ({
+          record,
+          inputType: col.type,
+          options: (col.type === "select" || col.type === "multiSelect") ? col.options : [],
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+        })
+      };
+    }
   });
 
   if (!props.colData.length) {

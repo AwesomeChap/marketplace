@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, InputNumber, TreeSelect, Button, TimePicker, Row, Col } from 'antd';
+import { Form, Input, Select, InputNumber, TreeSelect, Button, DatePicker, TimePicker, Row, Col, Alert, message, Modal } from 'antd';
 import UploadImage from '../../Helper/UploadImage';
 import moment from 'moment';
 import Loader from '../../Helper/Loader';
 import GenericPropsTable from '../../Helper/GenericPropsTable';
 import ColData from './ColData';
+
+const { RangePicker } = DatePicker;
 
 const FoodItemModalForm = (props) => {
   const { form } = props;
@@ -13,11 +15,13 @@ const FoodItemModalForm = (props) => {
   const [nutrientsList, setNutrientsList] = useState([]);
   const [ingsOption, setIngsOption] = useState([]);
   const [nutsOption, setNutsOption] = useState([]);
+  const [visible, setVisible] = useState(false);
 
   const ingColData = ColData.ingredients;
   const nutColData = ColData.nutrition;
 
   useEffect(() => {
+    console.log(props.branches);
     if (!!props.foodItem) {
       setIngredientsList(props.foodItem.ingredients);
       setNutrientsList(props.foodItem.nutrition);
@@ -44,6 +48,12 @@ const FoodItemModalForm = (props) => {
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
+        let totalQty = 0;
+        if (!!values["discount"] && values["discount"].length) values["discountTimeSpan"] = [values["discountTimeSpan"][0].format('DD-MM-YYYY'), values["discountTimeSpan"][1].format('DD-MM-YYYY')];
+        nutrientsList.forEach(nu => { totalQty += parseFloat(nu.quantity) });
+        if (totalQty > 100) {
+          return message.warning("Your sum total nutrients weight exceeed 100%");
+        }
         values["leadTime"] = values["leadTime"].format('HH:mm');
         values = { ...values, ingredients: ingredientsList, nutrition: nutrientsList };
         delete values.addIngredient;
@@ -79,8 +89,9 @@ const FoodItemModalForm = (props) => {
 
   const newConfig = !props.foodItem;
 
-  console.log(props.foodItem);
-
+  const rangeConfig = {
+    rules: [{ type: 'array', required: true, message: 'Please select time!' }],
+  };
 
   if (!Object.keys(props.options).length)
     return <Loader />
@@ -96,9 +107,45 @@ const FoodItemModalForm = (props) => {
     },
   };
 
+  const handleTransfer = (e) => {
+    setVisible(false);
+    props.transferFoodItem(props.foodItem._id, getFieldValue("targetBranches"));
+  }
+
   return (
     <Loader loading={props.loading} >
       <Form onSubmit={handleSubmit} {...formItemLayout}>
+        <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+          <Alert message="Please enter price with respect to one person" type="info" closable />
+        </Form.Item>
+
+        {!newConfig && (
+          <>
+            <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+              <Row type="flex" justify="center">
+                <Col>
+                  <Button onClick={() => setVisible(true)} icon="swap">Transfer</Button>
+                </Col>
+              </Row>
+            </Form.Item>
+            <Modal width={500} visible={visible} centered={true} onCancel={() => setVisible(false)} okText={"Share"}
+              maskClosable={false} destroyOnClose={true} title={"Share Food Item"} onOk={handleTransfer}>
+              {visible && <Form.Item label="Branches">
+                {getFieldDecorator('targetBranches', {
+                  rules: [{ required: true, message: "Choose Branches" }],
+                })(
+                  <Select style={{ width: "100%" }} mode={"multiple"} placeholder="Choose target branches">
+                    {props.branches.map((opt, i) => {if (opt.id !== props.branchId) return (<Select.Option value={opt.name} key={opt.id}>{opt.name}</Select.Option>) })}
+                  </Select>
+                )}
+              </Form.Item>}
+            </Modal>
+          </>
+        )}
+
+        {!newConfig && <Form.Item label="Food Item Id">
+          <span><strong>{props.foodItem._id}</strong></span>
+        </Form.Item>}
 
         <Form.Item label="Name">
           {getFieldDecorator('name', {
@@ -107,7 +154,7 @@ const FoodItemModalForm = (props) => {
           })(<Input placeholder="name (eg. Pizza)" />)}
         </Form.Item>
 
-        <UploadImage form={form} limit={1} label="image" name="image" options={{
+        <UploadImage form={form} limit={1} label="image" name="image" options={{ 
           rules: [{ required: true, message: "Food Item image is required" }],
           initialValue: newConfig ? undefined : props.foodItem.image
         }} />
@@ -130,6 +177,18 @@ const FoodItemModalForm = (props) => {
           })(<InputNumber formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             parser={value => value.replace(/\£\s?|(,*)/g, '')} placeholder="price" />)}
         </Form.Item>
+
+        <Form.Item label="Discount">
+          {getFieldDecorator('discount', {
+            initialValue: newConfig ? undefined : props.foodItem.discount
+          })(
+            <InputNumber formatter={value => `${value}%`} parser={value => value.replace('%', '')} min={0} max={100} placeholder="Discount" />
+          )}
+        </Form.Item>
+
+        {!!getFieldValue("discount") && <Form.Item label="Discount Time Span">
+          {getFieldDecorator('discountTimeSpan', { ...rangeConfig, initialValue: newConfig ? undefined : props.foodItem.discountTimeSpan.map(dts => moment(dts)) })(<RangePicker format="DD-MM-YYYY" />)}
+        </Form.Item>}
 
         <Form.Item label="Lead Time">
           {getFieldDecorator('leadTime', {
@@ -179,7 +238,7 @@ const FoodItemModalForm = (props) => {
             // rules: [{ required: true, message: "Spice level is required!" }],
             initialValue: newConfig ? undefined : props.foodItem.spiceLevel
           })(
-            <Select placeholder="Flavours (eg. Spicy)">
+            <Select mode={"multiple"} placeholder="Flavours (eg. Spicy)">
               {props.options.spiceLevel.map((opt, i) => <Option value={opt} key={i + 1}>{opt}</Option>)}
             </Select>
           )}
@@ -187,7 +246,7 @@ const FoodItemModalForm = (props) => {
 
         <Form.Item label="Allergies" >
           {getFieldDecorator('allergies', {
-            initialValue: newConfig ? undefined : props.foodItem.flavours
+            initialValue: newConfig ? undefined : props.foodItem.allergies
           })(
             <Select mode={"multiple"} placeholder="Allergies (eg. Nut allergy)">
               {props.options.allergies.map((opt, i) => <Option value={opt} key={i + 1}>{opt}</Option>)}

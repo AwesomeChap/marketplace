@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import { updateCategoriesConfig } from '../../../redux/actions/actions';
 import CategoryApprovalTable from '../../Helper/CategoryApprovals';
+import ApprovalView from '../../Helper/ApprovalView';
 import { CustomTitle } from '../../Helper/ChoiceCards';
 
 const { confirm } = Modal;
@@ -150,25 +151,6 @@ const CreateRootCategory = (props) => {
     })
   }
 
-  const handleSaveApproval = (data) => {
-    const categoriesClone = { ...categories };
-    categoriesClone["approval"] = data;
-    const values = categoriesClone;
-
-    setLoading(true)
-    axios.post('/config', { values, userId: props.user._id, prop: "categories" }).then(({ data }) => {
-      setLoading(false);
-
-      props.updateCategoriesConfig(data.config);
-
-      return message.success(data.message);
-    }).catch((e) => {
-      const error = JSON.parse(JSON.stringify(e.response.data));
-      setLoading(false);
-      return message.error(error.message);
-    })
-  }
-
   function showPropsConfirm(category) {
     confirm({
       title: 'Are you sure ?',
@@ -231,7 +213,7 @@ const CreateRootCategory = (props) => {
 
   return (
     <div className="menu-item-page">
-      <Tabs type="card" animated={true}>
+      <Tabs destroyInactiveTabPane={true} type="card" animated={true}>
         <TabPane tab="Manage" key="1">
           <div className="bread-crumb">
             {nameHistory.map((nh) => (
@@ -254,7 +236,8 @@ const CreateRootCategory = (props) => {
           </div>
         </TabPane>
         <TabPane tab="Approval" key="2">
-          <CategoryApprovalTable loading={loading} name={'categories'} handleSave={handleSaveApproval} dataSource={categories["approval"]} />
+          <ApprovalView loading={loading} name="categories"/>
+          {/* <CategoryApprovalTable loading={loading} name={'categories'} handleSave={handleSaveApproval} dataSource={categories["approval"]} /> */}
         </TabPane>
       </Tabs>
     </div>

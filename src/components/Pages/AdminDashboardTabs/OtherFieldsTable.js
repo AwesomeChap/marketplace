@@ -11,6 +11,7 @@ import axios from 'axios';
 import Coldata from './ColData';
 import { connect } from 'react-redux';
 import { setConfig } from '../../../redux/actions/actions';
+import ApprovalView from '../../Helper/ApprovalView';
 
 const { TabPane } = Tabs;
 
@@ -147,26 +148,6 @@ const OtherFieldsTable = (props) => {
     }
   }
 
-  const handleSaveApproval = (data, name) => {
-    const configClone = { ...props.config };
-    configClone[name]["approval"] = data;
-    const values = configClone;
-
-    setLoading(true)
-    axios.post('/config', { values, userId: props.user._id, prop: name }).then(({ data }) => {
-      setLoading(false);
-
-      let updatedConfig = { ...props.config, [name]: data.config };
-      props.setConfig(updatedConfig);
-
-      return message.success(data.message);
-    }).catch((e) => {
-      const error = JSON.parse(JSON.stringify(e.response.data));
-      setLoading(false);
-      return message.error(error.message);
-    })
-  }
-
   // console.log(props.config[props.name]["values"])
 
   return (
@@ -213,7 +194,7 @@ const OtherFieldsTable = (props) => {
             <CategoryConfigForm loading={loading} name={props.name} handleSave={handleSaveConfig} dataSource={transformColData2DataSource(props.config[props.name]["colData"] || Coldata[props.name])} />
           </TabPane>}
           {props.config[props.name].hasOwnProperty('approval') && <TabPane tab="Approval" key="3">
-            <CategoryApprovalTable loading={loading} name={props.name} handleSave={handleSaveApproval} dataSource={props.config[props.name]["approval"]} />
+            <ApprovalView name={props.name} />
           </TabPane>}
         </Tabs>
       </Loader>

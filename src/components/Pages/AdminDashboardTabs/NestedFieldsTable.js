@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { message, Tabs, Alert, Button, Tag } from 'antd';
+import { message, Tabs, Alert, Button, Tag, Modal, Form, Row, Col } from 'antd';
 import _ from 'lodash';
 import GenericEditabelTable from '../../Helper/GenericTable';
+import GenericClickableTable from '../../Helper/GenericClickableTable';
 import CategoryConfigForm from '../../Helper/CategoryConfigForm';
 import CategoryApprovalTable from '../../Helper/CategoryApprovals';
 import Loader from '../../Helper/Loader';
 import { SimpleChoiceCard, CustomTitle } from '../../Helper/ChoiceCards';
 import '../../../scss/choice-card.scss'
 import axios from 'axios';
-import Coldata from './ColData';
 import { connect } from 'react-redux';
 import { setConfig } from '../../../redux/actions/actions';
+import ColData from './ColData';
 
 const { TabPane } = Tabs;
+const { confirm } = Modal;
 
 const addForm = {
   advertisement: {
-    addPricing : true,
+    addPricing: true,
     subscribedSellers: false
   },
   courier: {
@@ -25,10 +27,127 @@ const addForm = {
   }
 }
 
+const SubscribedPeople = (props) => {
+
+  const [loading, setLoading] = useState(false);
+  const [advts, setAdvts] = useState([]);
+  const [currentAdvtData, setCurrentAdvtData] = useState(null);
+  const [currentUserData, setCurrentUserData] = useState(null);
+  const [visible, setVisible] = useState(false);
+
+
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`/advertisement?userId=${props.user._id}`).then(({ data }) => {
+      let advtsData = data.advts;
+      advtsData.forEach(aD => {
+        aD["userId"] = aD._userId;
+        aD["status"] = _.startCase(aD["status"]);
+        delete aD["_userId"];
+      })
+      console.log(advtsData);
+      setAdvts(advtsData);
+      setLoading(false);
+      return message.success(data.message);
+    }).catch(e => { setLoading(false); return message.error(e.message) });
+  }, [])
+
+  const showAdvtData = (data) => {
+    return <div className="advtPhotos">
+      {data.photos.map((photo, i) => (
+        <img src={photo.thumbUrl} key={`photo-${i + 1}`} />
+      ))}
+    </div>
+  }
+
+  const showUserData = (data) => {
+    return <div>User Data</div>
+  }
+
+  const handleCancel = () => {
+    setVisible(false);
+    if (!!currentAdvtData) {
+      setCurrentAdvtData(null);
+    }
+    if (!!userData) {
+      setUserData(null);
+    }
+  }
+
+  const openViewModal = (key) => {
+    console.log(key);
+    const currentItem = advts.find(el => el.key === key);
+    setCurrentAdvtData(currentItem);
+    console.log(currentItem);
+    setVisible(true);
+  }
+
+  const openViewUserModal = (userId) => {
+    //make api call and fetch userData
+    setCurrentUserData("User Data");
+    //and set it to user data
+    setVisible(true);
+  }
+
+  const handleDeleteItem = (key) => {
+    const advtId = advts.find(el => el.key === key)._id;
+    setLoading(true);
+    axios.delete('/advertisement', { data: { advtId } }).then(({ data }) => {
+      setLoading(false);
+      setAdvts(advts.filter((ad, i) => ad._id !== advtId));
+      return message.success(data.message);
+    }).catch(e => { setLoading(false); return message.error(e.message) });
+  }
+
+  const handleApproveItem = () => {
+    setLoading(true);
+    axios.put('/advertisement', { advtId: currentAdvtData._id, values: {...currentAdvtData, status: "active" } }).then(({ data }) => {
+      setLoading(false);
+      advts.find(el => el.key === currentAdvtData.key).status = "Active";
+      setCurrentAdvtData(null);
+      setVisible(false);
+      return message.success(data.message);
+    }).catch(e => { setLoading(false); return message.error(e.message) });
+  }
+
+  function showPropsConfirm(key) {
+    confirm({
+      title: 'Are you sure ?',
+      content: <span>This action would result in permanent deletion of this advertisement</span>,
+      okText: "Yes I'm",
+      okType: 'danger',
+      cancelText: "Abort",
+      centered: true,
+      onOk() {
+        handleDeleteItem(key);
+      }
+    });
+  }
+
+  return (
+    <Loader loading={loading}>
+      <div className="menu-item-page">
+        <Modal title={!!currentAdvtData ? "Advertisement Data" : "User Data"} width={600} visible={visible} footer={null}
+          onCancel={handleCancel} centered={true} destroyOnClose={true}>
+          {!!currentAdvtData ? showAdvtData(currentAdvtData) : showUserData(currentUserData)}
+          <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
+            <Row type="flex" justify="center">
+              <Col>
+                {!!currentAdvtData && currentAdvtData.status === "Pending" && <Button onClick={handleApproveItem} className="center-me" shape={"round"} size="large" loading={loading} htmlType={"submit"} type="primary" icon="check">Approve</Button>}
+              </Col>
+            </Row>
+          </Form.Item>
+        </Modal>
+        <GenericClickableTable openViewUserModal={openViewUserModal} handleDeleteItem={showPropsConfirm} openViewModal={openViewModal} colData={ColData["subscribedPeople"]} dataSource={advts} name={"advts-view"} />
+      </div>
+    </Loader>
+  )
+}
+
 const OtherFieldsTable = (props) => {
 
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState(`${_.camelCase(props.config[props.rootName]["values"][0])}-values`);
+  const [activeTab, setActiveTab] = useState(`firstTab`);
   const [rootName, setRootName] = useState(props.rootName);
 
   useEffect(() => {
@@ -60,7 +179,7 @@ const OtherFieldsTable = (props) => {
 
   const handleSaveConfig = (colData, name) => {
     console.log('coldata from form', colData);
-    
+
     const configClone = { ...props.config };
     colData = colData.map((cd) => {
       const obj = {};
@@ -169,10 +288,17 @@ const OtherFieldsTable = (props) => {
     <div className="category-wrapper" >
       <Loader loading={loading}>
         <Tabs activeKey={activeTab} onTabClick={handleTabClick} animated={true} type="card">
+          <TabPane tab={"Subscribed People"} key={"firstTab"}>
+            <SubscribedPeople user={props.user} />
+          </TabPane>
           {props.config[props.rootName].values.map((val, i) => {
             const subName = _.camelCase(val);
-            console.log(val, props.config[props.rootName][subName]);
-            const obj = props.config[props.rootName][subName];
+            let obj = props.config[props.rootName][subName];
+            if (subName == "subscribedSellers") {
+              obj.values = advts;
+            }
+            // else obj = props.config[props.rootName][subName];
+            console.log(val, obj);
             return Object.keys(obj).map((key) => {
               if (key === "values") {
                 return (
@@ -210,7 +336,7 @@ const OtherFieldsTable = (props) => {
                       </>
                     ) : (
                         <GenericEditabelTable
-                          addForm={addForm[props.rootName].hasOwnProperty(subName) ? addForm[props.rootName][subName] : true} 
+                          addForm={addForm[props.rootName].hasOwnProperty(subName) ? addForm[props.rootName][subName] : true}
                           loading={loading} name={subName} handleSave={handleSaveData}
                           colData={props.config[props.rootName][subName]["colData"] || Coldata[props.rootName][subName]}
                           dataSource={props.config[props.rootName][subName]["values"]} />
@@ -227,7 +353,7 @@ const OtherFieldsTable = (props) => {
               }
               else if (props.config[props.rootName][subName].hasOwnProperty('approval') && key == "approval") {
                 return (
-                  <TabPane tab={"Approval "+val} key={`${val}-${(i + 1) * 3}`}>
+                  <TabPane tab={"Approval " + val} key={`${val}-${(i + 1) * 3}`}>
                     <CategoryApprovalTable loading={loading} name={subName} handleSave={handleSaveApproval} dataSource={props.config[props.rootName][subName]["approval"]} />
                   </TabPane>
                 )
