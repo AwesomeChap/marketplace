@@ -6,8 +6,7 @@ import { connect } from 'react-redux';
 import { saveUser } from '../../redux/actions/actions';
 // import { loadReCaptcha, ReCaptcha } from 'react-recaptcha-v3'
 import ReCAPTCHA from "react-google-recaptcha";
-
-const recaptchaKey = "6LdLIbEUAAAAAHVPgMDI2EbsWH7KiG9uKf2ccUOt";
+import { recaptchaKey } from '../../keys';
 
 const NormalLoginForm = (props) => {
 
@@ -132,15 +131,7 @@ const NormalLoginForm = (props) => {
               )}
             </Form.Item>,
             <Form.Item key="recaptcha">
-              {/* <ReCaptcha
-                sitekey="6LctH7EUAAAAAEqtvDmbnMk6C-7rtpNSWRKa7hmf"
-                action='action_name'
-                verifyCallback={verifyCallback}
-              /> */}
-              <ReCAPTCHA
-                sitekey={recaptchaKey}
-                onChange={onReCaptchaChange}
-              />
+              <ReCAPTCHA sitekey={recaptchaKey} onChange={onReCaptchaChange} />
             </Form.Item>,
             <Form.Item key="c">
               <div className="space-between">
@@ -151,15 +142,15 @@ const NormalLoginForm = (props) => {
                 <Button disabled={loading} onClick={handlePassReset} type="link">Forgot password?</Button>
               </div>
             </Form.Item>,
-            <Form.Item key="d">
-              <div className="space-between">
+            // <Form.Item key="d">
+              <div key="d" className="space-between">
                 <Button type="primary" disabled={loading} onClick={handleNewUserClick} ghost={true}>New User?</Button>
                 <Button type="primary" disabled={captchaText.length === 0} loading={loading} htmlType="submit" >Log in</Button>
-              </div>
-            </Form.Item>,
+              </div>,
+            // </Form.Item>,
             <Divider key="e">OR</Divider>,
-            <Form.Item key="f">
-              <div className="space-between">
+            // <Form.Item key="f">
+              <div key="f" className="space-between">
                 <Button disabled={loading} type="link" href="/auth/google" size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-google" /></Button>
                 <Button disabled={loading} type="link" href="/auth/facebook" size="large" shape="circle" type="primary"
@@ -167,7 +158,7 @@ const NormalLoginForm = (props) => {
                 <Button disabled={loading} type="link" href="/auth/linkedin" size="large" shape="circle" type="primary"
                   className="center-me" ><i className="fab fa-linkedin-in" /></Button>
               </div>
-            </Form.Item>
+            // </Form.Item>
           ] : null
         }
       </QueueAnim>

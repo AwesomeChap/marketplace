@@ -353,18 +353,19 @@ html {
   background: #2f54eb; }
 
 .login-signup .ant-modal .ant-modal-content .ant-modal-body {
-  overflow: hidden !important;
-  height: 475px !important; }
+  height: 470px !important; }
 
 .ant-modal {
   padding-bottom: 0 !important; }
 
 .ant-modal-body {
   overflow: auto !important;
-  max-height: 80vh !important; }
+  overflow-x: hidden !important;
+  max-height: 90vh !important; }
 
 .ant-modal-content {
   overflow: hidden;
+  max-height: 96vh !important;
   transition: all 0.5s !important; }
 
 .ant-modal-title {
@@ -443,12 +444,21 @@ h3 {
   justify-content: space-around; }
   .advtPhotos img {
     margin: 20px;
-    box-shadow: 0 0 10px #aaa;
-    border-radius: 10px;
     box-sizing: border-box; }
 
 .ant-input-number {
   width: unset !important; }
+
+/* For demo */
+.ant-carousel .slick-slide {
+  text-align: center;
+  height: 200px;
+  line-height: 200px;
+  background: #364d79;
+  overflow: hidden; }
+
+.ant-carousel .slick-slide h3 {
+  color: #fff; }
 
 .editable-cell {
   position: relative; }

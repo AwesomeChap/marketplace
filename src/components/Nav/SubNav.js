@@ -9,6 +9,7 @@ import { removeUser } from '../../redux/actions/actions';
 import axios from 'axios';
 import PassReset from '../Login/PassReset';
 import VerifyEmailForm from '../Login/VerifyEmail';
+import _ from 'lodash';
 
 const SubNav = (props) => {
 
@@ -77,7 +78,7 @@ const SubNav = (props) => {
               <span>
                 <Dropdown trigger={['click']} overlay={DropdownMenu} >
                   <Button type="primary">
-                    <Icon type="user" /> Me {props.user.type != "user" && <span style={{ opacity: 0.7, padding: 0, border: 0 }}>({props.user.type})</span>}<Icon type="down" />
+                    <Icon type="user" /> {_.startCase(props.user.local.name.first)} {props.user.type != "user" && <span style={{ opacity: 0.7, padding: 0, border: 0 }}>({props.user.type})</span>}<Icon type="down" />
                   </Button>
                 </Dropdown>
               </span>

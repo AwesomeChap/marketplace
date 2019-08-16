@@ -45,6 +45,7 @@
     "rc-texty": "^0.2.0",
     "re": "^0.1.4",
     "rea": "0.0.1",
+    "reac": "0.0.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-google-recaptcha": "^1.1.0",

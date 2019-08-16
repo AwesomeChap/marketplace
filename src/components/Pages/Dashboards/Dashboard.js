@@ -11,7 +11,7 @@ import MakeSuggestions from '../CommonTabs/MakeSuggestions';
 import Advertise from '../CommonTabs/Advertise';
 
 const Dashboard = (props) => {
-  const [current, setCurrent] = useState("user_dashboard");
+  const [current, setCurrent] = useState("seller_dashboard");
   const [collapsed, setCollapsed] = useState(true);
   let wrapperRef = useRef(null);
 

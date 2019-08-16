@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, InputNumber, Switch, Button, TimePicker, Row, Col, AutoComplete, Icon } from 'antd';
+import { Form, Input, Select, InputNumber, Switch, Button, TimePicker, Row, Col, AutoComplete, Icon, DatePicker } from 'antd';
 import UploadImage from '../../Helper/UploadImage';
 import moment from 'moment';
 import Loader from '../../Helper/Loader';
 import axios from 'axios';
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 const SellerProfile = (props) => {
   const [data, setData] = useState([]);
@@ -40,6 +41,7 @@ const SellerProfile = (props) => {
       if (!err) {
         values["openingTime"] = values["openingTime"].format('hh:mm A');
         values["closingTime"] = values["closingTime"].format('hh:mm A');
+        if (!!values["discount"] && values["discount"].length) values["discountTimeSpan"] = [values["discountTimeSpan"][0].format('DD-MM-YYYY'), values["discountTimeSpan"][1].format('DD-MM-YYYY')];
         props.handleSaveConfig(values, "profile", props.branchId, props.done);
       }
     })
@@ -47,7 +49,11 @@ const SellerProfile = (props) => {
 
   const onSelect = (value, option) => {
     console.log(option.props.fullAddr);
-  }; 
+  };
+
+  const rangeConfig = {
+    rules: [{ type: 'array', required: true, message: 'Please select time!' }],
+  };
 
   const addressOptions = data.length ? data.map(d => (
     <AutoComplete.Option key={d.id} label={d.text} value={d.place_name} style={{ whiteSpace: "normal" }} fullAddr={{
@@ -94,15 +100,7 @@ const SellerProfile = (props) => {
           {getFieldDecorator('branchName', {
             rules: [{ required: true, message: "Branch name is required!" }],
             initialValue: newConfig ? undefined : profile.branchName
-          })(<Input suffix={
-            <Button
-              className="search-btn"
-              style={{ marginRight: -12 }}
-              size="large"
-              type="primary"
-            >
-              <Icon type="search" />
-            </Button>} placeholder="Branch Name" />)}
+          })(<Input placeholder="Branch Name" />)}
         </Form.Item>
 
         <Form.Item label="Address">
@@ -111,11 +109,23 @@ const SellerProfile = (props) => {
             initialValue: newConfig ? undefined : profile.address
           })(
             <AutoComplete style={{ width: "100%" }} dataSource={addressOptions} placeholder="Please input an address" onSelect={onSelect} optionLabelProp="value">
-              <Input allowClear={true} 
-                // suffix={<Icon type={loading ? "loading" : "search"} />} 
-              />
+              <Input allowClear={true} />
             </AutoComplete>
           )}
+        </Form.Item>
+
+        <Form.Item label="Contact Email">
+          {getFieldDecorator("contact.email", {
+            rules: [{ required: true, message: "Email is required" }],
+            initialValue: newConfig ? undefined : profile.contact.email
+          })(<Input placeholder="eg. marketplace@domain.com"/>)}
+        </Form.Item>
+
+        <Form.Item label="Contact Phone Number(s)">
+          {getFieldDecorator("contact.phoneNumbers", {
+            rules: [{ required: true, message: "Phone numbers are required" }],
+            initialValue: newConfig ? undefined : profile.contact.phoneNumbers
+          })(<Select mode="tags" placeholder="eg. +43-1-010101, 9876543210" dropdownStyle={{display: "none"}}/>)}
         </Form.Item>
 
         <Form.Item label="Opening Time">
@@ -145,18 +155,22 @@ const SellerProfile = (props) => {
         <Form.Item label="Cost For One">
           {getFieldDecorator('costForOne', {
             initialValue: newConfig ? undefined : profile.costForOne,
-            rules: [{ type: "number", message: "Input should be a number." },{ required: true, message: "Cost for one is required!" }]
+            rules: [{ type: "number", message: "Input should be a number." }, { required: true, message: "Cost for one is required!" }]
           })(<InputNumber min={0} formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             parser={value => value.replace(/\£\s?|(,*)/g, '')} placeholder="price" />)}
         </Form.Item>
 
-        <Form.Item label="Offers">
-          {getFieldDecorator('offers', {
-            initialValue: newConfig ? undefined : profile.offers
+        <Form.Item label="Discount">
+          {getFieldDecorator('discount', {
+            initialValue: newConfig ? undefined : profile.discount
           })(
-            <Select mode="tags" placeholder="Please select available service options" dropdownStyle={{ display: "none" }} />
+            <InputNumber formatter={value => `${value}%`} parser={value => value.replace('%', '')} min={0} max={100} placeholder="Discount" />
           )}
         </Form.Item>
+
+        {!!getFieldValue("discount") && <Form.Item label="Discount Time Span">
+          {getFieldDecorator('discountTimeSpan', { ...rangeConfig, initialValue: newConfig ? undefined : profile.discountTimeSpan.map(dts => moment(dts)) })(<RangePicker format="DD-MM-YYYY" />)}
+        </Form.Item>}
 
         <Form.Item label="Available Services">
           {getFieldDecorator('serviceOptions', {
@@ -174,7 +188,7 @@ const SellerProfile = (props) => {
             <Form.Item label="Min Order">
               {getFieldDecorator('minOrder', {
                 initialValue: newConfig ? undefined : profile.minOrder,
-                rules: [{ type: "number", message: "Input should be a number." },{ required: true, message: "Min Order is required!" }]
+                rules: [{ type: "number", message: "Input should be a number." }, { required: true, message: "Min Order is required!" }]
               })(<InputNumber min={0} formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                 parser={value => value.replace(/\£\s?|(,*)/g, '')} placeholder="price" />)}
             </Form.Item>
@@ -182,7 +196,7 @@ const SellerProfile = (props) => {
             <Form.Item label="Delivery Coverage Area">
               {getFieldDecorator('delivery.coverageArea', {
                 initialValue: newConfig ? undefined : (profile.delivery.coverageArea || null),
-                rules: [{ type: "number", message: "Input should be a number." },{ required: true, message: "Service coverage required if you deliver also!" }]
+                rules: [{ type: "number", message: "Input should be a number." }, { required: true, message: "Service coverage required if you deliver also!" }]
               })(<InputNumber min={1}
                 // formatter={value => `${value}m`} parser={value => value.replace('m', '')} 
                 placeholder="in Km eg. 5" />)}

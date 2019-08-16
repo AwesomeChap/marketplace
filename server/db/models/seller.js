@@ -22,13 +22,18 @@ const sellerProfileSchema = new Schema({
   branchName: String,
   serviceOptions: [String], //dining in, take away, delivery
   photos: [],
-  offers: [String],
+  discount: Number,
+  discountTimeSpan: [String],
   openingTime: String,
   closingTime: String,
   closingDays: [String],
+  contact: {
+    email: String,
+    phoneNumbers: [String],
+  },
   costForOne: Float,
   minOrder: Float,
-  delivery:{
+  delivery: {
     coverageArea: Float,
     price: Float
   },
@@ -59,6 +64,8 @@ const foodItemSchema = new Schema({
   category: [String],
   flavours: [String],
   recipe: [String],
+  discount: Number,
+  discountTimeSpan: [String],
   ingredients: [ingredientsSchema],
   spiceLevel: [String],
   allergies: [String],

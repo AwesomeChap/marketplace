@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { Form, Icon, Tooltip, message, Input, Button, Divider, Checkbox, Modal } from 'antd';
 import QueueAnim from "rc-queue-anim";
 import axios from 'axios';
+import ReCAPTCHA from "react-google-recaptcha";
+import { recaptchaKey } from '../../keys';
 
 const SignupForm = (props) => {
   const [show, setShow] = useState();
   const [loading, setLoading] = useState(false);
   const [visible, setVisibile] = useState(false);
+  const [captchaText, setCaptchaText] = useState("");
 
   useEffect(() => {
     setShow(true)
@@ -39,6 +42,27 @@ const SignupForm = (props) => {
   const handleAlreadyUserClick = () => {
     setShow(false);
     setTimeout(() => props.showLogin(), 600);
+  }
+
+  const compareToFirstPassword = (rule, value, callback) => {
+    const { form } = props;
+    if (value && value !== form.getFieldValue('password')) {
+      callback('Passwords mismatch');
+    } else {
+      callback();
+    }
+  };
+
+  const validateToNextPassword = (rule, value, callback) => {
+    const { form } = props;
+    if (value) {
+      form.validateFields(['confirmPassword'], { force: true });
+    }
+    callback();
+  };
+
+  const onReCaptchaChange = (value) => {
+    setCaptchaText(value);
   }
 
   const { getFieldDecorator, setFieldsValue } = props.form;
@@ -97,36 +121,61 @@ const SignupForm = (props) => {
                 />,
               )}
             </Form.Item>,
-            <Form.Item key="c" >
-              {getFieldDecorator('password', {
-                rules: [
-                  { required: true, message: 'Please input your Password!' }
-                ],
-              })(
-                <Input
-                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                  type="password"
-                  placeholder="Password"
-                  suffix={
-                    <Tooltip title={passwordInfo}>
-                      <Icon type="info-circle" style={{ color: 'rgba(0,0,0,.45)' }} />
-                    </Tooltip>
-                  }
-                />
-              )}
-            </Form.Item>,
+            <div key="passwords" className="inline-form">
+              <Form.Item >
+                  {getFieldDecorator('password', {
+                    rules: [
+                      { required: true, message: 'Enter Password!' },
+                      { validator: validateToNextPassword }
+                    ],
+                  })(
+                    <Input
+                      prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                      type="password"
+                      placeholder="Password"
+                      suffix={
+                        <Tooltip title={passwordInfo}>
+                          <Icon type="info-circle" style={{ color: 'rgba(0,0,0,.45)' }} />
+                        </Tooltip>
+                      }
+                    />
+                  )}
+              </Form.Item>
+              <Form.Item >
+                {getFieldDecorator('confirmPassword', {
+                  rules: [
+                    { required: true, message: 'Confirm Password!' },
+                    { validator: compareToFirstPassword }
+                  ],
+                })(
+                  <Input
+                    prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    type="password"
+                    placeholder="Confirm Password"
+                    suffix={
+                      <Tooltip title={"Confirm password"}>
+                        <Icon type="info-circle" style={{ color: 'rgba(0,0,0,.45)' }} />
+                      </Tooltip>
+                    }
+                  />
+                )}
+              </Form.Item>
+            </div>
+            ,
             <Form.Item key="acceptTermsAndConditions">
               {getFieldDecorator('acceptTermsAndConditions', {
                 valuePropName: 'checked',
                 rules: [{ required: true, message: "Please accept terms and conditions" }]
               })(<Checkbox> <Button onClick={() => setVisibile(true)} type="link">Accept Terms & Conditions</Button> </Checkbox>)}
             </Form.Item>,
-            <Form.Item key="d" >
-              <Button type="primary" loading={loading} htmlType="submit" className="center-me" >Sign up</Button>
+            <Form.Item key="recaptcha">
+              <ReCAPTCHA sitekey={recaptchaKey} onChange={onReCaptchaChange} />
             </Form.Item>,
-            <Divider key="e" >OR</Divider>,
-            <Form.Item key="f" >
-              <Button type="primary" disabled={loading} onClick={handleAlreadyUserClick} ghost={true} className="center-me" >Already registered?</Button>
+            <Form.Item key="e" >
+              <div className="space-between">
+                <Button type="primary" disabled={loading} onClick={handleAlreadyUserClick} ghost={true} >Already registered?</Button>
+                <Button type="primary" disabled={captchaText.length === 0} loading={loading} htmlType="submit" >Sign up</Button>
+              </div>
             </Form.Item>,
           ] : null
         }

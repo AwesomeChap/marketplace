@@ -54,9 +54,7 @@ const SubscribedPeople = (props) => {
 
   const showAdvtData = (data) => {
     return <div className="advtPhotos">
-      {data.newPhotos.length ? data.newPhotos.map((photo, i) => (
-        <img src={photo.thumbUrl} key={`photo-${i + 1}`} />
-      )) : data.photos.map((photo, i) => (
+      {data.photos.map((photo, i) => (
         <img src={photo.thumbUrl} key={`photo-${i + 1}`} />
       ))}
     </div>

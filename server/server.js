@@ -67,7 +67,8 @@ app.post('/upload', (req, res, next) => {
 	}
 
 	let uploadFile = req.files[Object.keys(req.files)[0]];
-	const fileName = `${req.body.userId}-${uploadFile.name}`;
+	// const fileName = `${req.body.userId}-${uploadFile.name}`;
+	const fileName = uploadFile.name;
   uploadFile.mv(`${uploadDataPath}/${fileName}`, function(err) {
     if (err)
       return res.status(500).send(err);

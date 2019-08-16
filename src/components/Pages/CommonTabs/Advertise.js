@@ -100,7 +100,7 @@ const Advertise = (props) => {
           <Modal width={600} visible={visible} footer={null} title={!!selectedAd ? "Edit Images & View Info" : "Advertise Something"}
             onCancel={() => setVisible(false)} centered={true} maskClosable={false} destroyOnClose={true}>
             <Form onSubmit={handleAdd} {...formItemLayout}>
-              <UploadImage limit={2} form={form} label={"Photo(s)"} name={!selectedAd ? "photos" : "newPhotos"} layout={formItemLayout} options={{
+              <UploadImage limit={2} form={form} label={"Photo(s)"} name={"photos"} layout={formItemLayout} options={{
                 initialValue: !!selectedAd ? selectedAd.photos : undefined, ...options
               }} />
 
@@ -153,14 +153,14 @@ const Advertise = (props) => {
                 const spanValue = 24 / adPricing.length;
                 return (
                   <div key={`${ap.visibility}-card`} style={{ margin: 20 }}>
-                    <Badge count={selectedAd && selectedAd.visibility === ap.visibility ? <Icon type={selectedAd.status === "pending" ? "clock-circle" : "check-circle"} theme="filled" style={{ color: selectedAd.status === "pending" ? "#aaa" : '#52c41a', fontSize: '24px' }} /> : 0}>
+                    <Badge count={selectedAd && selectedAd.visibility === ap.visibility ? <Icon type={selectedAd.status === "end" ? "stop" : selectedAd.status === "pending" ? "clock-circle" : "check-circle"} theme="filled" style={{ color: selectedAd.status === "end" ? "#ff4d4f" : selectedAd.status === "pending" ? "#aaa" : '#52c41a', fontSize: '24px' }} /> : 0}>
                       <Card style={{ width: 180, boxShadow: "0px 0px 10px #bbb" }}>
                         <Statistic
                           title={ap.visibility}
                           value={ap.price}
                           precision={2}
                           prefix={"£"}
-                          valueStyle={selectedAd && selectedAd.visibility === ap.visibility ? { color: selectedAd.status === "pending" ? "#aaa" : '#52c41a' } : null}
+                          valueStyle={selectedAd && selectedAd.visibility === ap.visibility ? { color: selectedAd.status === "end" ? "#ff4d4f" : selectedAd.status === "pending" ? "#aaa" : '#52c41a' } : null}
                           suffix="/ month"
                         />
                       </Card>
