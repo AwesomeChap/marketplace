@@ -35,9 +35,10 @@ const sellerProfileSchema = new Schema({
   minOrder: Float,
   delivery: {
     coverageArea: Float,
-    price: Float
+    cost: Float
   },
   address: String,
+  fullAddr: {},
   cateringService: {
     available: { type: Boolean, default: false },
     coverageArea: Float,

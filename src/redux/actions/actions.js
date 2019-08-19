@@ -18,8 +18,9 @@ export const removeUser = () => ({
   type: REMOVE
 })
 
-export const setLoading = () => ({
-  type: LOADING
+export const _setLoading = (value) => ({
+  type: LOADING,
+  payload: {value}
 })
 
 export const setConfig = (config) => ({

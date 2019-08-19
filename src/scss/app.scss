@@ -1,4 +1,5 @@
 $blue: #2f54eb;
+$light-grey: #f3f3f3;
 
 body {
   height: 100vh;
@@ -245,7 +246,7 @@ h3 {
 /* For demo */
 
 .ant-carousel{
-  background: #f5f5f5;
+  background: $light-grey;
   margin: 16px 0 !important;
 }
 
@@ -269,6 +270,10 @@ h3 {
       // background: #2f54eb !important;
     }
   }
+}
+
+.grey-bg{
+  background: $light-grey;
 }
 
 

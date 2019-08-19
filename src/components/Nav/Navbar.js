@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon, Input, AutoComplete, Form, Button, Tooltip } from 'antd';
 import { NavLink, Link, withRouter } from 'react-router-dom';
-import { setLocation } from '../../redux/actions/actions';
+import { setLocation, _setLoading } from '../../redux/actions/actions';
 import { connect } from 'react-redux';
 import '../../scss/nav.scss';
 import SubNav from './SubNav';
@@ -19,7 +19,7 @@ const Navbar = (props) => {
 
   useEffect(() => {
     // console.log(props.history);
-    // _locateMe();
+    _locateMe();
   }, [])
 
   const _locateMe = () => {
@@ -27,11 +27,12 @@ const Navbar = (props) => {
       const lat = position.coords.latitude;
       const long = position.coords.longitude;
       const encodedText = encodeURIComponent(`${long},${lat}`);
+      props._setLoading(true);
       axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedText}.json?access_token=${mapBoxKey}&cachebuster=1565433849624&autocomplete=true`)
         .then(({ data }) => {
           if (data.features) {
             let d = data.features[0];
-            props.setLocation({
+            props.setLocation({ 
               id: d.id,
               name: d.text,
               address: d.place_name,
@@ -42,12 +43,15 @@ const Navbar = (props) => {
             });
             setLocation(data.features[0].place_name);
             setData(data.features);
+            props._setLoading(false);
           } else {
             setData([]);
+            props._setLoading(false);
           }
         })
         .catch(e => {
           setData([]);
+          props._setLoading(false);
         });
     });
   }
@@ -113,4 +117,4 @@ const Navbar = (props) => {
 
 const mapStateToProps = state => state;
 
-export default connect(mapStateToProps, { setLocation })(withRouter(Navbar));
+export default connect(mapStateToProps, { setLocation, _setLoading })(withRouter(Navbar));

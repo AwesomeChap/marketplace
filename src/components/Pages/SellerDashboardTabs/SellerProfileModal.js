@@ -4,6 +4,7 @@ import UploadImage from '../../Helper/UploadImage';
 import moment from 'moment';
 import Loader from '../../Helper/Loader';
 import axios from 'axios';
+import { mapBoxKey } from '../../../keys';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -12,6 +13,14 @@ const SellerProfile = (props) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const newConfig = !props.branchId;
+
+  let profile;
+
+  (!newConfig && props.sellerConfig.branches.length) ? profile = props.sellerConfig.branches.filter(branch => branch._id == props.branchId)[0].profile : undefined;
+
+  const [fullAddr, setFullAddr] = useState(!!profile ? profile.fullAddr : null);
+
   const { form } = props;
   const { getFieldDecorator, getFieldValue, validateFields } = form;
 
@@ -19,7 +28,7 @@ const SellerProfile = (props) => {
     setLoading(true);
     let encodedText = encodeURIComponent(getFieldValue("address"));
     if (encodedText === "undefined") encodedText = "";
-    axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedText}.json?access_token=pk.eyJ1IjoiYXdlc29tZWNoYXAiLCJhIjoiY2p6NGxuYzV4MDM0NjNmdDQxNm5vd3RlZiJ9.fnHf3fB5ddaANEfKiqYrAQ&cachebuster=1565433849624&autocomplete=true`)
+    axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedText}.json?access_token=${mapBoxKey}&cachebuster=1565433849624&autocomplete=true`)
       .then(({ data }) => {
         if (data.features) {
           setData(data.features);
@@ -42,13 +51,14 @@ const SellerProfile = (props) => {
         values["openingTime"] = values["openingTime"].format('hh:mm A');
         values["closingTime"] = values["closingTime"].format('hh:mm A');
         if (!!values["discount"] && values["discount"].length) values["discountTimeSpan"] = [values["discountTimeSpan"][0].format('DD-MM-YYYY'), values["discountTimeSpan"][1].format('DD-MM-YYYY')];
+        values["fullAddr"] = fullAddr;
         props.handleSaveConfig(values, "profile", props.branchId, props.done);
       }
     })
   }
 
   const onSelect = (value, option) => {
-    console.log(option.props.fullAddr);
+    setFullAddr(option.props.fullAddr);
   };
 
   const rangeConfig = {
@@ -60,7 +70,7 @@ const SellerProfile = (props) => {
       id: d.id,
       name: d.text,
       address: d.place_name,
-      location: {
+      geometry: {
         longitude: d.geometry.coordinates[0],
         latitude: d.geometry.coordinates[1]
       }
@@ -87,12 +97,6 @@ const SellerProfile = (props) => {
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   // const newConfig = Object.keys(sellerConfig).length == 1;
-  const newConfig = !props.branchId;
-
-  let profile;
-
-  (!newConfig && props.sellerConfig.branches.length) ? profile = props.sellerConfig.branches.filter(branch => branch._id == props.branchId)[0].profile : undefined;
-
   return (
     <>
       <Form style={{ position: "relative" }} {...formItemLayout} onSubmit={handleSubmit}>

@@ -5,7 +5,7 @@ import Navbar from './components/Nav/Navbar';
 import Dashboard from './components/Pages/Dashboards/Dashboard';
 import Home from './components/Pages/Home';
 import { connect } from 'react-redux';
-import { saveUser, setLoading, saveErrors } from './redux/actions/actions';
+import { saveUser, _setLoading, saveErrors } from './redux/actions/actions';
 import { message } from 'antd';
 import Loader from './components/Helper/Loader';
 import ScrollToTop from './components/Helper/ScrollToTop';
@@ -16,8 +16,7 @@ const App = (props) => {
 
   useEffect(() => {
     if (!props.loggedIn) {
-
-      props.setLoading();
+      // props._setLoading(true);
       setLoading(true);
       axios.get('/auth/user')
         .then(({ data: { user } }) => {
@@ -31,7 +30,7 @@ const App = (props) => {
     }
   }, []);
 
-  const { loggedIn, loaded, user } = props;
+  const { loggedIn, user } = props;
 
 
   if (loading) {
@@ -48,9 +47,9 @@ const App = (props) => {
     <>
       <Router>
         <Navbar dashboardPath={dashboardPath} />
-        <Route exact path="/" render={(props) => <Home {...props} user={user} loggedIn={loggedIn} loaded={loaded} dashboardPath={dashboardPath} />} />
-        <Route exact path={"/admin/dashboard"} render={(props) => <AdminDashboard {...props} user={user} loggedIn={loggedIn} loaded={loaded}/>} />
-        <Route exact path={"/me/dashboard"} render={(props) => <Dashboard {...props} user={user} loggedIn={loggedIn} loaded={loaded} />} />
+        <Route exact path="/" render={(props) => <Home {...props} user={user} loggedIn={loggedIn} dashboardPath={dashboardPath} />} />
+        <Route exact path={"/admin/dashboard"} render={(props) => <AdminDashboard {...props} user={user} loggedIn={loggedIn} />} />
+        <Route exact path={"/me/dashboard"} render={(props) => <Dashboard {...props} user={user} loggedIn={loggedIn} />} />
       </Router>
     </>
   )
@@ -60,4 +59,4 @@ const mapStateToProps = (state) => {
   return state;
 }
 
-export default connect(mapStateToProps, { saveUser, setLoading, saveErrors })(App);
+export default connect(mapStateToProps, { saveUser, _setLoading, saveErrors })(App);
