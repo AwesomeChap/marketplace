@@ -30,37 +30,37 @@ router.get('/', (req, res) => {
                     }
                     switch (advt.duration.key) {
                         case 1: AdvtStatusToken1.findOne({ _advtId: advt._id }).then(advtToken => {
-                            if (!advtToken && advt.photos.length) {
+                            if (!advtToken && _.toLower(advt.status) === "active") {
                                 Advertisement.findByIdAndUpdate(advt._id, { status: "end" }, { new: true }).then(advt => res.status(200).json({ message: "You plan has ended", advt })).catch(e => res.status(500).json({ message: "Error occured while setting status to end", errors: e }))
                             }
                             return res.status(200).json({ message: "Advertisement found", advt })
                         }); break;
                         case 2: AdvtStatusToken2.findOne({ _advtId: advt._id }).then(advtToken => {
-                            if (!advtToken && advt.photos.length) {
+                            if (!advtToken && _.toLower(advt.status) === "active") {
                                 Advertisement.findByIdAndUpdate(advt._id, { status: "end" }, { new: true }).then(advt => res.status(200).json({ message: "You plan has ended", advt })).catch(e => res.status(500).json({ message: "Error occured while setting status to end", errors: e }))
                             }
                             return res.status(200).json({ message: "Advertisement found", advt })
                         }); break;
                         case 3: AdvtStatusToken3.findOne({ _advtId: advt._id }).then(advtToken => {
-                            if (!advtToken && advt.photos.length) {
+                            if (!advtToken && _.toLower(advt.status) === "active") {
                                 Advertisement.findByIdAndUpdate(advt._id, { status: "end" }, { new: true }).then(advt => res.status(200).json({ message: "You plan has ended", advt })).catch(e => res.status(500).json({ message: "Error occured while setting status to end", errors: e }))
                             }
                             return res.status(200).json({ message: "Advertisement found", advt })
                         }); break;
                         case 6: AdvtStatusToken6.findOne({ _advtId: advt._id }).then(advtToken => {
-                            if (!advtToken && advt.photos.length) {
+                            if (!advtToken && _.toLower(advt.status) === "active") {
                                 Advertisement.findByIdAndUpdate(advt._id, { status: "end" }, { new: true }).then(advt => res.status(200).json({ message: "You plan has ended", advt })).catch(e => res.status(500).json({ message: "Error occured while setting status to end", errors: e }))
                             }
                             return res.status(200).json({ message: "Advertisement found", advt })
                         }); break;
                         case 12: AdvtStatusToken12.findOne({ _advtId: advt._id }).then(advtToken => {
-                            if (!advtToken && advt.photos.length) {
+                            if (!advtToken && _.toLower(advt.status) === "active") {
                                 Advertisement.findByIdAndUpdate(advt._id, { status: "end" }, { new: true }).then(advt => res.status(200).json({ message: "You plan has ended", advt })).catch(e => res.status(500).json({ message: "Error occured while setting status to end", errors: e }))
                             }
                             return res.status(200).json({ message: "Advertisement found", advt })
                         }); break;
                         default: case 1: AdvtStatusToken1.findOne({ _advtId: advt._id }).then(advtToken => {
-                            if (!advtToken && advt.photos.length) {
+                            if (!advtToken && _.toLower(advt.status) === "active") {
                                 Advertisement.findByIdAndUpdate(advt._id, { status: "end" }, { new: true }).then(advt => res.status(200).json({ message: "You plan has ended", advt })).catch(e => res.status(500).json({ message: "Error occured while setting status to end", errors: e }))
                             }
                             return res.status(200).json({ message: "Advertisement found", advt })
@@ -200,6 +200,26 @@ router.delete('/', (req, res) => {
                 }).catch(e => res.status(500).json({ errors: e })); break;
             }
         }).catch(e => res.status(500).json({ message: "Error occured while finding advertisement", errors: e }))
+    }
+})
+
+// check location
+// find advertisements of visibility location, state, county, international
+
+// what is the location of advertisement
+
+router.get('/show', (req, res) => {
+    console.log(req.query);
+    if(!req.query.lat || !req.query.long){
+        return res.status(500).json({message: "insufficient Parameters"});
+    }
+    else{
+        Advertisement.find({}).then(advts => {
+            const filteredAdvts = advts.filter( advt => advt.approvedPhotos.length !== 0).map( advt => {
+                return advt.approvedPhotos;
+            })
+            return res.status(200).json({advts: filteredAdvts});
+        }).catch(e => res.status(500).json({messsage: "some error occured while finding advts to show"}));
     }
 })
 

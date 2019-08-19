@@ -1,5 +1,7 @@
-import { SAVE, REMOVE, LOADING, SAVE_ERRORS, SET_CONFIG, UPDATE_MAIL_CONFIG, 
-  UPDATE_CATEGORIES_CONFIG, SET_SELLER_CONFIG, SET_BRANCH_ID } from '../actions/actions';
+import {
+  SAVE, REMOVE, LOADING, SAVE_ERRORS, SET_CONFIG, UPDATE_MAIL_CONFIG,
+  UPDATE_CATEGORIES_CONFIG, SET_SELLER_CONFIG, SET_BRANCH_ID, SET_LOCATION
+} from '../actions/actions';
 
 const initialState = {
   loggedIn: false,
@@ -9,6 +11,7 @@ const initialState = {
   sellerConfig: null,
   branchId: null,
   errors: null,
+  location: null,
 }
 
 export default function (state = initialState, action) {
@@ -18,11 +21,12 @@ export default function (state = initialState, action) {
     case REMOVE: return { ...state, loggedIn: false, loaded: true, user: null };
     case LOADING: return { ...state, loaded: false };
     case SET_CONFIG: return { ...state, config: { ...action.payload.config } };
-    case SET_BRANCH_ID: return { ...state, branchId: action.payload.branchId  };
+    case SET_BRANCH_ID: return { ...state, branchId: action.payload.branchId };
     case SET_SELLER_CONFIG: return { ...state, sellerConfig: { ...action.payload.sellerConfig } };
     case UPDATE_MAIL_CONFIG: let newConfig1 = { ...state.config }; newConfig1["mail"] = action.payload.mail; return { ...state, config: newConfig1 };
     case UPDATE_CATEGORIES_CONFIG: let newConfig2 = { ...state.config }; newConfig2["categories"] = action.payload.categories; return { ...state, config: newConfig2 };
     case SAVE_ERRORS: return { ...state, loaded: true, errors: action.payload.err };
+    case SET_LOCATION: return { ...state, location: action.payload.location };
     default: return state;
   }
 }

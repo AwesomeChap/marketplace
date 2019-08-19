@@ -3,8 +3,10 @@ import "../../scss/table.scss";
 import { Table, Input, InputNumber, Form, Button, message, Select, Switch, DatePicker, Tag, Upload, Icon } from "antd";
 import CreateCategoryForm from "./CategoryConfigForm";
 import Highlighter from 'react-highlight-words';
+import moment from 'moment';
 
 let typeIsSelect = false;
+const { RangePicker } = DatePicker;
 
 const AddForm = (props) => {
 
@@ -19,7 +21,10 @@ const AddForm = (props) => {
         return message.warning("fields should not be empty")
       }
       else {
+        if (!!values["discount"]) { values["discountTimeSpan"] = [values["discountTimeSpan"][0].format('DD/MM/YYYY'), values["discountTimeSpan"][1].format('DD/MM/YYYY')]; }
+        if (!values["discount"]) { values["discount"] = 0; values["discountTimeSpan"] = [] }
         if (values.hasOwnProperty("editable") && (values.editable == true || values.editable == false)) values.editable = JSON.stringify(values.editable);
+        console.log(values);
         props.handleAddition(values);
         resetFields();
         setUploadButtonDisplay(true);
@@ -44,19 +49,21 @@ const AddForm = (props) => {
   };
 
   return (
-    <Form layout={"inline"} onSubmit={handleSubmit}>
+    <Form layout={"inline"}>
       <div className="flex-inline-form">
-        <Button onClick={() => resetFields()} icon="undo" />
+        <Button onClick={() => resetFields()} style={props.noAddFormLables && { marginRight: 10 }} icon="undo" />
         {props.columns.map((col, i) => {
           const inputField = {
             text: <Input placeholder={col.title} />,
             number: <InputNumber placeholder={col.title} />,
-            select: <Select placeholder={col.title}>{col.type == "select" ? col.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>) : undefined}</Select>,
+            select: <Select style={col.dataIndex == "branchName" && { width: 130 }} placeholder={col.title}>{col.type == "select" ? col.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>) : undefined}</Select>,
             switch: <Switch />,
             tagSelect: <Select disabled={!typeIsSelect} placeholder={"Only for Select field"} dropdownStyle={{ display: "none" }} mode="tags" />,
             price: <InputNumber placeholder={col.title} formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />,
+            percentage: <InputNumber placeholder={col.title} />,
             multiSelect: <Select mode="multiple" placeholder={col.title}>{col.type == "multiSelect" ? col.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>) : undefined}</Select>,
             date: <DatePicker placeholder="date" />,
+            rangePicker: <RangePicker disabled={col.dataIndex === "discountTimeSpan" && !getFieldValue("discount")} format="DD/MM/YYYY" />,
             upload: (<Upload listType="picture"
               action={"/upload"}
               onRemove={(file) => { setUploadButtonDisplay(true) }}
@@ -65,7 +72,7 @@ const AddForm = (props) => {
             </Upload>)
           }
           if (col.dataIndex == "operation") {
-            return <Button htmlType={"submit"} type="primary" icon="plus" />
+            return <Button onClick={handleSubmit} type="primary" icon="plus" />
           }
 
           let options = {
@@ -76,14 +83,31 @@ const AddForm = (props) => {
             options = { initialValue: false, valuePropName: 'checked' };
           }
 
+          if (col.type == "number") {
+            options = { rules: [{ type: "number", message: "Invalid input" }] };
+          }
+
           if (col.type == "upload") {
             options = { ...options, valuePropName: 'fileList', getValueFromEvent: normFile, }
           }
 
           if (col.type == "tagSelect") options = {};
 
+          if (col.dataIndex == "discount") {
+            options = { initialValue: "" }
+          }
+
+          if (col.dataIndex == "discountTimeSpan") {
+            options = { initialValue: [] }
+            if (getFieldValue("discount")) {
+              options = { ...options, rules: [{ required: true, message: `${col.title} is required` }] }
+            }
+          }
+
+          const labelProps = props.noAddFormLables ? {} : { label: col.title };
+
           return (
-            <Form.Item key={`col-${col.type}-${col.dataIndex}`} className={col.type == "switch" && "switch-fix" || col.type == "tagSelect" && "options-fix"} label={col.title}>
+            <Form.Item key={`col-${col.type}-${col.dataIndex}`} className={col.type == "switch" && "switch-fix" || (col.type == "tagSelect" || col.type == "rangePicker") && "options-fix"} {...labelProps}>
               {getFieldDecorator(col.dataIndex, { ...options })(inputField[col.type])}
             </Form.Item>
           )
@@ -126,11 +150,11 @@ const EditableCell = (props) => {
     return e && e.fileList;
   };
 
-  const getInput = (type) => {
+  const getInput = (type, getFieldValue) => {
     if (props.inputType === "number") {
       return <InputNumber />;
     }
-
+ 
     if (props.inputType === "upload") {
       return (
         <Upload listType="picture"
@@ -143,7 +167,11 @@ const EditableCell = (props) => {
     }
 
     else if (props.inputType === "multiSelect") {
-      return <Select mode="multiple" style={{ width: "100%" }}>{props.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>)}</Select>
+      return <Select mode="multiple" style={col.dataIndex == "branchName" && { width: 120 }}>{props.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>)}</Select>
+    }
+
+    else if (props.inputType === "rangePicker") {
+      return <RangePicker disabled={!getFieldValue("discount")} format="DD/MM/YYYY" />
     }
 
     else if (props.inputType === "date") {
@@ -152,6 +180,10 @@ const EditableCell = (props) => {
 
     else if (props.inputType === "price") {
       return <InputNumber formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />
+    }
+
+    else if (props.inputType === "percentage") {
+      return <InputNumber />
     }
 
     else if (props.inputType === "switch") {
@@ -168,7 +200,7 @@ const EditableCell = (props) => {
     return <Input />;
   };
 
-  const renderCell = ({ getFieldDecorator }) => {
+  const renderCell = ({ getFieldDecorator, getFieldValue }) => {
     const {
       editing,
       dataIndex,
@@ -189,17 +221,25 @@ const EditableCell = (props) => {
       ],
     };
 
-    if (inputType === "switch") options = { valuePropName: 'checked' };
-    if (inputType === "tagSelect") options = {};
-    if (inputType == "upload") { options = { valuePropName: 'fileList', getValueFromEvent: normFile } }
+    if (inputType === "switch") options = { valuePropName: 'checked' }
+    if (inputType === "tagSelect") options = {}
+    if (inputType === "upload") { options = { valuePropName: 'fileList', getValueFromEvent: normFile } }
+    if (dataIndex == "discount") { options = { initialValue: "" } }
+    if (dataIndex == "discountTimeSpan") {
+      options = { initialValue: [] }
+      if (getFieldValue("discount")) {
+        options = { ...options, rules: [{ required: true, message: `required` }] }
+      }
+    }
+
 
     return (
       <td {...restProps}>
         {editing ? (
           <Form.Item style={{ margin: 0 }}>
             {getFieldDecorator(dataIndex, {
-              ...options, initialValue: inputType === "switch" ? record[dataIndex] = JSON.parse(record[dataIndex]) : record[dataIndex],
-            })(getInput(record["type"]))}
+              ...options, initialValue: inputType === "rangePicker" ? record[dataIndex].map(val => moment(val, "DD/MM/YYYY")) : inputType === "switch" ? record[dataIndex] = JSON.parse(record[dataIndex]) : record[dataIndex],
+            })(getInput(record["type"], getFieldValue))}
           </Form.Item>
         ) : (
             children
@@ -220,7 +260,7 @@ const EditableTable = (props) => {
   const [searchText, setSearchText] = useState("");
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
-  
+
   useEffect(() => {
     if (name != props.name) {
       setName(props.name);
@@ -271,6 +311,8 @@ const EditableTable = (props) => {
       }
       const data = [...props.dataSource];
       const newData = [...data];
+
+      if (!!row["discount"]) { console.log("here"); row["discountTimeSpan"] = [row["discountTimeSpan"][0].format('DD/MM/YYYY'), row["discountTimeSpan"][1].format('DD/MM/YYYY')]; }
 
       const index = newData.findIndex(item => key === item.key);
 
@@ -329,7 +371,6 @@ const EditableTable = (props) => {
   };
 
   let searchInput = React.useRef(null);
-  let filterDropDown = React.useRef(null);
 
   const FilterDropDown = ({ setSelectedKeys, selectedKeys, confirm, clearFilters, dataIndex }) => (
     <div style={{ padding: 8 }}>
@@ -358,23 +399,28 @@ const EditableTable = (props) => {
   )
 
   const getColumnSearchProps = dataIndex => ({
-    filterDropdown: (props) => <FilterDropDown ref={node => filterDropDown = node} {...props} dataIndex={dataIndex} />,
+    filterDropdown: (props) => <FilterDropDown {...props} dataIndex={dataIndex} />,
     filterIcon: filtered => (
       <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
-    onFilter: (value, record) => {
-      return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-    },
+    // onFilter: (value, record) => {
+    //   console.log("onFilter", dataIndex, value);
+    //   return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+    // },
     onFilterDropdownVisibleChange: visible => {
       if (visible) {
         setTimeout(() => searchInput.select());
       }
     },
     render: (text) => {
-      if(dataIndex == "price"){
+      console.log("render", dataIndex, text);
+      if (dataIndex == "price") {
         text = `£ ${text}`;
       }
-      if(Array.isArray(text)){
+      if (dataIndex == "discount") {
+        if (text != "" && text != null && text != undefined) text = `${text} %`;
+      }
+      if (Array.isArray(text)) {
         text = text.join(', ');
       }
       return (
@@ -403,13 +449,14 @@ const EditableTable = (props) => {
       if (!(col.dataIndex == "operation" || col.type == "upload" || col.type == "select")) {
         col = { ...col, ...getColumnSearchProps(col.dataIndex) }
 
-        if (col.type == "number" || col.type == "price") {
+        if (col.type == "number" || col.type == "price" || col.type == "percentage") {
           col["sorter"] = (a, b) => a[col.dataIndex] - b[col.dataIndex];
         }
       }
 
       if (col.type == "select") {
-        col["filters"] = col.options.map(opt => ({ text: opt, value: opt }));
+        if(col.dataIndex === "branchName") col["filters"] = props.branches.map( opt => ({text: opt, value: opt}));
+        else col["filters"] = col.options.map(opt => ({ text: opt, value: opt }));
         col["filteredValue"] = filteredInfo[col.dataIndex] || null;
         col["onFilter"] = (value, record) => record[col.dataIndex] === value;
       }
@@ -468,7 +515,7 @@ const EditableTable = (props) => {
   }
 
   const footer = () => (
-    <WrappedAddForm columns={columns} handleAddition={handleAddFormData} />
+    <WrappedAddForm noAddFormLables={props.noAddFormLables} columns={columns} handleAddition={handleAddFormData} />
   )
 
   const handleChange = (pagination, filters, sorter) => {
@@ -520,6 +567,6 @@ const EditableTable = (props) => {
   );
 }
 
-const GenericPropsTable = Form.create({name: "generic-props-editable"})(EditableTable);
+const GenericPropsTable = Form.create({ name: "generic-props-editable" })(EditableTable);
 
 export default GenericPropsTable

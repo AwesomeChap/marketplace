@@ -12,6 +12,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { setConfig } from '../../../redux/actions/actions';
 import ColData from './ColData';
+import UploadImage from '../../Helper/UploadImage';
 
 const { TabPane } = Tabs;
 const { confirm } = Modal;
@@ -53,11 +54,9 @@ const SubscribedPeople = (props) => {
   }, [])
 
   const showAdvtData = (data) => {
-    return <div className="advtPhotos">
-      {data.photos.map((photo, i) => (
-        <img src={photo.thumbUrl} key={`photo-${i + 1}`} />
-      ))}
-    </div>
+    return <UploadImage limit={data.photos.length} form={props.form} name={"photos"} options={{
+      initialValue: data.photos || undefined
+    }} /> 
   }
 
   const showUserData = (data) => {
@@ -143,6 +142,8 @@ const SubscribedPeople = (props) => {
     </Loader>
   )
 }
+
+const WrappedSubscribedPeople = Form.create({name: "subscribed-people"})(SubscribedPeople);
 
 const OtherFieldsTable = (props) => {
 
@@ -289,7 +290,7 @@ const OtherFieldsTable = (props) => {
       <Loader loading={loading}>
         <Tabs activeKey={activeTab} onTabClick={handleTabClick} animated={true} type="card">
           <TabPane tab={"Subscribed People"} key={"firstTab"}>
-            <SubscribedPeople user={props.user} />
+            <WrappedSubscribedPeople user={props.user} />
           </TabPane>
           {props.config[props.rootName].values.map((val, i) => {
             const subName = _.camelCase(val);

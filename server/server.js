@@ -51,6 +51,7 @@ app.use('/seller', require('./routes/seller'))
 app.use('/customer', require('./routes/customer'))
 app.use('/approval', require('./routes/approval'))
 app.use('/advertisement', require('./routes/advertisement'))
+app.use('/restaurants', require('./routes/restaurants'));
 
 app.get('/upload', (req, res) => {
 	res.sendFile(path.join(uploadDataPath, req.query.location));

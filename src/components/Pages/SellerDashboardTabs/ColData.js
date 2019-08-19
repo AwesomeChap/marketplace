@@ -55,13 +55,6 @@ export default {
       editable: false,
     },
     {
-      title: "Price (£)",
-      dataIndex: "price",
-      type: "number",
-      editable: false,
-      // render: (text) => `£ ${text}`
-    },
-    {
       title: "Image",
       dataIndex: "image",
       type: "upload",
@@ -75,10 +68,41 @@ export default {
       editable: false,
     },
     {
-      title: "category",
+      title: "Category",
       dataIndex: "category",
       type: "text",
       editable: false
     }
   ],
+  branchSpecificDetails: [
+    {
+      title: "Branch Name",
+      dataIndex: "branchName",
+      type: "select",
+      options: [],
+      editable: false,
+      width: "24%",
+    },
+    {
+      title: "Price (£)",
+      dataIndex: "price", 
+      type: "number",
+      editable: true,
+      width: "16%",
+    },
+    {
+      title: "Discount (%)",
+      dataIndex: "discount",
+      type: "number",
+      editable: true,
+      width: "20%",
+    },
+    {
+      title: "Discount Time Span",
+      dataIndex: "discountTimeSpan",
+      type: "rangePicker",
+      editable: true,
+      width: "40%",
+    }
+  ]
 }

@@ -450,15 +450,19 @@ h3 {
   width: unset !important; }
 
 /* For demo */
-.ant-carousel .slick-slide {
-  text-align: center;
-  height: 200px;
-  line-height: 200px;
-  background: #364d79;
-  overflow: hidden; }
+.ant-carousel {
+  background: #f5f5f5;
+  margin: 16px 0 !important; }
 
-.ant-carousel .slick-slide h3 {
-  color: #fff; }
+.ant-carousel .slick-slide {
+  height: 250px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  overflow: hidden; }
+  .ant-carousel .slick-slide div img {
+    height: 250px !important; }
 
 .editable-cell {
   position: relative; }

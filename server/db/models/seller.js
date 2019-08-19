@@ -54,19 +54,24 @@ const sellerProfileSchema = new Schema({
   hourlyCharge: { type: Float, default: 0 },
 }, { strict: false })
 
+const foodItemsBranchSpecificDetailsSchema = new Schema({
+  branchName: String,
+  price: Float,
+  discount: Number,
+  discountTimeSpan: [String],
+},{strict: false});
+
 const foodItemSchema = new Schema({
   name: String,
   image: [],
   type: String, // veg or non-veg
-  price: Float,
   leadTime: String,
   serveTime: [String],
   category: [String],
   flavours: [String],
   recipe: [String],
-  discount: Number,
-  discountTimeSpan: [String],
   ingredients: [ingredientsSchema],
+  branchSpecificDetails: [foodItemsBranchSpecificDetailsSchema],
   spiceLevel: [String],
   allergies: [String],
   nutrition: [nutritionSchema],
@@ -98,7 +103,6 @@ const advtSchema = new Schema({
 }, { strict: false })
 
 const restaurantBranchConfig = new Schema({
-  foodItems: [foodItemSchema],
   seatArrangement: seatArrangementSchema,
   profile: sellerProfileSchema,
   order: [],
@@ -115,6 +119,7 @@ const sellerConfigSchema = new Schema({
     restaurantName: String,
     logo: {},
   },
+  foodItems: [foodItemSchema],
   branches: [restaurantBranchConfig]
 }, { strict: false });
 

@@ -3,7 +3,9 @@ import "../../scss/table.scss";
 import { Table, Input, InputNumber, Form, Button, message, Select, Switch, DatePicker, Tag, Upload, Icon } from "antd";
 import CreateCategoryForm from "./CategoryConfigForm";
 import Highlighter from 'react-highlight-words';
+import moment from 'moment';
 
+const { RangePicker } = DatePicker;
 let typeIsSelect = false;
 
 const AddForm = (props) => {
@@ -19,6 +21,7 @@ const AddForm = (props) => {
         return message.warning("fields should not be empty")
       }
       else {
+        if (!!values["discount"] && values["discount"].length) values["discountTimeSpan"] = [values["discountTimeSpan"][0].format('DD-MM-YYYY'), values["discountTimeSpan"][1].format('DD-MM-YYYY')];
         if (values.hasOwnProperty("editable") && (values.editable == true || values.editable == false)) values.editable = JSON.stringify(values.editable);
         props.handleAddition(values);
         resetFields();
@@ -46,7 +49,7 @@ const AddForm = (props) => {
   return (
     <Form layout={"inline"} onSubmit={handleSubmit}>
       <div className="flex-inline-form">
-        <Button onClick={() => resetFields()} icon="undo" />
+        <Button onClick={() => resetFields()} style={props.noAddFormLables && {marginRight: 10}} icon="undo" />
         {props.columns.map((col, i) => {
           const inputField = {
             text: <Input placeholder={col.title} />,
@@ -57,6 +60,7 @@ const AddForm = (props) => {
             price: <InputNumber placeholder={col.title} formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} />,
             multiSelect: <Select mode="multiple" placeholder={col.title}>{col.type == "multiSelect" ? col.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>) : undefined}</Select>,
             date: <DatePicker placeholder="date" />,
+            rangePicker : <RangePicker format="DD-MM-YYYY" />,
             upload: (<Upload listType="picture"
               action={"/upload"}
               onRemove={(file) => { setUploadButtonDisplay(true) }}
@@ -82,8 +86,14 @@ const AddForm = (props) => {
 
           if (col.type == "tagSelect") options = {};
 
+          if (col.type == "rangePicker") options = {rules: [{ type: 'array', required: true, message: 'Please select time!' }]}
+
+          console.log(props.noAddFormLables);
+
+          const labelProps = props.noAddFormLables ? {} : {label : col.title};
+
           return (
-            <Form.Item key={`col-${col.type}-${col.dataIndex}`} className={col.type == "switch" && "switch-fix" || col.type == "tagSelect" && "options-fix"} label={col.title}>
+            <Form.Item key={`col-${col.type}-${col.dataIndex}`} className={col.type == "switch" && "switch-fix" || (col.type == "tagSelect" || col.type == "rangePicker") && "options-fix"} {...labelProps} >
               {getFieldDecorator(col.dataIndex, { ...options })(inputField[col.type])}
             </Form.Item>
           )
@@ -146,6 +156,10 @@ const EditableCell = (props) => {
       return <Select mode="multiple" style={{ width: "100%" }}>{props.options.map((opt, i) => <Option value={opt} key={i}>{opt}</Option>)}</Select>
     }
 
+    else if(props.inputType === "rangePicker"){
+      return <RangePicker format="DD-MM-YYYY"/>
+    }
+
     else if (props.inputType === "date") {
       return <DatePicker placeholder="date" />
     }
@@ -198,7 +212,7 @@ const EditableCell = (props) => {
         {editing ? (
           <Form.Item style={{ margin: 0 }}>
             {getFieldDecorator(dataIndex, {
-              ...options, initialValue: inputType === "switch" ? record[dataIndex] = JSON.parse(record[dataIndex]) : record[dataIndex],
+              ...options, initialValue: inputType="rangePicker" ? record[dataIndex].map(val => moment(val)) : inputType === "switch" ? record[dataIndex] = JSON.parse(record[dataIndex]) : record[dataIndex],
             })(getInput(record["type"]))}
           </Form.Item>
         ) : (
@@ -460,7 +474,7 @@ const EditableTable = (props) => {
   }
 
   const footer = () => (
-    <WrappedAddForm columns={columns} handleAddition={handleAddFormData} />
+    <WrappedAddForm columns={columns} noAddFormLables={props.noAddFormLables} handleAddition={handleAddFormData} />
   )
 
   const handleChange = (pagination, filters, sorter) => {
@@ -502,7 +516,7 @@ const EditableTable = (props) => {
         <div className="table-buttons">
           <Button disabled={props.loading} type="danger" onClick={handleMultiDelete} disabled={!selectedRowKeys.length}>Remove</Button>
           {props.handleSave && <Button loading={props.loading} type="primary" onClick={() => props.handleSave(data, props.name)} disabled={selectedRowKeys.length}>Save</Button>}
-          {!props.disableFilters && <Button onClick={clearAll}>Clear All</Button>}
+          {!props.disableFilters && <Button onClick={clearAll}>Clear Filters</Button>}
         </div>
         <Table
           {...tableProps}

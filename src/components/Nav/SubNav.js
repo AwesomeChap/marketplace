@@ -5,7 +5,7 @@ import SignupForm from '../Login/SignupForm';
 import BikeIcon from '../../assets/customIcons/bikeIcon';
 import { NavLink, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { removeUser } from '../../redux/actions/actions';
+import { removeUser} from '../../redux/actions/actions';
 import axios from 'axios';
 import PassReset from '../Login/PassReset';
 import VerifyEmailForm from '../Login/VerifyEmail';

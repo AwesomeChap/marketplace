@@ -106,20 +106,20 @@ const SellerDashBoard = (props) => {
     </>
   )
 
+  const dinningPossible = () => {
+    const branchIndex = props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId);
+    return !!props.branchId && !!props.sellerConfig.branches && props.sellerConfig.branches[branchIndex].profile.serviceOptions.includes("Dinning In");
+  }
+
   const TabPanes = {
     sellerProfile: <SellerProfileTab loading={loading} handleDeleteBranch={handleDeleteBranch} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} />,
     foodItems: <FoodItemsTab branches={!!props.sellerConfig.branches && props.sellerConfig.branches.map(branch => ({name: branch.profile.branchName, id: branch._id}))} />,
-    seatArrangement: <SeatArrangement done={() => setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId} />,
+    seatArrangement: <SeatArrangement dinningPossible={dinningPossible} done={() => setLoading(false)} loading={loading} handleSaveConfig={handleSaveConfig} sellerConfig={props.sellerConfig} branchId={props.branchId} />,
     order: <div>Order</div>,
   }
 
   const handleChange = key => setCurrentKey(key);
   const tabHeaders = ["foodItems", "seatArrangement", "order"];
-
-  const dinningPossible = () => {
-    const branchIndex = props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId);
-    return !!props.branchId && !!props.sellerConfig.branches && props.sellerConfig.branches[branchIndex].profile.serviceOptions.includes("Dinning In");
-  }
 
   return (
     <>

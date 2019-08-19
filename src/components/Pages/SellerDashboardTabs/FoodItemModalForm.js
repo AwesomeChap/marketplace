@@ -5,6 +5,8 @@ import moment from 'moment';
 import Loader from '../../Helper/Loader';
 import GenericPropsTable from '../../Helper/GenericPropsTable';
 import ColData from './ColData';
+import GenericEditableTable from '../../Helper/GenericTable';
+import _ from 'lodash';
 
 const { RangePicker } = DatePicker;
 
@@ -16,17 +18,20 @@ const FoodItemModalForm = (props) => {
   const [ingsOption, setIngsOption] = useState([]);
   const [nutsOption, setNutsOption] = useState([]);
   const [visible, setVisible] = useState(false);
+  const [branchSpecificDetails, setBranchSpecificDetails] = useState([]);
+  const [branchSpecificDetailsColData, setBranchSpecificDetailsColData] = useState(ColData["branchSpecificDetails"]);
 
   const ingColData = ColData.ingredients;
   const nutColData = ColData.nutrition;
 
   useEffect(() => {
-    console.log(props.branches);
+    console.log(props.foodItem);
     if (!!props.foodItem) {
       setIngredientsList(props.foodItem.ingredients);
       setNutrientsList(props.foodItem.nutrition);
+      setBranchSpecificDetails(props.foodItem.branchSpecificDetails);
     }
-  }, [])
+  }, [props.foodItem])
 
   useEffect(() => {
     if (Object.keys(props.options).length) {
@@ -44,6 +49,14 @@ const FoodItemModalForm = (props) => {
     }
   }, [nutrientsList])
 
+  useEffect(() => {
+    const selectedBranchNames = branchSpecificDetails.map(dt => dt.branchName);
+    const allBranchNames = props.branches.map(branch => branch.name);
+    let bsdc = [...branchSpecificDetailsColData];
+    bsdc[0].options = _.difference(allBranchNames, selectedBranchNames);
+    setBranchSpecificDetailsColData(bsdc);
+  }, [branchSpecificDetails])
+
   const handleSubmit = (e) => {
     e.preventDefault();
     validateFields((err, values) => {
@@ -55,7 +68,7 @@ const FoodItemModalForm = (props) => {
           return message.warning("Your sum total nutrients weight exceeed 100%");
         }
         values["leadTime"] = values["leadTime"].format('HH:mm');
-        values = { ...values, ingredients: ingredientsList, nutrition: nutrientsList };
+        values = { ...values, ingredients: ingredientsList, nutrition: nutrientsList, branchSpecificDetails };
         delete values.addIngredient;
         delete values.addIngredientWeight;
         delete values.addNutrition;
@@ -73,6 +86,10 @@ const FoodItemModalForm = (props) => {
     else {
       setNutrientsList(data);
     }
+  }
+
+  const handleDetailsChange = (name, data) => {
+    setBranchSpecificDetails(data);
   }
 
   const handleAddIngredient = (name, quantity) => {
@@ -119,30 +136,6 @@ const FoodItemModalForm = (props) => {
           <Alert message="Please enter price with respect to one person" type="info" closable />
         </Form.Item>
 
-        {!newConfig && (
-          <>
-            <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
-              <Row type="flex" justify="center">
-                <Col>
-                  <Button onClick={() => setVisible(true)} icon="swap">Transfer</Button>
-                </Col>
-              </Row>
-            </Form.Item>
-            <Modal width={500} visible={visible} centered={true} onCancel={() => setVisible(false)} okText={"Share"}
-              maskClosable={false} destroyOnClose={true} title={"Share Food Item"} onOk={handleTransfer}>
-              {visible && <Form.Item label="Branches">
-                {getFieldDecorator('targetBranches', {
-                  rules: [{ required: true, message: "Choose Branches" }],
-                })(
-                  <Select style={{ width: "100%" }} mode={"multiple"} placeholder="Choose target branches">
-                    {props.branches.map((opt, i) => {if (opt.id !== props.branchId) return (<Select.Option value={opt.name} key={opt.id}>{opt.name}</Select.Option>) })}
-                  </Select>
-                )}
-              </Form.Item>}
-            </Modal>
-          </>
-        )}
-
         {!newConfig && <Form.Item label="Food Item Id">
           <span><strong>{props.foodItem._id}</strong></span>
         </Form.Item>}
@@ -154,7 +147,7 @@ const FoodItemModalForm = (props) => {
           })(<Input placeholder="name (eg. Pizza)" />)}
         </Form.Item>
 
-        <UploadImage form={form} limit={1} label="image" name="image" options={{ 
+        <UploadImage form={form} limit={1} label="image" name="image" options={{
           rules: [{ required: true, message: "Food Item image is required" }],
           initialValue: newConfig ? undefined : props.foodItem.image
         }} />
@@ -169,26 +162,6 @@ const FoodItemModalForm = (props) => {
             </Select>
           )}
         </Form.Item>
-
-        <Form.Item label="Price">
-          {getFieldDecorator('price', {
-            initialValue: newConfig ? 0 : (props.foodItem.price || 0),
-            rules: [{ required: true, message: "Catering service coverage required!" }]
-          })(<InputNumber formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            parser={value => value.replace(/\£\s?|(,*)/g, '')} placeholder="price" />)}
-        </Form.Item>
-
-        <Form.Item label="Discount">
-          {getFieldDecorator('discount', {
-            initialValue: newConfig ? undefined : props.foodItem.discount
-          })(
-            <InputNumber formatter={value => `${value}%`} parser={value => value.replace('%', '')} min={0} max={100} placeholder="Discount" />
-          )}
-        </Form.Item>
-
-        {!!getFieldValue("discount") && <Form.Item label="Discount Time Span">
-          {getFieldDecorator('discountTimeSpan', { ...rangeConfig, initialValue: newConfig ? undefined : props.foodItem.discountTimeSpan.map(dts => moment(dts)) })(<RangePicker format="DD-MM-YYYY" />)}
-        </Form.Item>}
 
         <Form.Item label="Lead Time">
           {getFieldDecorator('leadTime', {
@@ -279,7 +252,7 @@ const FoodItemModalForm = (props) => {
               )}
             </Col>
             <Col span={4}>
-              <Button disabled={getFieldValue("addIngredient") == undefined || !getFieldValue("addIngredient").length || getFieldValue("addIngredientWeight") == undefined}
+              <Button style={{transform: "translate(0,-5%)"}} disabled={getFieldValue("addIngredient") == undefined || !getFieldValue("addIngredient").length || getFieldValue("addIngredientWeight") == undefined}
                 type="primary" onClick={() => {
                   handleAddIngredient(getFieldValue("addIngredient"), getFieldValue("addIngredientWeight"))
                   resetFields(["addIngredient", "addIngredientWeight"]);
@@ -314,7 +287,7 @@ const FoodItemModalForm = (props) => {
               )}
             </Col>
             <Col span={4}>
-              <Button disabled={getFieldValue("addNutrition") == undefined || !getFieldValue("addNutrition").length || getFieldValue("addNutritionWeight") == undefined}
+              <Button style={{transform: "translate(0,-5%)"}} disabled={getFieldValue("addNutrition") == undefined || !getFieldValue("addNutrition").length || getFieldValue("addNutritionWeight") == undefined}
                 type="primary" onClick={() => {
                   handleAddNutrition(getFieldValue("addNutrition"), getFieldValue("addNutritionWeight"))
                   resetFields(["addNutrition", "addNutritionWeight"]);
@@ -328,6 +301,18 @@ const FoodItemModalForm = (props) => {
           sm: { span: 20, offset: 2 },
         }}>
           <GenericPropsTable handleDataChange={handleDataChange} addForm={false} name="nutrition" colData={nutColData} dataSource={nutrientsList} />
+        </Form.Item>
+
+        <Form.Item wrapperCol={{
+          xs: { span: 24, offset: 0 },
+          sm: { span: 20, offset: 2 }
+        }}> <span style={{fontSize: 22, fontWeight: 300}} >Manage Pricing & Discounts</span>   </Form.Item>
+
+        <Form.Item wrapperCol={{
+          xs: { span: 24, offset: 0 },
+          sm: { span: 20, offset: 2 }
+        }}>
+          <GenericPropsTable branches={props.branches.map(b => b.name)} handleDataChange={handleDetailsChange} noAddFormLables={true} name={"branchSpecificDetails"} colData={branchSpecificDetailsColData} dataSource={branchSpecificDetails} />
         </Form.Item>
         <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { span: 24 } }}>
           <Row type="flex" justify="center">

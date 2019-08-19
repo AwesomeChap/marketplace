@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Icon, Input, AutoComplete, Form, Button, Tooltip } from 'antd';
 import { NavLink, Link, withRouter } from 'react-router-dom';
+import { setLocation } from '../../redux/actions/actions';
+import { connect } from 'react-redux';
 import '../../scss/nav.scss';
 import SubNav from './SubNav';
 import axios from 'axios';
+import { mapBoxKey } from '../../keys';
 
 const IconFont = Icon.createFromIconfontCN({
   scriptUrl: '//at.alicdn.com/t/font_1354310_6el429o2whs.js',
@@ -24,9 +27,19 @@ const Navbar = (props) => {
       const lat = position.coords.latitude;
       const long = position.coords.longitude;
       const encodedText = encodeURIComponent(`${long},${lat}`);
-      axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedText}.json?access_token=pk.eyJ1IjoiYXdlc29tZWNoYXAiLCJhIjoiY2p6NGxuYzV4MDM0NjNmdDQxNm5vd3RlZiJ9.fnHf3fB5ddaANEfKiqYrAQ&cachebuster=1565433849624&autocomplete=true`)
+      axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedText}.json?access_token=${mapBoxKey}&cachebuster=1565433849624&autocomplete=true`)
         .then(({ data }) => {
           if (data.features) {
+            let d = data.features[0];
+            props.setLocation({
+              id: d.id,
+              name: d.text,
+              address: d.place_name,
+              geometry: {
+                longitude: d.geometry.coordinates[0],
+                latitude: d.geometry.coordinates[1]
+              }
+            });
             setLocation(data.features[0].place_name);
             setData(data.features);
           } else {
@@ -43,7 +56,7 @@ const Navbar = (props) => {
     setLocation(value);
     let encodedText = encodeURIComponent(value);
     if (encodedText === "undefined") encodedText = "";
-    axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedText}.json?access_token=pk.eyJ1IjoiYXdlc29tZWNoYXAiLCJhIjoiY2p6NGxuYzV4MDM0NjNmdDQxNm5vd3RlZiJ9.fnHf3fB5ddaANEfKiqYrAQ&cachebuster=1565433849624&autocomplete=true`)
+    axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedText}.json?access_token=${mapBoxKey}&cachebuster=1565433849624&autocomplete=true`)
       .then(({ data }) => {
         if (data.features) {
           setData(data.features);
@@ -61,7 +74,7 @@ const Navbar = (props) => {
       id: d.id,
       name: d.text,
       address: d.place_name,
-      location: {
+      geomet: {
         longitude: d.geometry.coordinates[0],
         latitude: d.geometry.coordinates[1]
       }
@@ -98,4 +111,6 @@ const Navbar = (props) => {
   )
 }
 
-export default withRouter(Navbar);
+const mapStateToProps = state => state;
+
+export default connect(mapStateToProps, { setLocation })(withRouter(Navbar));

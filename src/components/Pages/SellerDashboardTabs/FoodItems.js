@@ -87,16 +87,15 @@ const FoodItemsTab = (props) => {
     axios.post('/seller/foodItem', { userId: props.user._id, branchId: props.branchId, foodItem }).then(({ data }) => {
       const resfoodItem = data.foodItem;
       const sellerConfigClone = { ...props.sellerConfig };
-      const branchIndex = sellerConfigClone.branches.map(obj => obj._id).indexOf(props.branchId);
 
       if (!foodItem.hasOwnProperty("_id")) {
         //add
-        sellerConfigClone.branches[branchIndex].foodItems = [...sellerConfigClone.branches[branchIndex].foodItems, foodItem = resfoodItem]
+        sellerConfigClone.foodItems = [...sellerConfigClone.foodItems, foodItem = resfoodItem]
       }
       else {
         //update
-        const foodItemIndex = sellerConfigClone.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItem._id);
-        sellerConfigClone.branches[branchIndex].foodItems[foodItemIndex] = resfoodItem;
+        const foodItemIndex = sellerConfigClone.foodItems.map(obj => obj._id).indexOf(foodItem._id);
+        sellerConfigClone.foodItems[foodItemIndex] = resfoodItem;
       }
       props.setSellerConfig(sellerConfigClone);
       setLoading(false); done();
@@ -120,13 +119,12 @@ const FoodItemsTab = (props) => {
         try {
           const { foodItem } = res.data;
           const sellerConfigClone = { ...props.sellerConfig };
-          const branchIndex = sellerConfigClone.branches.map(obj => obj._id).indexOf(branches[i].id);
-          if (!sellerConfigClone.branches[branchIndex].foodItems.includes(foodItem)) {
-            sellerConfigClone.branches[branchIndex].foodItems = [...sellerConfigClone.branches[branchIndex].foodItems, foodItem]
+          if (!sellerConfigClone.foodItems.includes(foodItem)) {
+            sellerConfigClone.foodItems = [...sellerConfigClone.foodItems, foodItem]
           }
           else {
-            const foodItemIndex = sellerConfigClone.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(foodItemId);
-            sellerConfigClone.branches[branchIndex].foodItems[foodItemIndex] = foodItem
+            const foodItemIndex = sellerConfigClone.foodItems.map(obj => obj._id).indexOf(foodItemId);
+            sellerConfigClone.foodItems[foodItemIndex] = foodItem
           }
           props.setSellerConfig(sellerConfigClone);
         }
@@ -155,9 +153,8 @@ const FoodItemsTab = (props) => {
   }
 
   const openEditModal = (id) => {
-    const branchIndex = props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId);
-    const foodItemIndex = props.sellerConfig.branches[branchIndex].foodItems.map(obj => obj._id).indexOf(id);
-    const cfid = props.sellerConfig.branches[branchIndex].foodItems[foodItemIndex];
+    const foodItemIndex = props.sellerConfig.foodItems.map(obj => obj._id).indexOf(id);
+    const cfid = props.sellerConfig.foodItems[foodItemIndex];
     setCurrentFoodItemData(cfid);
     setVisible(true);
   }
@@ -178,7 +175,8 @@ const FoodItemsTab = (props) => {
 
   let foodItemModalFormProps = {
     done: () => setVisible(false), loading, options, branches: props.branches,
-    handleSaveFoodItem, foodItemData: {}, transferFoodItem, branchId: props.branchId
+    handleSaveFoodItem, foodItemData: {}, transferFoodItem, branchId: props.branchId,
+    branches : props.sellerConfig.branches.map( branch => ({id: branch._id, name: branch.profile.branchName}))
   }
 
   if (props.config) {
@@ -198,11 +196,11 @@ const FoodItemsTab = (props) => {
     <div className="menu-item-page">
       <Loader loading={loading}>
         <Button className="top-right-absolute" onClick={() => { setCurrentFoodItemData(null); setVisible(true) }} type="primary">Add Food Item</Button>
-        <Modal width={700} visible={visible} centered={true} footer={null} onCancel={handleCancel} maskClosable={false}
+        <Modal width={1000} visible={visible} centered={true} footer={null} onCancel={handleCancel} maskClosable={false}
           destroyOnClose={true} title={!!currentFoodItemData ? "Edit Food Item" : "Create Food Item"} >
           <FoodItemModalForm {...foodItemModalFormProps} />
         </Modal>
-        <GenericModalTable name="foodItems" openEditModal={openEditModal} handleDeleteItem={handleDeleteItem} colData={ColData["foodItems"]} dataSource={transformConfigToDatasource(props.sellerConfig.branches[props.sellerConfig.branches.map(obj => obj._id).indexOf(props.branchId)].foodItems)} />
+        <GenericModalTable name="foodItems" openEditModal={openEditModal} handleDeleteItem={handleDeleteItem} colData={ColData["foodItems"]} dataSource={transformConfigToDatasource(props.sellerConfig.foodItems)} />
       </Loader>
     </div>
   )

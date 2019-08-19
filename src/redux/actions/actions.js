@@ -7,6 +7,7 @@ export const SET_SELLER_CONFIG = "set seller config";
 export const UPDATE_MAIL_CONFIG = "update mail config";
 export const UPDATE_CATEGORIES_CONFIG = "update categories config";
 export const SET_BRANCH_ID = "set branch id";
+export const SET_LOCATION = "set location";
 
 export const saveUser = (user) => ({
   type: SAVE,
@@ -43,9 +44,12 @@ export const setSellerConfig = (sellerConfig) => ({
 
 export const setBranchId = (branchId) => ({
   type: SET_BRANCH_ID,
-  payload: {
-    branchId
-  }
+  payload: { branchId }
+})
+
+export const setLocation = (location) => ({
+  type: SET_LOCATION,
+  payload: { location }
 })
 
 export const saveErrors = (err) => ({

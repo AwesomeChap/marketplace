@@ -66,7 +66,10 @@ const SeatArrangement = (props) => {
 
   return (
     <Loader loading={props.loading}>
-      <div className="seat-arrangement-controls">
+      {
+        props.dinningPossible() ? (
+          <>
+            <div className="seat-arrangement-controls">
         <Input placeholder={"eg. 500"} value={height} onChange={({ target: { value } }) => setHeight(value)} addonBefore="Height" />
         <Input placeholder={"eg. 500"} value={width} onChange={({ target: { value } }) => setWidth(value)} addonBefore="Width" />
         <Button icon="border-horizontal" onClick={() => handleAddComponent("vertical")}>Add Vertical Table</Button>
@@ -93,6 +96,11 @@ const SeatArrangement = (props) => {
           })}
         </div>
       </div>
+          </>
+        ) : (
+          <div>This service is not accessible to you, In order to activate it add <b>Dinning In</b> to available services of your branch</div>
+        )
+      }
     </Loader>
   )
 }

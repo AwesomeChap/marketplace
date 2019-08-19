@@ -111,7 +111,7 @@ const AdminDashboard = (props) => {
             <Menu.Item onClick={handleClick} key="nutrition"><Icon type="appstore" />Nutrition</Menu.Item>
             <Menu.Item onClick={handleClick} key="spices"><Icon type="appstore" />Spice Levels</Menu.Item>
             <Menu.Item onClick={handleClick} key="allergy"><Icon type="appstore" />Allergy</Menu.Item>
-            <Menu.Item onClick={handleClick} key="priceRange"><Icon type="appstore" />Price Range</Menu.Item>
+            {/* <Menu.Item onClick={handleClick} key="priceRange"><Icon type="appstore" />Price Range</Menu.Item> */}
             <Menu.Item onClick={handleClick} key="time"><Icon type="appstore" />Serve Time</Menu.Item>
             <Menu.Item onClick={handleClick} key="foodProvider"><Icon type="shop" />Food Provider</Menu.Item>
             <Menu.Item onClick={handleClick} key="commission"><Icon type="pound" />Commission</Menu.Item>
