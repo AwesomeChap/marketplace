@@ -31,9 +31,9 @@ const convertTreeToArray = (array, tree) => {
 router.get('/options', (req, res) => {
   Config.find({}).then(configs => {
     let { categories } = configs[0];
-    categories = convertTreeToArray([], categories);
-    categories.sort();
-    res.status(200).json({ options: { categories } });
+    let allCategories = convertTreeToArray([], categories);
+    allCategories.sort();
+    res.status(200).json({ options: { categories : {main : configs[0].categories.values.sort(), all: allCategories} } });
   }).catch(e => res.status(500).json({ messsage: "some error occured while fetching restaurant filter options", errors: e }))
 })
 

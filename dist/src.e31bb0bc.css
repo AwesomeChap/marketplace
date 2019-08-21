@@ -348,6 +348,13 @@ html {
   width: 100%;
   justify-content: space-between; }
 
+.space-between-center {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: space-between; }
+
 .blue-bg {
   width: 100%;
   background: #2f54eb; }
@@ -361,12 +368,13 @@ html {
 .ant-modal-body {
   overflow: auto !important;
   overflow-x: hidden !important;
-  max-height: 90vh !important; }
+  max-height: 90vh !important;
+  transition: all 0.3s; }
 
 .ant-modal-content {
   overflow: hidden;
   max-height: 96vh !important;
-  transition: all 0.5s !important; }
+  transition: all 0.3s !important; }
 
 .ant-modal-title {
   font-weight: 100 !important;
@@ -391,13 +399,13 @@ html {
       margin-left: 0; }
     .inline-form button:nth-last-child(1) {
       margin-right: 0; }
-  .inline-form div {
+  .inline-form div, .inline-form span {
     flex-basis: 100%;
     margin-right: 8px;
     margin-left: 8px; }
-    .inline-form div:nth-child(1) {
+    .inline-form div:nth-child(1), .inline-form span:nth-child(1) {
       margin-left: 0; }
-    .inline-form div:nth-last-child(1) {
+    .inline-form div:nth-last-child(1), .inline-form span:nth-last-child(1) {
       margin-right: 0; }
 
 h3 {
@@ -451,7 +459,7 @@ h3 {
 
 /* For demo */
 .ant-carousel {
-  background: #f3f3f3;
+  background: #f7f7f7;
   margin: 16px 0 !important; }
 
 .ant-carousel .slick-slide {
@@ -465,7 +473,11 @@ h3 {
     height: 250px !important; }
 
 .grey-bg {
-  background: #f3f3f3; }
+  background: #f7f7f7; }
+
+.selected-food-type {
+  border-bottom: 1px solid #1890ff !important;
+  border-radius: 0 !important; }
 
 .editable-cell {
   position: relative; }
