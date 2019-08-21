@@ -131,9 +131,7 @@
         box-shadow: none; }
     .left-sub-nav .ant-select-selection .ant-select-selection__placeholder {
       color: #fff !important;
-      opacity: 0.6;
-      letter-spacing: 0.1em;
-      font-weight: 300; }
+      opacity: 0.6; }
 
 .category-values {
   display: flex;

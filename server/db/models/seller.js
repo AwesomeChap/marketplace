@@ -23,6 +23,7 @@ const sellerProfileSchema = new Schema({
   serviceOptions: [String], //dining in, take away, delivery
   photos: [],
   discount: Number,
+  discountMinOrder: {type: Number, default: 0},
   discountTimeSpan: [String],
   openingTime: String,
   closingTime: String,
@@ -53,6 +54,7 @@ const sellerProfileSchema = new Schema({
   smokingAllowed: { type: Boolean, default: false },
   levy: { type: Float, default: 0 },
   hourlyCharge: { type: Float, default: 0 },
+  rating: { type: Float, default: 0 }
 }, { strict: false })
 
 const foodItemsBranchSpecificDetailsSchema = new Schema({
@@ -60,7 +62,7 @@ const foodItemsBranchSpecificDetailsSchema = new Schema({
   price: Float,
   discount: Number,
   discountTimeSpan: [String],
-},{strict: false});
+}, { strict: false });
 
 const foodItemSchema = new Schema({
   name: String,

@@ -8,6 +8,7 @@ export const UPDATE_MAIL_CONFIG = "update mail config";
 export const UPDATE_CATEGORIES_CONFIG = "update categories config";
 export const SET_BRANCH_ID = "set branch id";
 export const SET_LOCATION = "set location";
+export const SET_FILTER_OPTIONS = "set filter options";
 
 export const saveUser = (user) => ({
   type: SAVE,
@@ -20,7 +21,7 @@ export const removeUser = () => ({
 
 export const _setLoading = (value) => ({
   type: LOADING,
-  payload: {value}
+  payload: { value }
 })
 
 export const setConfig = (config) => ({
@@ -51,6 +52,11 @@ export const setBranchId = (branchId) => ({
 export const setLocation = (location) => ({
   type: SET_LOCATION,
   payload: { location }
+})
+
+export const setFilterOptions = (filterOptions) => ({
+  type: SET_FILTER_OPTIONS,
+  payload: { filterOptions }
 })
 
 export const saveErrors = (err) => ({

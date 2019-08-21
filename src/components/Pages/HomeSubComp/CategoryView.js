@@ -36,7 +36,7 @@ const CategoryListItem = props => {
     <List.Item
       onClick={e => props.handleSelect(props.item)}
       key={props.item}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer" , color: props.selected && "#1890ff"}}
       onMouseEnter={e => setDisplay(true)}
       onMouseLeave={e => setDisplay(false)}
       actions={
@@ -111,15 +111,15 @@ const CategoryList = props => {
 
 const CategoryView = props => {
 
-  const [selectedCategories, setSelectedCategories] = useState([]);
   const [visible, setVisible] = useState(false);
   const [visible2, setVisible2] = useState(false);
   const [filterText, setFilterText] = useState("");
+  
   const handleSelect = value => {
-    if (selectedCategories.includes(value)) {
-      setSelectedCategories(selectedCategories.filter(sc => sc !== value));
+    if (props.categories.includes(value)) {
+      props.handleChange(props.categories.filter(sc => sc !== value));
     } else {
-      setSelectedCategories([...selectedCategories, value]);
+      props.handleChange([...props.categories, value])
     }
   };
 
@@ -128,9 +128,9 @@ const CategoryView = props => {
     <>
       <CategoryList
         header={true}
-        dataSource={props.categories.main}
+        dataSource={props.dataSource.main}
         handleSelect={handleSelect}
-        selectedCategories={selectedCategories}
+        selectedCategories={props.categories}
         handleViewAll={() => setVisible(true)}
         handleViewSelected={() => setVisible2(true)}
         bordered={true}
@@ -152,9 +152,9 @@ const CategoryView = props => {
       >
         <CategoryList
           grid={{ gutter: 16, column: 3 }}
-          dataSource={props.categories.all.filter(d => _.toLower(d).includes(filterText))}
+          dataSource={props.dataSource.all.filter(d => _.toLower(d).includes(filterText))}
           handleSelect={handleSelect}
-          selectedCategories={selectedCategories}
+          selectedCategories={props.categories}
         />
       </Modal>
       <Modal
@@ -166,12 +166,12 @@ const CategoryView = props => {
       >
         <CategoryList
           grid={{ gutter: 16, column: 2 }}
-          dataSource={selectedCategories}
+          dataSource={props.categories}
           handleSelect={handleSelect}
-          selectedCategories={selectedCategories}
+          selectedCategories={props.categories}
         />
-        {!!selectedCategories.length && <Row type="flex" justify="center">
-          <Button type="danger" onClick={() => { setSelectedCategories([]); setVisible2(false) }}>Reset</Button>
+        {!!props.categories.length && <Row type="flex" justify="center">
+          <Button type="danger" onClick={() => { props.handleChange([]); setVisible2(false) }}>Reset</Button>
         </Row>}
       </Modal>
     </>

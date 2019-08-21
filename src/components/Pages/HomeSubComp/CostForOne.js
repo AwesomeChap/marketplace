@@ -9,7 +9,7 @@ const CostForOneListItem = props => {
     <List.Item
       onClick={e => props.handleSelect(props.item)}
       key={props.item}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer", color: props.selected && "#1890ff" }}
       onMouseEnter={e => setDisplay(true)}
       onMouseLeave={e => setDisplay(false)}
       actions={
@@ -48,7 +48,7 @@ const CostForOneList = props => {
         props.header && (
           <Row type="flex" justify="space-between">
             <span style={{ fontSize: 20, fontWeight: 300, color: "#000" }}>Cost For One</span>
-            {!!props.costRange && (<Col><Button onClick={props.handleReset} type="link">Reset</Button></Col>)}
+            {!!props.costRange && (<Col><Button style={{padding: 0, height: 30}} onClick={props.handleReset} type="link">Reset</Button></Col>)}
           </Row>
         )
       }
@@ -66,17 +66,15 @@ const CostForOneList = props => {
 
 const CostForOneView = props => {
 
-  const [costRange, setCostRange] = useState(null);
-
   const handleSelect = value => {
-    if (costRange == value) {
-      setCostRange(null);
+    if (props.costForOne == value) {
+      props.handleChange(null);
     } else {
-      setCostRange(value);
+      props.handleChange(value);
     }
   };
 
-  const handleReset = () => setCostRange(null);
+  const handleReset = () => props.handleChange(null);
 
   return (
     <>
@@ -84,7 +82,7 @@ const CostForOneView = props => {
         header={true}
         dataSource={["below £10", "£11 to £20", "£21 to £30", "£31 to £40", "£41 to £50", "more than £50"]}
         handleSelect={handleSelect}
-        costRange={costRange}
+        costRange={props.costForOne}
         bordered={true}
         handleReset={handleReset}
       />

@@ -47,7 +47,7 @@ router.get('/', (req, res) => {
         const { restaurantName, logo } = seller.commonSettings;
         let logoUrl = logo[0].thumbUrl;
         return seller.branches.map(branch => {
-          const { _id, alcohol, fullAddr, delivery, serviceOptions, minOrder, costForOne, openingTime, closingTime, closingDays, discount, smokingAllowed, capacity } = branch.profile;
+          const { _id, alcohol, fullAddr, delivery, serviceOptions, minOrder, costForOne, openingTime, closingTime, closingDays, discount, discountMinOrder, discountTimeSpan, smokingAllowed, capacity, rating } = branch.profile;
           let foodType = [];
           let dishes = [];
           let categories = [];
@@ -65,7 +65,7 @@ router.get('/', (req, res) => {
           foodType = _.sortedUniq(foodType); dishes.sort(); categories.sort(); flavours.sort();
           return {
             restaurantName, logoUrl, _id, alcohol, serviceOptions, minOrder, costForOne, openingTime, fullAddr, delivery,
-            closingTime, closingDays, discount, smokingAllowed, capacity, foodType, dishes, categories, flavours
+            closingTime, closingDays, discount, discountMinOrder, discountTimeSpan, smokingAllowed, capacity, foodType, dishes, categories, flavours, rating
           };
         })
       })
@@ -89,15 +89,16 @@ module.exports = router
 restaurantName
 Logo
 
-serviceOptions
-minOrder // sort
-cost for one
-openingHours
-closingDays *
-alcohol
-discount // sort
+serviceOptions             x
+minOrder // sort           
+cost for one               
+openingHours               
+closingDays                x
+alcohol                    x
+discount // sort          
 smoking allowed
 capacity
+rating
 
 pure veg // to be created
 dishes // to be created

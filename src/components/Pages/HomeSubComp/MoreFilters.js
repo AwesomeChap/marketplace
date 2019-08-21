@@ -9,7 +9,7 @@ const MoreFiltersListItem = props => {
     <List.Item
       onClick={e => props.handleSelect(props.item)}
       key={props.item}
-      style={{ cursor: "pointer" }}
+      style={{ cursor: "pointer", color: props.selected && "#1890ff" }}
       onMouseEnter={e => setDisplay(true)}
       onMouseLeave={e => setDisplay(false)}
       actions={
@@ -26,7 +26,7 @@ const MoreFiltersListItem = props => {
                     />
                   )}
                 </React.Fragment>
-              )}
+              )} 
             {6}
           </span>
         ]
@@ -48,7 +48,7 @@ const MoreFiltersList = props => {
         props.header && (
           <Row type="flex" justify="space-between">
             <span style={{ fontSize: 20, fontWeight: 300, color: "#000" }}>More Filters</span>
-            {!!props.selectedFilters.length && (<Col><Button onClick={() => props.handleReset} type="link">Reset</Button></Col>)}
+            {!!props.selectedFilters.length && (<Col><Button style={{ padding: 0, height: 30 }} onClick={props.handleReset} type="link">Reset</Button></Col>)}
           </Row>
         )
       }
@@ -66,29 +66,25 @@ const MoreFiltersList = props => {
 
 const MoreFiltersView = props => {
 
-  const [selectedFilters, setSelectedFilters] = useState([]);
-
   const handleSelect = value => {
-    if (selectedFilters.includes(value)) {
-      setSelectedFilters(selectedFilters.filter(sf => sf !== value));
+    if (props.moreFilters.includes(value)) {
+      props.handleChange(props.moreFilters.filter(sf => sf !== value));
     } else {
-      setSelectedFilters([...selectedFilters, value]);
+      props.handleChange([...props.moreFilters, value]);
     }
   };
 
-  const handleReset = () => setSelectedFilters(null);
+  const handleReset = () => { console.log("handle reset"); props.handleChange([]) };
 
   return (
-    <>
-      <MoreFiltersList
-        header={true}
-        dataSource={props.dataSource}
-        handleSelect={handleSelect}
-        selectedFilters={selectedFilters}
-        bordered={true}
-        handleReset={handleReset}
-      />
-    </>
+    <MoreFiltersList
+      header={true}
+      dataSource={props.dataSource}
+      handleSelect={handleSelect}
+      selectedFilters={props.moreFilters}
+      bordered={true}
+      handleReset={handleReset}
+    />
   );
 };
 

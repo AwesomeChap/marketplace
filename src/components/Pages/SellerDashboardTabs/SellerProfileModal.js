@@ -122,14 +122,14 @@ const SellerProfile = (props) => {
           {getFieldDecorator("contact.email", {
             rules: [{ required: true, message: "Email is required" }],
             initialValue: newConfig ? undefined : profile.contact.email
-          })(<Input placeholder="eg. marketplace@domain.com"/>)}
+          })(<Input placeholder="eg. marketplace@domain.com" />)}
         </Form.Item>
 
         <Form.Item label="Contact Phone Number(s)">
           {getFieldDecorator("contact.phoneNumbers", {
             rules: [{ required: true, message: "Phone numbers are required" }],
             initialValue: newConfig ? undefined : profile.contact.phoneNumbers
-          })(<Select mode="tags" placeholder="eg. +43-1-010101, 9876543210" dropdownStyle={{display: "none"}}/>)}
+          })(<Select mode="tags" placeholder="eg. +43-1-010101, 9876543210" dropdownStyle={{ display: "none" }} />)}
         </Form.Item>
 
         <Form.Item label="Opening Time">
@@ -171,6 +171,14 @@ const SellerProfile = (props) => {
             <InputNumber formatter={value => `${value}%`} parser={value => value.replace('%', '')} min={0} max={100} placeholder="Discount" />
           )}
         </Form.Item>
+
+        {!!getFieldValue("discount") && <Form.Item label="Min Order for Discount">
+          {getFieldDecorator('discountMinOrder', {
+            initialValue: newConfig ? undefined : profile.discountMinOrder,
+            rules: [{ type: "number", message: "Input should be a number." }, { required: true, message: "Min order for discount is required!" }]
+          })(<InputNumber min={0} formatter={value => `£ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\£\s?|(,*)/g, '')} placeholder="price" />)}
+        </Form.Item>}
 
         {!!getFieldValue("discount") && <Form.Item label="Discount Time Span">
           {getFieldDecorator('discountTimeSpan', { ...rangeConfig, initialValue: newConfig ? undefined : profile.discountTimeSpan.map(dts => moment(dts)) })(<RangePicker format="DD-MM-YYYY" />)}
