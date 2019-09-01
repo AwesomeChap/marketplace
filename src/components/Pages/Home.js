@@ -19,16 +19,15 @@ const Home = (props) => {
 
   const [advts, setAdvts] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
+  const [filteredRsts, setFilteredRsts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState(null);
-  const [time, setTime] = useState(null);
   const [timeVisibility, setTimeVisibility] = useState(false);
-  const [selectedFoodType, setSelectedFoodType] = useState("Both");
-  const [selectedSortingOption, setSelectedSortingOption] = useState("Distance");
-  const [mapView, setMapView] = useState(true);
+  const [mapView, setMapView] = useState(false);
   const [offset, setOffset] = useState(0);
+  const [showAll, setShowAll] = useState(false);
 
-  const moreFilterOptions = ["Dining In", "Take Away", "Delivery", "Special Offers", "Alcohol served", "Alcohol Not Allowed", "Smoking Not Allowed "]
+  const moreFilterOptions = ["Dining In", "Take Away", "Delivery", "Special Offers", "Alcohol Served", "Alcohol Not Allowed", "Smoking Not Allowed "]
   const sortOptions = ["Distance", "Min Order", "Cost for one", "Rating"];
   let wrapperRef = useRef(null);
 
@@ -44,6 +43,7 @@ const Home = (props) => {
           resAdvts, resRestaurants,
           resOptions) => {
           setRestaurants(resRestaurants.data.restaurants);
+          setFilteredRsts(resRestaurants.data.restaurants);
           setAdvts([].concat.apply([], resAdvts.data.advts));
           setOptions(resOptions.data.options);
           setLoading(false);
@@ -51,7 +51,133 @@ const Home = (props) => {
     }
   }, [props.location]);
 
-  useEffect(() => console.log(mapView), [mapView]);
+  // filtering
+  useEffect(() => {
+    let rsts = [...restaurants];
+
+    // time - show only opened
+    if (!!props.filterOptions.time && !showAll) {
+      rsts = rsts.filter(rst => !(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
+    }
+
+    // foodType - veg, non-veg, both
+    if (!!props.filterOptions.foodType) {
+      rsts = rsts.filter(rst => {
+        switch (props.filterOptions.foodType) {
+          case "Veg": return rst.foodType.includes("Veg") && rst.foodType.length === 1;
+          case "Non Veg": return rst.foodType.includes("Non Veg") && rst.foodType.length === 1;
+          case "Both": return true;
+          default: return true;
+        }
+      })
+    }
+
+    // categories / sub-categories
+    if (props.filterOptions.categories.length) {
+      rsts = rsts.filter(rst => {
+        let cat;
+        for (cat of props.filterOptions.categories) {
+          if (!rst.categories.includes(cat)) return false;
+        }
+        return true;
+      })
+    }
+
+    // cost for one
+    if (!!props.filterOptions.costForOne) {
+      rsts = rsts.filter(rst => (rst.costForOne >= props.filterOptions.costForOne.min && rst.costForOne <= props.filterOptions.costForOne.max) || (props.filterOptions.costForOne.max === undefined && rst.costForOne > props.filterOptions.costForOne.min))
+    }
+
+    // more filters
+    if (props.filterOptions.moreFilters.length) {
+
+      // dining in
+      if (props.filterOptions.moreFilters.includes("Dining In")) {
+        rsts = rsts.filter(rst => rst.serviceOptions.includes("Dining In"));
+      }
+
+      // take away
+      if (props.filterOptions.moreFilters.includes("Take Away")) {
+        rsts = rsts.filter(rst => rst.serviceOptions.includes("Take Away"));
+      }
+
+      // delivery
+      if (props.filterOptions.moreFilters.includes("Delivery")) {
+        rsts = rsts.filter(rst => rst.serviceOptions.includes("Delivery"));
+      }
+
+      //Special Offers 
+      if (props.filterOptions.moreFilters.includes("Special Offers")) {
+        rsts = rsts.filter(rst => !!rst.discount);
+      }
+
+      //Alcohol served
+      if (props.filterOptions.moreFilters.includes("Alcohol Served")) {
+        rsts = rsts.filter(rst => rst.alcohol.served);
+      }
+
+      //Alcohol Not Allowed 
+      if (props.filterOptions.moreFilters.includes("Alcohol Not Allowed")) {
+        rsts = rsts.filter(rst => !rst.alcohol.allowed);
+      }
+
+      //Smoking Not Allowed
+      if (props.filterOptions.moreFilters.includes("Smoking Not Allowed")) {
+        rsts = rsts.filter(rst => !rst.smoking.allowed);
+      }
+    }
+
+    function compareMinSort(a, b) {
+      if (a.minOrder < b.minOrder) {
+        return -1;
+      }
+      if (a.minOrder > b.minOrder) {
+        return 1;
+      }
+      return 0;
+    }
+
+    function compareCostForOne(a, b) {
+      if (a.costForOne < b.costForOne) {
+        return -1;
+      }
+      if (a.costForOne > b.costForOne) {
+        return 1;
+      }
+      return 0;
+    }
+
+    function compareRating(a, b) {
+      if (a.rating < b.rating) {
+        return 1;
+      }
+      if (a.rating > b.rating) {
+        return -1;
+      }
+      return 0;
+    }
+
+    // sorting options { default: distance }
+    if (props.filterOptions.sortingOption) {
+      switch (props.filterOptions.sortingOption) {
+        case 'Distance': rsts = restaurants; break;
+        case 'Min Order': rsts.sort(compareMinSort); break;
+        case 'Cost For One': rsts.sort(compareCostForOne); break;
+        case 'Rating': rsts.sort(compareRating); break;
+        default: rsts = restaurants; break;
+      }
+    }
+
+    if(!props.filterOptions.time){
+      console.log("here"); 
+      rsts = rsts.filter( rst => false);
+      console.log(rsts);
+    }
+
+    setFilteredRsts(rsts);
+  }, [props.filterOptions, showAll]);
+
+  // useEffect(() => console.log(mapView), [mapView]);
 
   const fetchAdvts = (lat, long) => {
     return axios.get(`/advertisement/show?lat=${lat}&long=${long}`)
@@ -82,6 +208,21 @@ const Home = (props) => {
     </Menu>
   );
 
+  const getOpenRsts = () => {
+    let openRsts = 0;
+    let rst;
+    for (rst of restaurants) {
+      if (!(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A")))) {
+        openRsts++
+        rst["status"] = true;
+        // console.log(openRsts);
+      }
+      else rst["status"] = false;
+    }
+
+    return openRsts;
+  }
+
   return (
     <div ref={(node) => wrapperRef = node} className="wrapper scrollable">
       {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef} />}
@@ -108,8 +249,8 @@ const Home = (props) => {
                         <div style={{ marginBottom: 16 }}>
                           <Card>
                             <div className="space-between-center" >
-                              <span><Badge showZero={true} count={restaurants.length}> <Tag color="green">Open</Tag> </Badge> </span>
-                              <span>{!timeVisibility && "Currently"}</span>
+                              <span><Badge style={{ backgroundColor: !!getOpenRsts() && "#52c41a" }} showZero={true} count={getOpenRsts()}> <Tag color="green">Open</Tag> </Badge> </span>
+                              <Badge dot={showAll}><Button size="small" onClick={() => setShowAll(!showAll)}>Show All</Button></Badge>
                               <Button style={{ padding: 0 }} type="link" onClick={() => setTimeVisibility(true)}>Change Time</Button>
                             </div>
                             {timeVisibility && (
@@ -150,7 +291,7 @@ const Home = (props) => {
                                   <Button size="large" icon="sort-descending">Sorting Options</Button>
                                 </Dropdown>
                               </div>
-                              <MapView filterOptions={props.filterOptions} restaurants={restaurants} />
+                              <MapView filterOptions={props.filterOptions} restaurants={filteredRsts} />
                             </Col>
                           </Affix>
                         ) : (
@@ -162,7 +303,7 @@ const Home = (props) => {
                                   <Button size="large" icon="sort-descending">Sorting Options</Button>
                                 </Dropdown>
                               </div>
-                              <Restaurants filterOptions={props.filterOptions} restaurants={restaurants} />
+                              <Restaurants filterOptions={props.filterOptions} restaurants={filteredRsts} />
                             </Col>
                           )}
                       </>

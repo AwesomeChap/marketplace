@@ -1211,6 +1211,8 @@ h3 {
   display: flex;
   padding: 8px;
   border-radius: 2px; }
+  .restaurant-card .ant-tag {
+    padding: 0 4px; }
 
 .restaurant-card img {
   height: 120px; }

@@ -7,14 +7,14 @@ const CostForOneListItem = props => {
 
   return (
     <List.Item
-      onClick={e => props.handleSelect(props.item)}
-      key={props.item}
+      onClick={e => props.handleSelect(props.item.value)}
+      key={props.item.label}
       style={{ cursor: "pointer", color: props.selected && "#1890ff" }}
       onMouseEnter={e => setDisplay(true)}
       onMouseLeave={e => setDisplay(false)}
-      actions={
+      actions={ 
         !props.grid && [
-          <span style={{ cursor: "pointer" }}>
+          <span key={props.item.label} style={{ cursor: "pointer" }}>
             {props.selected ? (
               <Icon type="check" style={{ marginRight: 8, color: "#1890ff" }} />
             ) : (
@@ -32,7 +32,7 @@ const CostForOneListItem = props => {
         ]
       }
     >
-      {props.item}
+      {props.item.label}
     </List.Item>
   );
 };
@@ -48,14 +48,14 @@ const CostForOneList = props => {
         props.header && (
           <Row type="flex" justify="space-between">
             <span style={{ fontSize: 20, fontWeight: 300, color: "#000" }}>Cost For One</span>
-            {!!props.costRange && (<Col><Button style={{padding: 0, height: 30}} onClick={props.handleReset} type="link">Reset</Button></Col>)}
+            {!!props.costRange && (<Col><Button style={{ padding: 0, height: 30 }} onClick={props.handleReset} type="link">Reset</Button></Col>)}
           </Row>
         )
       }
       renderItem={item => (
         <CostForOneListItem
           grid={!!props.grid}
-          selected={_.toLower(item) === _.toLower(props.costRange)}
+          selected={_.toLower(JSON.stringify(item.value)) === _.toLower(JSON.stringify(props.costRange))}
           handleSelect={props.handleSelect}
           item={item}
         />
@@ -80,7 +80,14 @@ const CostForOneView = props => {
     <>
       <CostForOneList
         header={true}
-        dataSource={["below £10", "£11 to £20", "£21 to £30", "£31 to £40", "£41 to £50", "more than £50"]}
+        dataSource={[
+          { value: { min: 0, max: 10 }, label: "£0 - £10" },
+          { value: { min: 11, max: 20 }, label: "£11 - £20" },
+          { value: { min: 21, max: 30 }, label: "£21 - £30" },
+          { value: { min: 31, max: 40 }, label: "£31 - £40" },
+          { value: { min: 41, max: 50 }, label: "£41 - £50" },
+          { value: { min: 51, max: undefined }, label: "Above £50" },
+        ]}
         handleSelect={handleSelect}
         costRange={props.costForOne}
         bordered={true}

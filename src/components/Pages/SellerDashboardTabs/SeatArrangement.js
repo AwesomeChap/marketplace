@@ -67,7 +67,7 @@ const SeatArrangement = (props) => {
   return (
     <Loader loading={props.loading}>
       {
-        props.dinningPossible() ? (
+        props.diningPossible() ? (
           <>
             <div className="seat-arrangement-controls">
         <Input placeholder={"eg. 500"} value={height} onChange={({ target: { value } }) => setHeight(value)} addonBefore="Height" />
@@ -98,7 +98,7 @@ const SeatArrangement = (props) => {
       </div>
           </>
         ) : (
-          <div>This service is not accessible to you, In order to activate it add <b>Dinning In</b> to available services of your branch</div>
+          <div>This service is not accessible to you, In order to activate it add <b>Dining In</b> to available services of your branch</div>
         )
       }
     </Loader>

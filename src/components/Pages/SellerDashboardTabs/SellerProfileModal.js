@@ -92,7 +92,7 @@ const SellerProfile = (props) => {
     },
   };
 
-  const services = ["Dinning In", "Take Away", "Delivery"];
+  const services = ["Dining In", "Take Away", "Delivery"];
   const modeOfService = ["Food is delivered", "Service personnel"];
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -150,7 +150,7 @@ const SellerProfile = (props) => {
           {getFieldDecorator('closingDays', {
             initialValue: newConfig ? undefined : profile.closingDays
           })(
-            <Select mode="multiple" placeholder="Please let us know which days are you closed">
+            <Select mode="multiple" getPopupContainer={() => document.querySelector(".ant-modal-body")} placeholder="Please let us know which days are you closed">
               {days.map((day, i) => <Option value={day} key={i + 1}>{day}</Option>)}
             </Select>
           )}
@@ -189,7 +189,7 @@ const SellerProfile = (props) => {
             rules: [{ required: true, message: "Services are required!" }],
             initialValue: newConfig ? undefined : profile.serviceOptions
           })(
-            <Select mode="multiple" placeholder="Please select available service options">
+            <Select getPopupContainer={() => document.querySelector(".ant-modal-body")} mode="multiple" placeholder="Please select available service options">
               {services.map((opt, i) => <Option value={opt} key={i + 1}>{opt}</Option>)}
             </Select>
           )}
@@ -296,7 +296,7 @@ const SellerProfile = (props) => {
                 initialValue: newConfig ? undefined : profile.cateringService.modeOfService,
                 rules: [{ required: true, message: "Mode of service is required!" }]
               })(
-                <Select mode="multiple" placeholder="Please select mode of services">
+                <Select getPopupContainer={() => document.querySelector(".ant-modal-body")} mode="multiple" placeholder="Please select mode of services">
                   {modeOfService.map((opt, i) => <Option value={opt} key={i + 1}>{opt}</Option>)}
                 </Select>
               )}

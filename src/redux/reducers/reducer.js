@@ -8,7 +8,7 @@ const initialState = {
   user: null,
   _loading: false,
   config: null,
-  sellerConfig: null,
+  sellerConfig: null, 
   branchId: null,
   errors: null,
   location: null,
@@ -16,7 +16,7 @@ const initialState = {
     time: null,
     foodType: "Both",
     categories: [],
-    costForOne: null,
+    costForOne: null, 
     moreFilters: [],
     sortingOption: "Distance"
   }
