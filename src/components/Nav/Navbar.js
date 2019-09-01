@@ -6,10 +6,10 @@ import { connect } from 'react-redux';
 import '../../scss/nav.scss';
 import SubNav from './SubNav';
 import axios from 'axios';
-import { mapBoxKey } from '../../keys';
+import { mapBoxKey, iconFontCNUrl } from '../../keys';
 
 const IconFont = Icon.createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/font_1354310_6el429o2whs.js',
+  scriptUrl: iconFontCNUrl,
 });
 
 const Navbar = (props) => {
@@ -32,7 +32,7 @@ const Navbar = (props) => {
         .then(({ data }) => {
           if (data.features) {
             let d = data.features[0];
-            props.setLocation({ 
+            props.setLocation({
               id: d.id,
               name: d.text,
               address: d.place_name,
@@ -104,7 +104,11 @@ const Navbar = (props) => {
                 <AutoComplete value={location} onSearch={handleSearch} style={{ width: "100%" }} dataSource={addressOptions} placeholder="Please input an address" onSelect={onSelect} optionLabelProp="value">
                   <Input allowClear={true} />
                 </AutoComplete>
-                <Tooltip placement="bottom" title="Find me"><Button onClick={_locateMe} style={{ fontSize: 18 }} type="primary"><IconFont type="icon-location" /></Button></Tooltip>
+                <Tooltip placement="bottom" title="Find me">
+                  <Button onClick={_locateMe} style={{ fontSize: 18 }} type="primary">
+                    <IconFont type="icon-location" />
+                  </Button>
+                </Tooltip>
               </>
             )}
           </div>

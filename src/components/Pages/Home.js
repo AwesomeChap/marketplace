@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Carousel, Row, Col, TimePicker, Card, Input, Button, Menu, Dropdown, Radio, Badge, Tag } from 'antd';
+import React, { useEffect, useState, useRef } from 'react';
+import { Carousel, Row, Col, TimePicker, Card, Input, Button, Menu, Dropdown, Radio, Badge, Tag, Affix } from 'antd';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { setFilterOptions } from '../../redux/actions/actions';
@@ -10,6 +10,10 @@ import CostForOneView from './HomeSubComp/CostForOne';
 import MoreFiltersView from './HomeSubComp/MoreFilters';
 import _ from 'lodash';
 import Restaurants from './UserDashboard/Restaurants';
+import ScrollToTop from '../Helper/ScrollToTop';
+
+import "./../../scss/home.scss"
+import MapView from './UserDashboard/mapView';
 
 const Home = (props) => {
 
@@ -21,30 +25,33 @@ const Home = (props) => {
   const [timeVisibility, setTimeVisibility] = useState(false);
   const [selectedFoodType, setSelectedFoodType] = useState("Both");
   const [selectedSortingOption, setSelectedSortingOption] = useState("Distance");
+  const [mapView, setMapView] = useState(true);
+  const [offset, setOffset] = useState(0);
 
   const moreFilterOptions = ["Dining In", "Take Away", "Delivery", "Special Offers", "Alcohol served", "Alcohol Not Allowed", "Smoking Not Allowed "]
   const sortOptions = ["Distance", "Min Order", "Cost for one", "Rating"];
+  let wrapperRef = useRef(null);
 
   useEffect(() => {
     if (!!props.location) {
-    setLoading(true);
-    axios.all([
-      fetchAdvts(props.location.geometry.latitude, props.location.geometry.longitude),
-      fetchRestaurants(props.location.geometry.latitude, props.location.geometry.longitude),
-      fetchOptions(),
-    ])
-      .then(axios.spread((
-        resAdvts, resRestaurants,
-        resOptions) => {
-        setRestaurants(resRestaurants.data.restaurants);
-        setAdvts([].concat.apply([], resAdvts.data.advts));
-        setOptions(resOptions.data.options);
-        setLoading(false);
-      })).catch(e => setLoading(false))
+      setLoading(true);
+      axios.all([
+        fetchAdvts(props.location.geometry.latitude, props.location.geometry.longitude),
+        fetchRestaurants(props.location.geometry.latitude, props.location.geometry.longitude),
+        fetchOptions(),
+      ])
+        .then(axios.spread((
+          resAdvts, resRestaurants,
+          resOptions) => {
+          setRestaurants(resRestaurants.data.restaurants);
+          setAdvts([].concat.apply([], resAdvts.data.advts));
+          setOptions(resOptions.data.options);
+          setLoading(false);
+        })).catch(e => setLoading(false))
     }
   }, [props.location]);
 
-  useEffect(() => console.log(selectedSortingOption), [selectedSortingOption]);
+  useEffect(() => console.log(mapView), [mapView]);
 
   const fetchAdvts = (lat, long) => {
     return axios.get(`/advertisement/show?lat=${lat}&long=${long}`)
@@ -76,7 +83,8 @@ const Home = (props) => {
   );
 
   return (
-    <div className="wrapper scrollable">
+    <div ref={(node) => wrapperRef = node} className="wrapper scrollable">
+      {wrapperRef != null && <ScrollToTop getCurrentRef={() => wrapperRef} />}
       <div className="container">
         {
           props._loading ? <Loader /> : (
@@ -95,7 +103,7 @@ const Home = (props) => {
                       ))}
                     </Carousel>
 
-                    <Row gutter={16}>
+                    <Row style={{ position: "relative" }} gutter={16}>
                       <Col span={6}>
                         <div style={{ marginBottom: 16 }}>
                           <Card>
@@ -131,16 +139,33 @@ const Home = (props) => {
                           <MoreFiltersView moreFilters={props.filterOptions.moreFilters} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, moreFilters: values })} dataSource={moreFilterOptions} />
                         </div>
                       </Col>
-                      <Col span={18}>
-                        <div style={{ marginBottom: 16 }} className="inline-form">
-                          <Input.Search placeholder="Search restaurants or dishes" size="large" />
-                          <Button size="large" icon="environment">Map View</Button>
-                          <Dropdown trigger={["click"]} overlay={menu} getPopupContainer={() => document.querySelector(".wrapper.scrollable")}>
-                            <Button size="large" icon="sort-descending">Sorting Options</Button>
-                          </Dropdown>
-                        </div>
-                        <Restaurants filterOptions={props.filterOptions} restaurants={restaurants}/>
-                      </Col>
+                      <>
+                        {mapView ? (
+                          <Affix offsetTop={16} target={() => document.querySelector(".wrapper.scrollable")} onChange={affixed => setOffset(affixed ? 6 : 0)}>
+                            <Col span={18} offset={offset}>
+                              <div style={{ marginBottom: 16 }} className="inline-form">
+                                <Input.Search placeholder="Search restaurants or dishes" size="large" />
+                                <Button size="large" icon="environment" onClick={() => setMapView(!mapView)} >Map View</Button>
+                                <Dropdown trigger={["click"]} overlay={menu} getPopupContainer={() => document.querySelector(".wrapper.scrollable")}>
+                                  <Button size="large" icon="sort-descending">Sorting Options</Button>
+                                </Dropdown>
+                              </div>
+                              <MapView filterOptions={props.filterOptions} restaurants={restaurants} />
+                            </Col>
+                          </Affix>
+                        ) : (
+                            <Col span={18}>
+                              <div style={{ marginBottom: 16 }} className="inline-form">
+                                <Input.Search placeholder="Search restaurants or dishes" size="large" />
+                                <Button size="large" icon="environment" onClick={() => { setMapView(!mapView); setOffset(0) }} >Map View</Button>
+                                <Dropdown trigger={["click"]} overlay={menu} getPopupContainer={() => document.querySelector(".wrapper.scrollable")}>
+                                  <Button size="large" icon="sort-descending">Sorting Options</Button>
+                                </Dropdown>
+                              </div>
+                              <Restaurants filterOptions={props.filterOptions} restaurants={restaurants} />
+                            </Col>
+                          )}
+                      </>
                     </Row>
                   </>
                 )}

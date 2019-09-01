@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Card, List } from 'antd';
+import { Card, List, Icon, Tag } from 'antd';
+import { iconFontCNUrl } from '../../../keys';
+
+const IconFont = Icon.createFromIconfontCN({
+  scriptUrl: iconFontCNUrl,
+});
 
 const Restaurant = (props) => {
   return (
@@ -8,9 +13,28 @@ const Restaurant = (props) => {
       key={props._id}
       style={{ cursor: "pointer" }}
     >
-      <Card>
-        {props.restaurantName}
-      </Card>
+      <div className="restaurant-card">
+        <img src={props.logoUrl} />
+        <div className="restaurant-content-wrapper">
+          <div className="restaurant-card-content">
+            <div className="restaurant-card-content-block">
+              <div className="restaurant-name"><b>{props.restaurantName}</b></div>
+              <div className="rating" style={{ color: "#52c41a" }}>
+                <Icon theme="filled" type="star" /> {parseFloat(Math.round(props.rating * 10) / 10).toFixed(1)} <span>100 ratings</span>
+              </div>
+              <div className="available-services">{props.serviceOptions.join(" . ")}</div>
+            </div>
+            <div className="restaurant-card-content-block">
+              {!!props.discount && <div style={{ color: "#1890ff" }}><IconFont type="icon-discount" /> {props.discount}% off when you spend £{props.discountMinOrder} </div>}
+              <div><IconFont type="icon-distance-road" /> {Math.round(props.distance / 100) / 10}km away </div>
+              {!!props.serviceOptions.includes("Delivery") && <div><IconFont type="icon-delivery" /> {props.delivery.cost ? `Delivery Cost £${props.delivery.cost}` : <span style={{ color: "#52c41a" }}>FREE Delivery</span>} . Min order £{props.minOrder}  </div>}
+            </div>
+          </div>
+          <div className="restaurant-card-content-block">
+            <div className="categories">{props.categories.map(cat => <Tag>{cat}</Tag>)}</div>
+          </div>
+        </div>
+      </div>
     </List.Item>
   )
 }
