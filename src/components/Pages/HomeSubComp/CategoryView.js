@@ -25,7 +25,7 @@ const CategoryListItem = props => {
                   )}
                 </React.Fragment>
               )}
-            {6}
+            {/* {6} */}
           </span>
         </Col>
       </Row>
@@ -54,7 +54,7 @@ const CategoryListItem = props => {
                   )}
                 </React.Fragment>
               )}
-            {6}
+            {/* {6} */}
           </span>
         ]
       }

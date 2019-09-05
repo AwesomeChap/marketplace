@@ -27,7 +27,7 @@ const MoreFiltersListItem = props => {
                   )}
                 </React.Fragment>
               )} 
-            {6}
+            {/* {6} */}
           </span>
         ]
       }

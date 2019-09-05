@@ -13,7 +13,7 @@ const initialState = {
   errors: null,
   location: null,
   filterOptions: {
-    time: null,
+    time: undefined,
     foodType: "Both",
     categories: [],
     costForOne: null, 

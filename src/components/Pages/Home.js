@@ -26,13 +26,13 @@ const Home = (props) => {
   const [mapView, setMapView] = useState(false);
   const [offset, setOffset] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [sortOptions, setSortingOptions] = useState(["Distance", "Cost For One", "Rating"]);
 
   const moreFilterOptions = ["Dining In", "Take Away", "Delivery", "Special Offers", "Alcohol Served", "Alcohol Not Allowed", "Smoking Not Allowed "]
-  const sortOptions = ["Distance", "Min Order", "Cost for one", "Rating"];
   let wrapperRef = useRef(null);
 
   useEffect(() => {
-    if (!!props.location) {
+    if (!!props.location) { 
       setLoading(true);
       axios.all([
         fetchAdvts(props.location.geometry.latitude, props.location.geometry.longitude),
@@ -43,7 +43,7 @@ const Home = (props) => {
           resAdvts, resRestaurants,
           resOptions) => {
           setRestaurants(resRestaurants.data.restaurants);
-          setFilteredRsts(resRestaurants.data.restaurants);
+          setFilteredRsts(resRestaurants.data.restaurants.filter(rst => !(moment().isBefore(moment(rst.openingTime, "hh:mm A")) || moment().isAfter(moment(rst.closingTime, "hh:mm A")))));
           setAdvts([].concat.apply([], resAdvts.data.advts));
           setOptions(resOptions.data.options);
           setLoading(false);
@@ -55,9 +55,21 @@ const Home = (props) => {
   useEffect(() => {
     let rsts = [...restaurants];
 
+    // rsts = rsts.filter(rst => !(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
+
+
     // time - show only opened
-    if (!!props.filterOptions.time && !showAll) {
-      rsts = rsts.filter(rst => !(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
+    // if (!!props.filterOptions.time && !showAll) {
+    //   rsts = rsts.filter(rst => !(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
+    // }
+
+    if (!showAll) {
+      if (!!props.filterOptions && !!props.filterOptions.time) {
+        rsts = rsts.filter(rst => !(moment(props.filterOptions.time, "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(props.filterOptions.time, "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
+      }
+      else {
+        rsts = rsts.filter(rst => !(moment().isBefore(moment(rst.openingTime, "hh:mm A")) || moment().isAfter(moment(rst.closingTime, "hh:mm A"))))
+      }
     }
 
     // foodType - veg, non-veg, both
@@ -103,7 +115,11 @@ const Home = (props) => {
 
       // delivery
       if (props.filterOptions.moreFilters.includes("Delivery")) {
+        setSortingOptions([...sortOptions, "Min Order"]);
         rsts = rsts.filter(rst => rst.serviceOptions.includes("Delivery"));
+      }
+      else{
+        setSortingOptions(["Distance", "Cost For One", "Rating"]);
       }
 
       //Special Offers 
@@ -160,22 +176,22 @@ const Home = (props) => {
     // sorting options { default: distance }
     if (props.filterOptions.sortingOption) {
       switch (props.filterOptions.sortingOption) {
-        case 'Distance': rsts = restaurants; break;
+        case 'Distance': break;
         case 'Min Order': rsts.sort(compareMinSort); break;
-        case 'Cost For One': rsts.sort(compareCostForOne); break;
+        case 'Cost For One': console.log("hey cfo"); rsts.sort(compareCostForOne); break;
         case 'Rating': rsts.sort(compareRating); break;
-        default: rsts = restaurants; break;
+        default: break;
       }
     }
 
-    if(!props.filterOptions.time){
-      console.log("here"); 
-      rsts = rsts.filter( rst => false);
-      console.log(rsts);
-    }
-
+    console.log(rsts);
     setFilteredRsts(rsts);
   }, [props.filterOptions, showAll]);
+
+  //show all 
+  // useEffect(() => {
+  //   console.log("show all pressed");
+  // }, [showAll])
 
   // useEffect(() => console.log(mapView), [mapView]);
 
