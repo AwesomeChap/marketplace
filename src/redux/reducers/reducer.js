@@ -10,12 +10,15 @@ const initialState = {
   config: null,
   sellerConfig: null, 
   branchId: null,
-  errors: null,
+  errors: null, 
   location: null,
   filterOptions: {
     time: undefined,
     foodType: "Both",
-    categories: [],
+    flavours: [],
+    ingredients: [],
+    nutrients: [],
+    categories: [], 
     costForOne: null, 
     moreFilters: [],
     sortingOption: "Distance"

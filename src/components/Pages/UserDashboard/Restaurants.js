@@ -27,7 +27,7 @@ const Restaurant = (props) => {
             <div className="restaurant-card-content">
               <div className="restaurant-card-content-block">
                 <div className="restaurant-name">
-                  <b>{props.searchOption === "restaurants" ? getHighlightedText(props.restaurantName, props.searchText, false) : props.restaurantName}</b> {!props.status ? <span style={{ color: "#ff4d4f", marginLeft: 16 }}><Icon theme="filled" type="clock-circle" /> Closed</span> : <span style={{ color: "#52c41a", marginLeft: 16 }}><Icon theme="filled" type="check-circle" /> Open</span>}
+                  <b>{props.searchOption === "restaurants" ? getHighlightedText(props.restaurantName, props.searchText, false) : props.restaurantName}</b> {!props.status ? <span style={{ color: "#999", marginLeft: 16 }}><Icon theme="filled" type="clock-circle" /> Closed</span> : <span style={{ color: "#52c41a", marginLeft: 16 }}><Icon theme="filled" type="check-circle" /> Open</span>}
                 </div>
                 <div className="rating" style={{ color: "#1890ff" }}>
                   <Icon theme="filled" type="star" /> {parseFloat(Math.round(props.rating * 10) / 10).toFixed(1)} <span>100 ratings</span> . <span>Cost For One £{props.costForOne}</span>

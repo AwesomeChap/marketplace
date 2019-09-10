@@ -36,7 +36,7 @@ const CategoryListItem = props => {
     <List.Item
       onClick={e => props.handleSelect(props.item)}
       key={props.item}
-      style={{ cursor: "pointer" , color: props.selected && "#1890ff"}}
+      style={{ cursor: "pointer", color: props.selected && "#1890ff" }}
       onMouseEnter={e => setDisplay(true)}
       onMouseLeave={e => setDisplay(false)}
       actions={
@@ -75,7 +75,7 @@ const CategoryList = props => {
         props.header && (
           <Row type="flex" justify="space-between">
             {/* <Col> */}
-              <span style={{fontSize: 20, fontWeight: 300, color: "#000"}}>Categories</span>
+            <span style={{ fontSize: 20, fontWeight: 300, color: "#000" }}>{props.name}</span>
             {/* </Col> */}
             <Col>
               <Button
@@ -114,7 +114,7 @@ const CategoryView = props => {
   const [visible, setVisible] = useState(false);
   const [visible2, setVisible2] = useState(false);
   const [filterText, setFilterText] = useState("");
-  
+
   const handleSelect = value => {
     if (props.categories.includes(value)) {
       props.handleChange(props.categories.filter(sc => sc !== value));
@@ -124,10 +124,10 @@ const CategoryView = props => {
   };
 
   return (
-    // <Loader loading={!!props.categories}>
     <>
       <CategoryList
         header={true}
+        name={props.name}
         dataSource={props.dataSource.main}
         handleSelect={handleSelect}
         selectedCategories={props.categories}
@@ -143,7 +143,7 @@ const CategoryView = props => {
         title={
           <Input.Search
             size="large"
-            placeholder="Search categories"
+            placeholder={`Search ${props.name}`}
             style={{ width: "auto" }}
             onChange={({ target: { value } }) => setFilterText(_.toLower(value))}
           />
@@ -162,7 +162,7 @@ const CategoryView = props => {
         onCancel={() => setVisible2(false)}
         centered={true}
         footer={null}
-        title={"Selected Categories"}
+        title={`Selected ${props.name}`}
       >
         <CategoryList
           grid={{ gutter: 16, column: 2 }}
@@ -175,7 +175,6 @@ const CategoryView = props => {
         </Row>}
       </Modal>
     </>
-    // </Loader>
   );
 };
 

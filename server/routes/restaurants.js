@@ -23,7 +23,7 @@ function distance(lat1, lon1, lat2, lon2) {
 const convertTreeToArray = (array, tree) => {
   array.push(...tree.values);
   tree.values.forEach((val) => {
-      return convertTreeToArray(array, tree[_.camelCase(val)]);
+    return convertTreeToArray(array, tree[_.camelCase(val)]);
   })
   return array;
 }
@@ -33,7 +33,7 @@ router.get('/options', (req, res) => {
     let { categories } = configs[0];
     let allCategories = convertTreeToArray([], categories);
     allCategories.sort();
-    res.status(200).json({ options: { categories : {main : configs[0].categories.values.sort(), all: allCategories} } });
+    res.status(200).json({ options: { categories: { main: configs[0].categories.values.sort(), all: allCategories } } });
   }).catch(e => res.status(500).json({ messsage: "some error occured while fetching restaurant filter options", errors: e }))
 })
 
@@ -50,9 +50,12 @@ router.get('/', (req, res) => {
           const { _id, alcohol, fullAddr, delivery, serviceOptions, minOrder, costForOne, openingTime, closingTime, closingDays, discount, discountMinOrder, discountTimeSpan, smokingAllowed, capacity, rating } = branch.profile;
           let foodType = [];
           let dishes = [];
+          let ingredients = [];
+          let nutrients = [];
           let categories = [];
           let flavours = [];
           let allergies = [];
+          
           seller.foodItems.forEach(foodItem => {
             if (!!foodItem.branchSpecificDetails.find(el => el.branchName == branch.profile.branchName)) {
               foodType = [...foodType, foodItem.type];
@@ -60,11 +63,14 @@ router.get('/', (req, res) => {
               categories = _.union(categories, foodItem.category);
               flavours = _.union(flavours, foodItem.flavours);
               allergies = _.union(allergies, foodItem.allergy);
+              ingredients = _.union(ingredients, foodItem.ingredients.map(ings => ings.name));
+              nutrients = _.union(nutrients, foodItem.nutrition.map(nuts => nuts.name));
             }
           })
+
           foodType = _.sortedUniq(foodType); dishes.sort(); categories.sort(); flavours.sort();
           return {
-            restaurantName, logoUrl, _id, alcohol, serviceOptions, minOrder, costForOne, openingTime, fullAddr, delivery,
+            restaurantName, logoUrl, _id, alcohol, serviceOptions, minOrder, costForOne, openingTime, fullAddr, delivery, ingredients, nutrients,
             closingTime, closingDays, discount, discountMinOrder, discountTimeSpan, smokingAllowed, capacity, foodType, dishes, categories, flavours, rating
           };
         })
@@ -90,12 +96,12 @@ restaurantName
 Logo
 
 serviceOptions             x
-minOrder // sort           
-cost for one               
-openingHours               
+minOrder // sort
+cost for one
+openingHours
 closingDays                x
 alcohol                    x
-discount // sort          
+discount // sort
 smoking allowed
 capacity
 rating
