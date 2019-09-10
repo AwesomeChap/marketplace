@@ -1,10 +1,31 @@
-.restaurant-card {
+.restaurant-card-wrapper{
+  display: flex;
+  flex-direction: column;
+  // background: #1890ff;
+  background: #f7f7f7;
+  border-radius: 5px !important;
+  overflow: hidden !important;
   border: 1px solid #e8e8e8;
-  box-shadow: 0 0 10px #ddd;
+}
+
+.dishes{
+  border-top: 1px solid #e8e8e8;
+  padding: 8px 8px 0px 8px !important;
+
+  .ant-tag{
+    background: #fff;
+    margin-bottom: 8px !important;
+  }
+}
+
+.restaurant-card {
+  // border: 1px solid #e8e8e8;
+  // box-shadow: 0 0 10px #ddd;
   display: flex;
   // height: 120px;
+  background: white;
   padding: 8px;
-  border-radius: 2px;
+  // border-radius: 5px;
 
   .ant-tag{
     padding: 0 4px;

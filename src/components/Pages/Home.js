@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Carousel, Row, Col, TimePicker, Card, Input, Button, Menu, Dropdown, Radio, Badge, Tag, Affix } from 'antd';
+import {
+  Carousel, Row, Col, TimePicker, Card,
+  Input, Select, Button, Menu, Dropdown, Radio,
+  Badge, Tag, Affix, Icon, Tooltip
+} from 'antd';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { setFilterOptions } from '../../redux/actions/actions';
@@ -11,9 +15,13 @@ import MoreFiltersView from './HomeSubComp/MoreFilters';
 import _ from 'lodash';
 import Restaurants from './UserDashboard/Restaurants';
 import ScrollToTop from '../Helper/ScrollToTop';
-
 import "./../../scss/home.scss"
 import MapView from './UserDashboard/mapView';
+import { iconFontCNUrl } from '../../keys';
+
+const IconFont = Icon.createFromIconfontCN({
+  scriptUrl: iconFontCNUrl,
+});
 
 const Home = (props) => {
 
@@ -25,14 +33,16 @@ const Home = (props) => {
   const [timeVisibility, setTimeVisibility] = useState(false);
   const [mapView, setMapView] = useState(false);
   const [offset, setOffset] = useState(0);
-  const [showAll, setShowAll] = useState(false);
+  const [hideClosed, setHideClosed] = useState(false);
   const [sortOptions, setSortingOptions] = useState(["Distance", "Cost For One", "Rating"]);
+  const [searchText, setSearchText] = useState("");
+  const [searchOption, setSearchOption] = useState("restaurants");
 
   const moreFilterOptions = ["Dining In", "Take Away", "Delivery", "Special Offers", "Alcohol Served", "Alcohol Not Allowed", "Smoking Not Allowed "]
   let wrapperRef = useRef(null);
 
   useEffect(() => {
-    if (!!props.location) { 
+    if (!!props.location) {
       setLoading(true);
       axios.all([
         fetchAdvts(props.location.geometry.latitude, props.location.geometry.longitude),
@@ -43,7 +53,8 @@ const Home = (props) => {
           resAdvts, resRestaurants,
           resOptions) => {
           setRestaurants(resRestaurants.data.restaurants);
-          setFilteredRsts(resRestaurants.data.restaurants.filter(rst => !(moment().isBefore(moment(rst.openingTime, "hh:mm A")) || moment().isAfter(moment(rst.closingTime, "hh:mm A")))));
+          setFilteredRsts(resRestaurants.data.restaurants);
+          // setFilteredRsts(resRestaurants.data.restaurants.filter(rst => !(moment().isBefore(moment(rst.openingTime, "hh:mm A")) || moment().isAfter(moment(rst.closingTime, "hh:mm A")))));
           setAdvts([].concat.apply([], resAdvts.data.advts));
           setOptions(resOptions.data.options);
           setLoading(false);
@@ -51,19 +62,48 @@ const Home = (props) => {
     }
   }, [props.location]);
 
+  useEffect(() => {
+    setSearchText("");
+  }, [searchOption])
+
+  // useEffect(() => {
+  //   // if (!searchText.replace(/\s/g, '').length) {
+  //   //   setSearchText("");
+  //   //   setFilteredRsts(restaurants);
+  //   // }
+
+  //   // if(!searchText.length){
+  //   //   setFilteredRsts(restaurants); 
+  //   // }
+
+  // if (searchOption === "restaurants") {
+  //   let rsts = restaurants.filter(rst => _.toLower(rst.restaurantName).includes(_.toLower(searchText)));
+  //   // setFilteredRsts(rsts.filter(rst => !(moment().isBefore(moment(rst.openingTime, "hh:mm A")) || moment().isAfter(moment(rst.closingTime, "hh:mm A")))));
+  //   setFilteredRsts(rsts);
+  // }
+
+  // else {
+  //   let fltdRsts = [...restaurants];
+  //   let i = 0;
+
+  //   for (i = 0; i < restaurants.length; i++) {
+  //     fltdRsts[i].dishes = fltdRsts[i].dishes.filter(dish => {
+  //       return _.toLower(dish).includes(_.toLower(searchText));
+  //     });
+  //   }
+
+  //   let rsts = fltdRsts.filter(rst => !!rst.dishes.length);
+  //   // setFilteredRsts(rsts.filter(rst => !(moment().isBefore(moment(rst.openingTime, "hh:mm A")) || moment().isAfter(moment(rst.closingTime, "hh:mm A")))));
+  //   setFilteredRsts(rsts);
+  // }
+  // }, [searchText])
+
   // filtering
   useEffect(() => {
+    // let rsts = [...filteredRsts];
     let rsts = [...restaurants];
 
-    // rsts = rsts.filter(rst => !(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
-
-
-    // time - show only opened
-    // if (!!props.filterOptions.time && !showAll) {
-    //   rsts = rsts.filter(rst => !(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
-    // }
-
-    if (!showAll) {
+    if (hideClosed) {
       if (!!props.filterOptions && !!props.filterOptions.time) {
         rsts = rsts.filter(rst => !(moment(props.filterOptions.time, "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(props.filterOptions.time, "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A"))))
       }
@@ -71,6 +111,28 @@ const Home = (props) => {
         rsts = rsts.filter(rst => !(moment().isBefore(moment(rst.openingTime, "hh:mm A")) || moment().isAfter(moment(rst.closingTime, "hh:mm A"))))
       }
     }
+
+    if (!!searchText && searchText.replace(/\s/g, '').length) {
+      console.log("It entered here!");
+
+      if (searchOption === "restaurants") {
+        rsts = [...rsts].filter(rst => _.toLower(rst.restaurantName).includes(_.toLower(searchText)));
+      }
+
+      else {
+        rsts = [...rsts].filter(rst => {
+          let dishes = rst.dishes.filter(dish => { 
+            return _.toLower(dish).includes(_.toLower(searchText));
+          })
+
+          return !!dishes.length
+        })
+
+        // console.log(searchText, rsts);
+      }
+    }
+
+    console.log(restaurants);
 
     // foodType - veg, non-veg, both
     if (!!props.filterOptions.foodType) {
@@ -115,10 +177,10 @@ const Home = (props) => {
 
       // delivery
       if (props.filterOptions.moreFilters.includes("Delivery")) {
-        setSortingOptions([...sortOptions, "Min Order"]);
+        setSortingOptions(["Distance", "Cost For One", "Rating", "Min Order"]);
         rsts = rsts.filter(rst => rst.serviceOptions.includes("Delivery"));
       }
-      else{
+      else {
         setSortingOptions(["Distance", "Cost For One", "Rating"]);
       }
 
@@ -178,22 +240,22 @@ const Home = (props) => {
       switch (props.filterOptions.sortingOption) {
         case 'Distance': break;
         case 'Min Order': rsts.sort(compareMinSort); break;
-        case 'Cost For One': console.log("hey cfo"); rsts.sort(compareCostForOne); break;
+        case 'Cost For One': rsts.sort(compareCostForOne); break;
         case 'Rating': rsts.sort(compareRating); break;
         default: break;
       }
     }
 
-    console.log(rsts);
+    // console.log(rsts);
     setFilteredRsts(rsts);
-  }, [props.filterOptions, showAll]);
+  }, [props.filterOptions, hideClosed, searchText]);
 
-  //show all 
-  // useEffect(() => {
-  //   console.log("show all pressed");
-  // }, [showAll])
-
-  // useEffect(() => console.log(mapView), [mapView]);
+  const searchBefore = (
+    <Button.Group>
+      <Button onClick={() => setSearchOption("restaurants")} style={{ fontSize: 18, color: searchOption !== "restaurants" && "#aaa" }} type="link"><Tooltip title="Restaurants"><Icon type="shop" /></Tooltip></Button>
+      <Button onClick={() => setSearchOption("dishes")} style={{ fontSize: 18, color: searchOption !== "dishes" && "#aaa" }} type="link"><Tooltip title="Dishes"><IconFont type="icon-FoodDrink" /></Tooltip></Button>
+    </Button.Group>
+  );
 
   const fetchAdvts = (lat, long) => {
     return axios.get(`/advertisement/show?lat=${lat}&long=${long}`)
@@ -231,7 +293,6 @@ const Home = (props) => {
       if (!(moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isBefore(moment(rst.openingTime, "hh:mm A")) || moment(!!props.filterOptions && !!props.filterOptions.time ? props.filterOptions.time : moment().format("hh:mm A"), "hh:mm A").isAfter(moment(rst.closingTime, "hh:mm A")))) {
         openRsts++
         rst["status"] = true;
-        // console.log(openRsts);
       }
       else rst["status"] = false;
     }
@@ -265,8 +326,11 @@ const Home = (props) => {
                         <div style={{ marginBottom: 16 }}>
                           <Card>
                             <div className="space-between-center" >
+                              <b>Found {restaurants.length} restaurants.</b>
+                              <Badge dot={hideClosed}><Button size="small" onClick={() => setHideClosed(!hideClosed)}>Hide Closed</Button></Badge>
+                            </div>
+                            <div style={{ marginTop: 16 }} className="space-between-center" >
                               <span><Badge style={{ backgroundColor: !!getOpenRsts() && "#52c41a" }} showZero={true} count={getOpenRsts()}> <Tag color="green">Open</Tag> </Badge> </span>
-                              <Badge dot={showAll}><Button size="small" onClick={() => setShowAll(!showAll)}>Show All</Button></Badge>
                               <Button style={{ padding: 0 }} type="link" onClick={() => setTimeVisibility(true)}>Change Time</Button>
                             </div>
                             {timeVisibility && (
@@ -301,7 +365,7 @@ const Home = (props) => {
                           <Affix offsetTop={16} target={() => document.querySelector(".wrapper.scrollable")} onChange={affixed => setOffset(affixed ? 6 : 0)}>
                             <Col span={18} offset={offset}>
                               <div style={{ marginBottom: 16 }} className="inline-form">
-                                <Input.Search placeholder="Search restaurants or dishes" size="large" />
+                                <Input.Search onSearch={value => setSearchText(value)} placeholder="Search restaurants or dishes" size="large" />
                                 <Button size="large" icon="environment" onClick={() => setMapView(!mapView)} >Map View</Button>
                                 <Dropdown trigger={["click"]} overlay={menu} getPopupContainer={() => document.querySelector(".wrapper.scrollable")}>
                                   <Button size="large" icon="sort-descending">Sorting Options</Button>
@@ -313,13 +377,14 @@ const Home = (props) => {
                         ) : (
                             <Col span={18}>
                               <div style={{ marginBottom: 16 }} className="inline-form">
-                                <Input.Search placeholder="Search restaurants or dishes" size="large" />
+                                {/* <Input.Search allowClear={true} size="large" placeholder="Search restaurants" /> */}
+                                <Input addonBefore={searchBefore} onChange={({ target: { value } }) => setSearchText(value)} addonAfter={<Icon type="search" />} placeholder={`Search ${searchOption}`} size="large" />
                                 <Button size="large" icon="environment" onClick={() => { setMapView(!mapView); setOffset(0) }} >Map View</Button>
                                 <Dropdown trigger={["click"]} overlay={menu} getPopupContainer={() => document.querySelector(".wrapper.scrollable")}>
                                   <Button size="large" icon="sort-descending">Sorting Options</Button>
                                 </Dropdown>
                               </div>
-                              <Restaurants filterOptions={props.filterOptions} restaurants={filteredRsts} />
+                              <Restaurants searchText={searchText} searchOption={searchOption} filterOptions={props.filterOptions} restaurants={filteredRsts} />
                             </Col>
                           )}
                       </>

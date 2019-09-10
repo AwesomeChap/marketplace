@@ -78,7 +78,7 @@ const Navbar = (props) => {
       id: d.id,
       name: d.text,
       address: d.place_name,
-      geomet: {
+      geometry: {
         longitude: d.geometry.coordinates[0],
         latitude: d.geometry.coordinates[1]
       }
@@ -90,6 +90,8 @@ const Navbar = (props) => {
   )) : null;
 
   const onSelect = (value, option) => {
+    console.log(option.props.fullAddr);
+    props.setLocation(option.props.fullAddr);
     setLocation(value);
   };
 
@@ -105,8 +107,8 @@ const Navbar = (props) => {
                   <Input allowClear={true} />
                 </AutoComplete>
                 <Tooltip placement="bottom" title="Find me">
-                  <Button onClick={_locateMe} style={{ fontSize: 18 }} type="primary">
-                    <IconFont type="icon-location" />
+                  <Button shape="round" onClick={_locateMe} style={{ padding: "0 8px", fontSize: 18 }} type="primary">
+                    <IconFont type="icon-location1" />
                   </Button>
                 </Tooltip>
               </>
