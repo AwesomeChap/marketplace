@@ -10,6 +10,7 @@ import { message } from 'antd';
 import Loader from './components/Helper/Loader';
 import ScrollToTop from './components/Helper/ScrollToTop';
 import AdminDashboard from './components/Pages/Dashboards/AdminDashboard';
+import RestaurantOnline from './components/Pages/HomeSubComp/RestaurantOnline';
 
 const App = (props) => {
   const [loading, setLoading] = useState(true);
@@ -36,6 +37,7 @@ const App = (props) => {
   if (loading) {
     return <Loader />
   }
+  
 
   let dashboardPath = "/me/dashboard"
 
@@ -50,6 +52,7 @@ const App = (props) => {
         <Route exact path="/" render={(props) => <Home {...props} user={user} loggedIn={loggedIn} dashboardPath={dashboardPath} />} />
         <Route exact path={"/admin/dashboard"} render={(props) => <AdminDashboard {...props} user={user} loggedIn={loggedIn} />} />
         <Route exact path={"/me/dashboard"} render={(props) => <Dashboard {...props} user={user} loggedIn={loggedIn} />} />
+        <Route exact path={"/restaurant/online/:sellerId/:branchId"} render={props => <RestaurantOnline {...props} user={user} loggedIn={loggedIn} />} />
       </Router>
     </>
   )

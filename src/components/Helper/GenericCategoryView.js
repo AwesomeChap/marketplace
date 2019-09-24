@@ -115,6 +115,8 @@ const CategoryView = props => {
   const [visible2, setVisible2] = useState(false);
   const [filterText, setFilterText] = useState("");
 
+  console.log(props);
+
   const handleSelect = value => {
     if (props.categories.includes(value)) {
       props.handleChange(props.categories.filter(sc => sc !== value));
@@ -126,8 +128,7 @@ const CategoryView = props => {
   return (
     <>
       <CategoryList
-        header={true}
-        name={props.name}
+        header={true} name={props.name}
         dataSource={props.dataSource.main}
         handleSelect={handleSelect}
         selectedCategories={props.categories}
@@ -138,8 +139,7 @@ const CategoryView = props => {
       <Modal
         visible={visible}
         onCancel={() => setVisible(false)}
-        centered={true}
-        footer={null}
+        centered={true} footer={null}
         title={
           <Input.Search
             size="large"

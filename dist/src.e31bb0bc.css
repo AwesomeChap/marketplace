@@ -397,13 +397,16 @@ html {
       margin-left: 0; }
     .inline-form button:nth-last-child(1) {
       margin-right: 0; }
-  .inline-form div, .inline-form span {
+  .inline-form div,
+  .inline-form span {
     flex-basis: 100%;
     margin-right: 8px;
     margin-left: 8px; }
-    .inline-form div:nth-child(1), .inline-form span:nth-child(1) {
+    .inline-form div:nth-child(1),
+    .inline-form span:nth-child(1) {
       margin-left: 0; }
-    .inline-form div:nth-last-child(1), .inline-form span:nth-last-child(1) {
+    .inline-form div:nth-last-child(1),
+    .inline-form span:nth-last-child(1) {
       margin-right: 0; }
 
 h3 {
@@ -476,6 +479,22 @@ h3 {
 .selected-food-type {
   border-bottom: 1px solid #1890ff !important;
   border-radius: 0 !important; }
+
+.ant-descriptions-item-label {
+  font-weight: 600 !important;
+  font-size: 16px !important; }
+
+.ant-descriptions-item span {
+  color: #fff; }
+
+.restaurant-top-bar {
+  background: #001529;
+  color: #fff;
+  height: auto;
+  transition: height 0.3s;
+  flex-shrink: 0; }
+  .restaurant-top-bar > * {
+    transition: all 0.3s; }
 
 .editable-cell {
   position: relative; }

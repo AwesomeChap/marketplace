@@ -132,4 +132,8 @@ router.get('/facebook/callback', passport.authenticate('facebook', { failureRedi
 	}
 );
 
+router.get("*", (req, res) => {
+	return res.send("Page not found")
+})
+
 module.exports = router

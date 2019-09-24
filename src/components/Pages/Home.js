@@ -13,10 +13,10 @@ import CategoryView from '../Helper/GenericCategoryView';
 import CostForOneView from './HomeSubComp/CostForOne';
 import MoreFiltersView from './HomeSubComp/MoreFilters';
 import _ from 'lodash';
-import Restaurants from './UserDashboard/Restaurants';
+import Restaurants from './HomeSubComp/Restaurants';
 import ScrollToTop from '../Helper/ScrollToTop';
 import "./../../scss/home.scss";
-import MapView from './UserDashboard/mapView';
+import MapView from './HomeSubComp/MapView';
 import { iconFontCNUrl } from '../../keys';
 
 const IconFont = Icon.createFromIconfontCN({
@@ -38,6 +38,8 @@ const getOptions = (arr, key) => {
 }
 
 const Home = (props) => {
+
+  console.log(`home props`, props);
 
   const [advts, setAdvts] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
@@ -259,15 +261,15 @@ const Home = (props) => {
         case 'Rating': rsts.sort(compareRating); break;
         default: break;
       }
-    }
+    } 
 
     setFilteredRsts(rsts);
   }, [props.filterOptions, hideClosed, searchText]);
 
   const searchBefore = (
     <Button.Group>
-      <Button onClick={() => setSearchOption("restaurants")} style={{ fontSize: 18, color: searchOption !== "restaurants" && "#aaa" }} type="link"><Tooltip title="Restaurants"><Icon type="shop" /></Tooltip></Button>
-      <Button onClick={() => setSearchOption("dishes")} style={{ fontSize: 18, color: searchOption !== "dishes" && "#aaa" }} type="link"><Tooltip title="Dishes"><IconFont type="icon-FoodDrink" /></Tooltip></Button>
+      <Tooltip title="Restaurants"><Button onClick={() => setSearchOption("restaurants")} style={{ fontSize: 18, color: searchOption !== "restaurants" && "#aaa" }} type="link"><Icon type="shop" /></Button></Tooltip>
+      <Tooltip title="Dishes"><Button onClick={() => setSearchOption("dishes")} style={{ fontSize: 18, color: searchOption !== "dishes" && "#aaa" }} type="link"><IconFont type="icon-FoodDrink" /></Button></Tooltip>
     </Button.Group>
   );
 
@@ -368,13 +370,13 @@ const Home = (props) => {
                           {!!options && <CategoryView name="Categories" categories={props.filterOptions.categories} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, categories: values })} dataSource={options.categories} />}
                         </div>
                         <div style={{ marginBottom: 16 }}>
-                          {!!options && <CategoryView name="Flavours" categories={props.filterOptions.flavours} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, flavours: values })} dataSource={{main: options.flavours.slice(0,8), all: options.flavours}} />}
+                          {!!options && <CategoryView name="Flavours" categories={props.filterOptions.flavours} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, flavours: values })} dataSource={{ main: options.flavours.slice(0, 8), all: options.flavours }} />}
                         </div>
                         <div style={{ marginBottom: 16 }}>
-                          {!!options && <CategoryView name="Ingredients" categories={props.filterOptions.ingredients} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, ingredients: values })} dataSource={{main: options.ingredients.slice(0,8), all: options.ingredients}} />}
+                          {!!options && <CategoryView name="Ingredients" categories={props.filterOptions.ingredients} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, ingredients: values })} dataSource={{ main: options.ingredients.slice(0, 8), all: options.ingredients }} />}
                         </div>
                         <div style={{ marginBottom: 16 }}>
-                          {!!options && <CategoryView name="Nutrients" categories={props.filterOptions.nutrients} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, nutrients: values })} dataSource={{main: options.nutrients.slice(0,8), all: options.nutrients}} />}
+                          {!!options && <CategoryView name="Nutrients" categories={props.filterOptions.nutrients} handleChange={(values) => props.setFilterOptions({ ...props.filterOptions, nutrients: values })} dataSource={{ main: options.nutrients.slice(0, 8), all: options.nutrients }} />}
                         </div>
                         <div style={{ marginBottom: 16 }}>
                           <CostForOneView costForOne={props.filterOptions.costForOne} handleChange={(value) => props.setFilterOptions({ ...props.filterOptions, costForOne: value })} />
@@ -389,7 +391,8 @@ const Home = (props) => {
                             <Col span={18} offset={offset}>
                               <div style={{ marginBottom: 16 }} className="inline-form">
                                 <Input.Search onSearch={value => setSearchText(value)} placeholder="Search restaurants" size="large" />
-                                <Button size="large" icon="environment" onClick={() => setMapView(!mapView)} >Map View</Button>
+                                {/* <Button size="large" icon="environment" onClick={() => setMapView(!mapView)} >Map View</Button> */}
+                                <Button size="large" onClick={() => setMapView(!mapView)}><IconFont type="icon-realtimelocation" /> Map View</Button>
                                 <Dropdown trigger={["click"]} overlay={menu} getPopupContainer={() => document.querySelector(".wrapper.scrollable")}>
                                   <Button size="large" icon="sort-descending">Sorting Options</Button>
                                 </Dropdown>
@@ -402,12 +405,13 @@ const Home = (props) => {
                               <div style={{ marginBottom: 16 }} className="inline-form">
                                 {/* <Input.Search allowClear={true} size="large" placeholder="Search restaurants" /> */}
                                 <Input addonBefore={searchBefore} onChange={({ target: { value } }) => setSearchText(value)} addonAfter={<Icon type="search" />} placeholder={`Search ${searchOption}`} size="large" />
-                                <Button size="large" icon="environment" onClick={() => { setMapView(!mapView); setOffset(0) }} >Map View</Button>
+                                {/* <Button size="large" icon="environment" onClick={() => { setMapView(!mapView); setOffset(0) }} >Map View</Button> */}
+                                <Button size="large" onClick={() => { setMapView(!mapView); setOffset(0) }}><IconFont type="icon-realtimelocation" /> Map View</Button>
                                 <Dropdown trigger={["click"]} overlay={menu} getPopupContainer={() => document.querySelector(".wrapper.scrollable")}>
                                   <Button size="large" icon="sort-descending">Sorting Options</Button>
                                 </Dropdown>
                               </div>
-                              <Restaurants searchText={searchText} searchOption={searchOption} filterOptions={props.filterOptions} restaurants={filteredRsts} />
+                              <Restaurants searchText={searchText} {...props} searchOption={searchOption} filterOptions={props.filterOptions} restaurants={filteredRsts} />
                             </Col>
                           )}
                       </>

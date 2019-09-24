@@ -119,8 +119,8 @@ router.put('/', (req, res) => {
                 if (!advt) {
                     return res.status(500).json({ message: "unable to update advt" });
                 }
-                else{
-                    return res.status(200).json({message: "Advertisement updated", advt});
+                else {
+                    return res.status(200).json({ message: "Advertisement updated", advt });
                 }
             })
         }
@@ -161,7 +161,7 @@ router.put('/', (req, res) => {
             }).catch(e => res.status(500).json({ message: "some error occured while updating photos advt" }));
         }
     }
-}) 
+})
 
 router.delete('/', (req, res) => {
     if (!req.body.advtId) {
@@ -210,17 +210,21 @@ router.delete('/', (req, res) => {
 
 router.get('/show', (req, res) => {
     console.log(req.query);
-    if(!req.query.lat || !req.query.long){
-        return res.status(500).json({message: "insufficient Parameters"});
+    if (!req.query.lat || !req.query.long) {
+        return res.status(500).json({ message: "insufficient Parameters" });
     }
-    else{
+    else {
         Advertisement.find({}).then(advts => {
-            const filteredAdvts = advts.filter( advt => advt.approvedPhotos.length !== 0).map( advt => {
+            const filteredAdvts = advts.filter(advt => advt.approvedPhotos.length !== 0).map(advt => {
                 return advt.approvedPhotos;
             })
-            return res.status(200).json({advts: filteredAdvts});
-        }).catch(e => res.status(500).json({messsage: "some error occured while finding advts to show"}));
+            return res.status(200).json({ advts: filteredAdvts });
+        }).catch(e => res.status(500).json({ messsage: "some error occured while finding advts to show" }));
     }
+})
+
+router.get("*", (req, res) => {
+    return res.send("Page not found")
 })
 
 

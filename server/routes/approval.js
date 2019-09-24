@@ -171,5 +171,8 @@ router.put('/', (req, res) => {
   }
 })
 
+router.get("*", (req, res) => {
+  return res.send("Page not found")
+})
 
 module.exports = router

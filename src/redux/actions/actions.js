@@ -9,6 +9,7 @@ export const UPDATE_CATEGORIES_CONFIG = "update categories config";
 export const SET_BRANCH_ID = "set branch id";
 export const SET_LOCATION = "set location";
 export const SET_FILTER_OPTIONS = "set filter options";
+export const SET_RESTAURANT = "set restaurant";
 
 export const saveUser = (user) => ({
   type: SAVE,
@@ -62,4 +63,9 @@ export const setFilterOptions = (filterOptions) => ({
 export const saveErrors = (err) => ({
   type: SAVE_ERRORS,
   payload: { err }
+})
+
+export const setRestaurant = restaurant => ({
+  type: SET_RESTAURANT,
+  payload: { restaurant }
 })
